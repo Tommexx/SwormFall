@@ -462,6 +462,11 @@
                 <span class="btn-cost">$150</span>
                 <span class="btn-hotkey">[7]</span>
             </button>
+            <button id="btn-bard" class="tool-btn" onclick="setTool('bard_troop')">
+                <span class="btn-label">Bard</span>
+                <span class="btn-cost">$100</span>
+                <span class="btn-hotkey">[B]</span>
+            </button>
         </div>
 
         <div id="tab-attack" class="tab-content">
@@ -573,6 +578,7 @@
     
     // Lists
     let enemies = [];
+    let corpses = [];
     let allies = [];      
     let structures = []; 
     let projectiles = []; 
@@ -659,6 +665,105 @@
 }
 
     /** CLASSES **/
+
+class Corpse {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y; // This is the "Ground" Y position
+        
+        this.life = 600; 
+        this.maxLife = 600;
+        this.active = true;
+        
+        // --- FALLING PHYSICS ---
+        this.dropY = -60; // Spawns 60 pixels in the air
+        this.velocity = 0;
+        this.gravity = 0.8; // How fast it accelerates down
+        this.landed = false;
+
+        this.sizeMod = 0.8 + Math.random() * 0.4;
+    }
+
+    update() {
+        // 1. FALLING LOGIC
+        if (!this.landed) {
+            this.velocity += this.gravity;
+            this.dropY += this.velocity;
+
+            // Hit the ground
+            if (this.dropY >= 0) {
+                this.dropY = 0;
+                // If moving fast enough, do a small bounce
+                if (Math.abs(this.velocity) > 2) {
+                    this.velocity = -this.velocity * 0.3; // 30% energy return (Heavy stone feel)
+                } else {
+                    this.landed = true; // Stop simulating physics
+                }
+            }
+        }
+
+        // 2. LIFE LOGIC
+        this.life--;
+        if (this.life <= 0) this.active = false;
+    }
+
+    draw() {
+        ctx.save();
+        
+        // Sinking logic (End of life)
+        let sink = 0;
+        if (this.life < 120) sink = (1 - (this.life / 120)) * 10;
+
+        // Combine Falling (dropY) + Sinking (sink)
+        ctx.translate(this.x, this.y + this.dropY + sink);
+        ctx.scale(this.sizeMod, this.sizeMod);
+        
+        // Fade out
+        ctx.globalAlpha = Math.min(1.0, (this.life / this.maxLife) * 3);
+
+        // --- DRAWING THE CROSS ---
+        
+        // 1. SHADOW (Only visible when close to ground)
+        if (this.dropY > -20) {
+            let shadowAlpha = 1 - (Math.abs(this.dropY) / 20);
+            ctx.fillStyle = `rgba(0, 0, 0, ${0.4 * shadowAlpha})`;
+            ctx.beginPath();
+            // Shadow grows as object gets closer
+            let sScale = 1 - (Math.abs(this.dropY) / 40); 
+            ctx.ellipse(0, 4, 10 * sScale, 5 * sScale, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 2. THE CROSS (Stone Gray)
+        const stoneDark = "#37474f";
+        const stoneLight = "#546e7a";
+        const stoneOutline = "#263238";
+
+        ctx.strokeStyle = stoneOutline;
+        ctx.lineWidth = 1.5;
+
+        // Vertical Beam
+        ctx.fillStyle = stoneDark;
+        ctx.fillRect(-2.5, -16, 5, 20);
+        ctx.strokeRect(-2.5, -16, 5, 20);
+
+        // Horizontal Beam
+        ctx.fillStyle = stoneLight;
+        ctx.fillRect(-7, -11, 14, 4);
+        ctx.strokeRect(-7, -11, 14, 4);
+
+        // 3. CRACK DETAIL
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-1, -16); 
+        ctx.lineTo(0, -13); 
+        ctx.lineTo(-1, -11);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
 
    class WaveAnnouncement {
     // Now accepts a title, a subtitle, and a color
@@ -828,53 +933,65 @@
         return true; // No walls found
     }
 
-    // --- UPDATED MOVEMENT LOGIC ---
-    function sharedMovement(enemy, col, row) {
-    // --- START OF MODIFICATION ---
-    // Calculate effective speed based on slow status
+function sharedMovement(enemy, col, row) {
+    // --- 1. CALCULATE SPEED (Your Slow Logic) ---
     let speedMod = enemy.isSlowed ? 0.5 : 1.0; 
     let currentSpeed = enemy.speed * speedMod;
-    
-    // Reset flag for the next frame (so they speed up if they leave range)
-    enemy.isSlowed = false; 
-    // --- END OF MODIFICATION ---
+    enemy.isSlowed = false; // Reset flag
 
-    // Target the center of the 2x2 base
+    // --- 2. TAUNT CHECK (New Logic) ---
+    // If enemy is taunted by a living Bard, chase the Bard instead of the base
+    if (enemy.tauntTarget) {
+        if (enemy.tauntTarget.hp <= 0) {
+            enemy.tauntTarget = null; // Bard is dead, stop chasing
+        } else {
+            // Move directly towards Bard
+            let dx = enemy.tauntTarget.x - enemy.x;
+            let dy = enemy.tauntTarget.y - enemy.y;
+            let dist = Math.hypot(dx, dy);
+            
+            if (dist > 0) {
+                // Steer towards bard
+                enemy.vx += ((dx/dist) * currentSpeed - enemy.vx) * 0.1;
+                enemy.vy += ((dy/dist) * currentSpeed - enemy.vy) * 0.1;
+            }
+            return false; // Skip normal pathfinding
+        }
+    }
+
+    // --- 3. STANDARD BASE TARGETING ---
     let baseX = (playerBase.x * CELL_SIZE) + CELL_SIZE;
     let baseY = (playerBase.y * CELL_SIZE) + CELL_SIZE;
     
-    // 1. CHECK THICK LINE OF SIGHT
+    // Check Line of Sight
     if (hasLineOfSight(enemy.x, enemy.y, baseX, baseY, enemy.radius)) {
         let dx = baseX - enemy.x;
         let dy = baseY - enemy.y;
         let dist = Math.hypot(dx, dy);
         
         if (dist > 0) {
-            // USE currentSpeed INSTEAD OF enemy.speed HERE:
             enemy.vx += ((dx/dist) * currentSpeed - enemy.vx) * 0.1;
             enemy.vy += ((dy/dist) * currentSpeed - enemy.vy) * 0.1;
         }
         return false; 
     }
 
-    // 2. FALLBACK TO GRID PATHFINDING
+    // Fallback to Grid Pathfinding
     let onGrid = (col >= 0 && col < COLS && row >= 0 && row < ROWS);
     let cell = onGrid ? grid[col][row] : null;
 
     if (onGrid && cell.distance !== Infinity) {
         let moveDir = getSmartVector(enemy);
-        // USE currentSpeed HERE TOO:
         enemy.vx += (moveDir.x * currentSpeed - enemy.vx) * 0.1;
         enemy.vy += (moveDir.y * currentSpeed - enemy.vy) * 0.1;
         return false; 
     } else {
-        // 3. BLOCKED
+        // Blocked / Last Resort
         let dx = baseX - enemy.x;
         let dy = baseY - enemy.y;
         let dist = Math.hypot(dx, dy);
         
         if (dist > 0) {
-            // USE currentSpeed HERE TOO:
             enemy.vx += ((dx/dist) * currentSpeed - enemy.vx) * 0.1;
             enemy.vy += ((dy/dist) * currentSpeed - enemy.vy) * 0.1;
         }
@@ -2816,6 +2933,944 @@ class LeaperEnemy {
     }
 }
 
+class ReviverEnemy {
+    constructor() {
+        // Spawn Logic
+        this.x = VIRTUAL_WIDTH + 20;
+        let playableHeight = VIRTUAL_HEIGHT - (CELL_SIZE * 2);
+        this.y = CELL_SIZE + (Math.random() * playableHeight);
+
+        this.type = "REVIVER_XENOID";
+        
+        // STATS
+        this.radius = 16; 
+        this.speed = 0.55; 
+        this.hp = 300 + (wave * 40); 
+        this.maxHp = this.hp;
+        this.bounty = 70; 
+        
+        this.vx = 0; 
+        this.vy = 0;
+        this.angle = 0; 
+        
+        // LOGIC
+        this.reviveRadius = 180; 
+        this.reviveSpeed = 1.3;  
+        
+        // ANIMATION STATE
+        this.walkCycle = 0; 
+        this.mandibleTwitch = 0;
+        this.abdomenPulse = 0;
+        this.isSinging = false;
+        
+        // VISUALS
+        this.strideLength = 40; // Wider steps
+    }
+
+    update(dt) {
+        // --- ANIMATION SYNC ---
+        let moveSpeed = Math.hypot(this.vx, this.vy);
+        
+        // Much slower animation increment for a "Heavy" feel
+        if (moveSpeed > 0.01) {
+            this.walkCycle += 0.015; // Was 0.04
+        } else {
+            this.walkCycle += 0.005; // Idle breathing
+        }
+
+        this.mandibleTwitch += 0.1;
+        this.abdomenPulse += 0.05;
+
+        // --- 1. MOVEMENT ---
+        let col = Math.floor(this.x / CELL_SIZE);
+        let row = Math.floor(this.y / CELL_SIZE);
+        
+        let isBlocked = sharedMovement(this, col, row);
+        if (isBlocked) sharedDestroyWalls(this, col, row, 2, 12);
+
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Smooth Rotation
+        if (Math.abs(this.vx) > 0.01 || Math.abs(this.vy) > 0.01) {
+            let targetAngle = Math.atan2(this.vy, this.vx);
+            let diff = targetAngle - this.angle;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            this.angle += diff * 0.08; 
+        }
+        
+        separate(this, enemies, 1.2); 
+
+        // --- 2. HIVE MIND REVIVAL ---
+        this.isSinging = false;
+        for (let i = corpses.length - 1; i >= 0; i--) {
+            let c = corpses[i];
+            if (!c.active) continue;
+
+            if (Math.hypot(c.x - this.x, c.y - this.y) < this.reviveRadius) {
+                this.isSinging = true;
+                if (typeof c.reviveProgress === 'undefined') c.reviveProgress = 0;
+                c.reviveProgress += this.reviveSpeed;
+
+                if (Math.random() > 0.85) createParticles(c.x, c.y, "#7c43bd", 1); 
+
+                if (c.reviveProgress >= 100) {
+                    enemies.push(new SkeletonEnemy(c.x, c.y));
+                    createParticles(c.x, c.y, "#d500f9", 25); 
+                    c.active = false; 
+                }
+            }
+        }
+        
+        // Base Damage
+        let dx = this.x - (playerBase.x * CELL_SIZE + CELL_SIZE/2);
+        let dy = this.y - (playerBase.y * CELL_SIZE + CELL_SIZE/2);
+        if (Math.hypot(dx, dy) < 30) {
+             takeDamage(20);
+             this.hp = 0;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle); 
+        
+        let s = 0.5; 
+        ctx.scale(s, s);
+
+        let pulse = Math.sin(this.abdomenPulse) * 2;
+
+        // --- 1. WIDE SPIDER LEGS ---
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        const drawLeg = (side, row) => {
+            let isFront = row < 2;
+            
+            // INCREASED LENGTH (Was 26/20)
+            let legLen = isFront ? 36 : 28; 
+            
+            // --- GAIT TIMING ---
+            const gaitOffset = [0, 0.5, 0.25, 0.75, 0.1][row];
+            let t = (this.walkCycle + gaitOffset + (side === -1 ? 0.5 : 0)) % 1.0;
+            
+            // --- STANCE VS SWING ---
+            let cycleX = 0; 
+            let cycleLift = 0; 
+            
+            let swingDuration = 0.3; // 30% of time spent moving forward
+
+            if (t < swingDuration) {
+                // == SWING (AIR) ==
+                let p = t / swingDuration; 
+                // Move from Back (-1) to Front (+1)
+                cycleX = -1 + (p * 2); 
+                // Higher lift for longer legs
+                cycleLift = Math.sin(p * Math.PI) * 12;
+            } else {
+                // == STANCE (GROUND) ==
+                let p = (t - swingDuration) / (1.0 - swingDuration); 
+                // Move from Front (+1) to Back (-1)
+                cycleX = 1 - (p * 2); 
+                cycleLift = 0; 
+            }
+
+            // --- CALCULATE POSITIONS ---
+            
+            // 1. Mount Point
+            let mountX, mountY;
+            if (isFront) {
+                mountX = 9 - (row * 7); 
+                mountY = side * 6;
+            } else {
+                let backIndex = row - 2;
+                mountX = -14 - (backIndex * 8); 
+                mountY = side * 8; 
+            }
+
+            // 2. Neutral Angle
+            // Slight adjustment to fan them out more given the length
+            let baseAngle = isFront ? (0.4 - row * 0.35) : (2.7 + (row-2) * 0.35);
+            
+            // 3. Apply Stride
+            let strideOffset = cycleX * (this.strideLength / 2);
+            
+            let neutralReach = legLen;
+            let nx = mountX + (Math.cos(baseAngle) * neutralReach);
+            let ny = mountY + (Math.sin(baseAngle) * neutralReach * side);
+            
+            let footX = nx + strideOffset;
+            let footY = ny; 
+
+            // 4. IK for the Knee
+            let midX = (mountX + footX) / 2;
+            let midY = (mountY + footY) / 2;
+            let dx = footX - mountX;
+            let dy = footY - mountY;
+            let dist = Math.hypot(dx, dy);
+            
+            // KNEE OUT: Increased to handle longer legs (Was 14)
+            let kneeOut = 20 + (cycleLift * 0.8); 
+            
+            let perpX = -dy / dist;
+            let perpY = dx / dist;
+            if (perpY * side < 0) { perpX = -perpX; perpY = -perpY; }
+
+            let kneeX = midX + (perpX * kneeOut);
+            let kneeY = midY + (perpY * kneeOut);
+
+            // --- DRAW ---
+            
+            // Shadow
+            if (cycleLift > 1) {
+                ctx.fillStyle = "rgba(0,0,0,0.3)";
+                ctx.beginPath();
+                // Shadow location slightly under the lifted foot
+                ctx.arc(footX - (cycleX * 4), footY, 3, 0, Math.PI*2); 
+                ctx.fill();
+            }
+
+            // Femur
+            ctx.strokeStyle = "#1a237e"; 
+            ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(mountX, mountY); ctx.lineTo(kneeX, kneeY); ctx.stroke();
+            
+            // Tibia
+            let lightness = 57 + (cycleLift * 4); 
+            ctx.strokeStyle = `hsl(231, 48%, ${lightness}%)`;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(kneeX, kneeY); ctx.lineTo(footX, footY); ctx.stroke();
+
+            // Joints
+            ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(mountX, mountY, 3, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#4a148c"; ctx.beginPath(); ctx.arc(kneeX, kneeY, 3.5, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#d500f9"; ctx.beginPath(); ctx.arc(footX, footY, 2, 0, Math.PI*2); ctx.fill();
+        };
+
+        // Render Legs (Back to Front)
+        for(let i=4; i>=2; i--) { drawLeg(1, i); drawLeg(-1, i); }
+        
+        // --- BODY ---
+        ctx.strokeStyle = "#212121"; ctx.lineWidth = 10;
+        ctx.beginPath(); ctx.moveTo(4, 0); ctx.lineTo(-12, 0); ctx.stroke();
+
+        ctx.save();
+        ctx.translate(-22, 0); 
+        ctx.fillStyle = "#0d1b2a"; 
+        ctx.beginPath(); ctx.ellipse(0, 0, 15, 11 + (pulse*0.3), 0, 0, Math.PI*2); ctx.fill();
+        
+        let buttGrad = ctx.createLinearGradient(0, -10, 0, 10);
+        buttGrad.addColorStop(0, "#1a237e"); buttGrad.addColorStop(0.5, "#000"); buttGrad.addColorStop(1, "#1a237e");
+        ctx.fillStyle = buttGrad;
+        ctx.beginPath(); ctx.ellipse(3, 0, 11, 7, 0, 0, Math.PI*2); ctx.fill();
+
+        ctx.fillStyle = this.isSinging ? "#d500f9" : "#4a148c";
+        ctx.shadowBlur = 15; ctx.shadowColor = ctx.fillStyle;
+        ctx.beginPath(); ctx.arc(-9, 0, 5, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.restore();
+
+        // Front Legs
+        drawLeg(1, 1); drawLeg(-1, 1);
+        drawLeg(1, 0); drawLeg(-1, 0);
+
+        // Thorax
+        ctx.fillStyle = "#1a237e";
+        ctx.beginPath();
+        ctx.moveTo(12, 0); ctx.lineTo(6, 8); ctx.lineTo(-4, 7); ctx.lineTo(-8, 0); ctx.lineTo(-4, -7); ctx.lineTo(6, -8);
+        ctx.fill();
+        ctx.fillStyle = "#304ffe";
+        ctx.beginPath(); ctx.moveTo(9, 0); ctx.lineTo(0, 2); ctx.lineTo(-6, 0); ctx.lineTo(0, -2); ctx.fill();
+
+        // Head
+        ctx.save();
+        ctx.translate(12, 0);
+        let twitch = Math.sin(this.mandibleTwitch) * 0.2;
+        ctx.fillStyle = "#283593"; ctx.strokeStyle = "#5c6bc0"; ctx.lineWidth = 1;
+        
+        ctx.save(); ctx.rotate(-0.4 + twitch);
+        ctx.beginPath(); ctx.moveTo(0, -3); ctx.lineTo(13, -6); ctx.lineTo(10, -1); ctx.lineTo(0, 0);
+        ctx.fill(); ctx.stroke(); ctx.restore();
+        
+        ctx.save(); ctx.rotate(0.4 - twitch);
+        ctx.beginPath(); ctx.moveTo(0, 3); ctx.lineTo(13, 6); ctx.lineTo(10, 1); ctx.lineTo(0, 0);
+        ctx.fill(); ctx.stroke(); ctx.restore();
+
+        ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(0, 0, 5.5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#00e5ff"; ctx.shadowBlur = 5; ctx.shadowColor = "#00e5ff";
+        ctx.beginPath(); ctx.arc(3, -2, 1.5, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(4, -1, 1, 0, Math.PI*2); ctx.fill(); 
+        ctx.beginPath(); ctx.arc(3, 2, 1.5, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(4, 1, 1, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+        
+        ctx.strokeStyle = "#d500f9"; ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(5, -1); ctx.lineTo(18, -6 + Math.sin(Date.now()/60)*2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(5, 1); ctx.lineTo(18, 6 - Math.sin(Date.now()/60)*2); ctx.stroke();
+        ctx.restore();
+
+        // Singing
+        if (this.isSinging) {
+            let wavePhase = (Date.now() / 150) % 10;
+            ctx.lineWidth = 1.5;
+            for(let w=0; w<3; w++) { 
+                let r = (wavePhase + (w*4)) * 6;
+                let alpha = 1 - (r/45);
+                if (alpha > 0) {
+                    ctx.strokeStyle = `rgba(0, 229, 255, ${alpha})`; 
+                    ctx.beginPath(); ctx.arc(15, 0, r, -0.8, 0.8); ctx.stroke();
+                }
+            }
+        }
+
+        ctx.restore();
+        drawHealth(this.x, this.y, this.hp, this.maxHp);
+    }
+}
+
+class SkeletonEnemy {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.type = "SKELETON_UNIT";
+        
+        // Stats
+        this.hp = 30 + (wave * 5);
+        this.maxHp = this.hp;
+        this.speed = 1.6;
+        this.vx = 0; 
+        this.vy = 0;
+        this.radius = 12;
+        this.bounty = 1;
+        
+        this.angle = 0;
+        this.walkCycle = 0;
+        this.twitch = 0; // Replaced "flicker" with a muscular spasm
+    }
+
+    update(dt) {
+        this.walkCycle += 0.15; // Slower, more deliberate stride
+        this.twitch = Math.random() > 0.98 ? Math.random() * 2 : 0; 
+        
+        let col = Math.floor(this.x / CELL_SIZE);
+        let row = Math.floor(this.y / CELL_SIZE);
+        
+        let isBlocked = sharedMovement(this, col, row);
+        if (isBlocked) sharedDestroyWalls(this, col, row, 5, 5);
+
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
+            this.angle = Math.atan2(this.vy, this.vx);
+        }
+        
+        separate(this, enemies, 0.5);
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x + this.twitch, this.y + this.twitch); // Spasmodic movement
+        ctx.rotate(this.angle);
+
+        // Biological animation variables
+        let breathe = Math.sin(this.walkCycle) * 1.5;
+        let limbSwing = Math.sin(this.walkCycle);
+        
+        // --- 1. THE SPINE (Calcified Bone) ---
+        ctx.strokeStyle = "#e0e0ce"; // Aged bone color
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+
+        // Segmented vertebrae
+        for(let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            ctx.fillStyle = i % 2 === 0 ? "#f5f5dc" : "#d2b48c";
+            ctx.arc(-8 + (i * 4), 0, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // --- 2. ROTTING RIBCAGE ---
+        ctx.strokeStyle = "#f5f5dc";
+        ctx.lineWidth = 2;
+        
+        // Curved ribs instead of straight lines
+        [1, -1].forEach(side => {
+            ctx.beginPath();
+            ctx.moveTo(2, side * 2);
+            // Ribs expand and contract (breathing)
+            ctx.quadraticCurveTo(-2, side * (8 + breathe), 4, side * (6 + breathe));
+            ctx.stroke();
+        });
+
+        // --- 3. THE SKULL ---
+        // Main cranium
+        ctx.fillStyle = "#f5f5dc"; 
+        ctx.beginPath();
+        ctx.arc(6, 0, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Sunken Jaw
+        ctx.beginPath();
+        ctx.ellipse(8, 2, 3, 4, Math.PI/4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // --- 4. THE EYE (Malevolent Glow) ---
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#ff0000";
+        ctx.fillStyle = "#4a0404"; // Dark socket
+        ctx.beginPath();
+        ctx.arc(7, -2, 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = "#ff4444"; // Pinprick pupil
+        ctx.beginPath();
+        ctx.arc(7.5, -2, 0.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // --- 5. LASHING LIMBS (Exposed Tendons) ---
+        ctx.strokeStyle = "#8b0000"; // Deep blood red
+        ctx.lineWidth = 2;
+
+        // Right Arm - Swinging erratically
+        ctx.beginPath();
+        ctx.moveTo(2, -4); 
+        let rArmX = 10 + (limbSwing * 4);
+        ctx.bezierCurveTo(rArmX, -10, rArmX + 2, -5, rArmX + 4, -8); 
+        ctx.stroke();
+
+        // Left Arm
+        ctx.beginPath();
+        ctx.moveTo(2, 4);
+        let lArmX = 10 - (limbSwing * 4);
+        ctx.bezierCurveTo(lArmX, 10, lArmX + 2, 5, lArmX + 4, 8);
+        ctx.stroke();
+
+        // --- 6. MIASMA / BLOOD DRIP (Rear) ---
+        ctx.fillStyle = "#660000";
+        ctx.globalAlpha = 0.3 + (Math.random() * 0.2);
+        ctx.beginPath();
+        ctx.arc(-12, breathe, 3, 0, Math.PI * 2);
+        ctx.arc(-15, -breathe, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+
+        ctx.restore();
+        drawHealth(this.x, this.y, this.hp, this.maxHp);
+    }
+}
+
+class FlyingEnemy {
+    constructor() {
+        // Spawn off-screen
+        this.x = VIRTUAL_WIDTH + 20;
+        let playableHeight = VIRTUAL_HEIGHT - (CELL_SIZE * 2);
+        this.y = CELL_SIZE + (Math.random() * playableHeight);
+
+        // --- STATS ---
+        this.radius = 9;       
+        this.speed = 0.6;      
+        this.hp = 150 + (wave * 20)* difficultyMultiplier; 
+        this.maxHp = this.hp;
+        this.bounty = 3;
+
+        this.vx = 0;
+        this.vy = 0;
+        
+        this.animOffset = Math.random() * 1000;
+    }
+
+    update(dt) {
+        // 1. MOVEMENT (Straight Line)
+        let baseX = (playerBase.x * CELL_SIZE) + CELL_SIZE;
+        let baseY = (playerBase.y * CELL_SIZE) + CELL_SIZE;
+        
+        let dx = baseX - this.x;
+        let dy = baseY - this.y;
+        let dist = Math.hypot(dx, dy);
+
+        if (dist > 0) {
+            this.vx = (dx / dist) * this.speed;
+            this.vy = (dy / dist) * this.speed;
+        }
+
+        // REMOVED: The "wobble" code was here. 
+        // Now it just tracks directly towards the base.
+
+        this.x += this.vx *dt;
+        this.y += this.vy *dt;
+
+        // 2. PHYSICS
+        separate(this, enemies, 0.5);
+
+        // 3. ATTACK
+        if (dist < 30) {
+            takeDamage(5); 
+            this.hp = 0;   
+            createParticles(this.x, this.y, "#ff3300", 10); 
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        // --- SCALING ---
+        ctx.scale(0.7, 0.9); 
+
+        // 1. ORIENTATION (Face Forward)
+        let angle = Math.atan2(this.vy, this.vx);
+        ctx.rotate(angle + Math.PI / 2); 
+
+        // Animation Variables
+        let time = Date.now();
+        let flutterFront = Math.sin((time / 60) + this.animOffset); 
+        let flutterBack = Math.cos((time / 60) + this.animOffset);
+
+        // --- 2. WINGS ---
+        ctx.save();
+        ctx.fillStyle = "rgba(200, 255, 255, 0.15)";
+        ctx.strokeStyle = "rgba(0, 255, 255, 0.4)";
+        ctx.lineWidth = 1;
+
+        const drawWing = (xOffset, yOffset, length, width, rot) => {
+            ctx.save();
+            ctx.translate(xOffset, yOffset);
+            ctx.rotate(rot); 
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(width, -length * 0.2); 
+            ctx.lineTo(0, -length); 
+            ctx.lineTo(-width, -length * 0.2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            // Inner Vein
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -length * 0.8); ctx.stroke();
+            ctx.restore();
+        };
+
+        // Front Wings
+        drawWing(4, -5, 22, 4, 1.0 + (flutterFront * 0.3)); 
+        drawWing(-4, -5, 22, 4, -1.0 - (flutterFront * 0.3));
+
+        // Back Wings
+        drawWing(3, 0, 16, 3, 2.2 + (flutterBack * 0.4));   
+        drawWing(-3, 0, 16, 3, -2.2 - (flutterBack * 0.4));  
+        ctx.restore();
+
+        // --- 3. BODY & TAIL ---
+        // Tail
+        ctx.fillStyle = "#1a1a1a"; 
+        ctx.strokeStyle = "#cc3300"; 
+        ctx.lineWidth = 1;
+
+        for(let i = 0; i < 4; i++) {
+            let tailSize = 6 - i; 
+            let tailY = 10 + (i * 4);
+            let wiggle = Math.sin(time / 400 + (i * 0.5)) * 1; 
+
+            ctx.beginPath();
+            ctx.moveTo(wiggle, tailY);
+            ctx.lineTo(wiggle + tailSize, tailY + tailSize);
+            ctx.lineTo(wiggle, tailY + (tailSize * 2));
+            ctx.lineTo(wiggle - tailSize, tailY + tailSize);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            if (i === 3) { 
+                ctx.fillStyle = "#ff0000";
+                ctx.beginPath(); ctx.arc(wiggle, tailY + 4, 2, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#1a1a1a";
+            }
+        }
+
+        // Thorax
+        ctx.fillStyle = "#222"; 
+        ctx.beginPath();
+        ctx.moveTo(0, -8); ctx.lineTo(6, -2); ctx.lineTo(4, 8); ctx.lineTo(-4, 8); ctx.lineTo(-6, -2);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Head
+        ctx.beginPath();
+        ctx.moveTo(0, -8); ctx.lineTo(5, -14); ctx.lineTo(0, -18); ctx.lineTo(-5, -14);
+        ctx.closePath(); ctx.fillStyle = "#000"; ctx.fill();
+
+        // --- 4. FACE ---
+        ctx.fillStyle = "#ff3300"; 
+        ctx.shadowColor = "#ff0000"; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.ellipse(-3, -12, 2, 4, -0.3, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(3, -12, 2, 4, 0.3, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0; 
+
+        // Mandibles
+        ctx.strokeStyle = "#999"; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-2, -18); ctx.quadraticCurveTo(-6, -22, -1, -24);
+        ctx.moveTo(2, -18); ctx.quadraticCurveTo(6, -22, 1, -24);
+        ctx.stroke();
+
+        ctx.restore();
+
+        if (this.hp < this.maxHp) {
+            const barW = 24;
+            const barH = 4;
+            const yOffset = 28;
+
+            const barX = this.x - (barW / 2);
+            const barY = this.y - yOffset;
+
+            const pct = Math.max(0, Math.min(1, this.hp / this.maxHp));
+            const hue = (pct * pct) * 120;
+
+            ctx.fillStyle = "#333333";
+            ctx.fillRect(barX, barY, barW, barH);
+
+            ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+            ctx.fillRect(barX, barY, barW * pct, barH);
+
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(barX, barY, barW, barH);
+        }
+    }
+}
+
+class MagnetEnemy {
+    constructor() {
+        // --- SPAWN SETUP ---
+        this.x = (typeof VIRTUAL_WIDTH !== 'undefined') ? VIRTUAL_WIDTH + 60 : 1000;
+        let playableHeight = (typeof VIRTUAL_HEIGHT !== 'undefined') ? VIRTUAL_HEIGHT : 600;
+        this.y = CELL_SIZE + Math.random() * (playableHeight - (CELL_SIZE * 2));
+
+        // --- STATS ---
+        this.radius = 22;          
+        this.hp = 3500 + (wave * 550); 
+        this.maxHp = this.hp;
+        this.speed = 0.50;         
+        this.bounty = 280;       
+        
+        // --- PHYSICS ---
+        this.vx = 0;
+        this.vy = 0;
+        this.friction = 0.92;
+        this.angle = Math.PI;      
+
+        // --- ABILITY ---
+        this.magnetRange = 340;    
+        this.magnetForce = 1.6;   
+
+        // --- VISUALS ---
+        this.animTimer = 0;
+        this.pulsePhase = 0;
+        this.legCycle = 0;
+        this.scale = 0.55; 
+    }
+
+    update(dt) {
+        if (!dt) dt = 1;
+        this.animTimer += dt * 0.05;
+        this.pulsePhase += dt * 0.12;
+
+        // --- MOVEMENT ---
+        let col = Math.floor(this.x / CELL_SIZE);
+        let row = Math.floor(this.y / CELL_SIZE);
+        
+        let isBlocked = false;
+        if (typeof sharedMovement === 'function') {
+            isBlocked = sharedMovement(this, col, row);
+        }
+
+        if (isBlocked && typeof sharedDestroyWalls === 'function') {
+            sharedDestroyWalls(this, col, row, 6, 30);
+        }
+
+        // Apply Velocity
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= this.friction;
+        this.vy *= this.friction;
+
+        // Calculate speed
+        let speed = Math.hypot(this.vx, this.vy);
+        
+        // Face movement direction
+        if (speed > 0.05) {
+            let targetAngle = Math.atan2(this.vy, this.vx);
+            let diff = targetAngle - this.angle;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            this.angle += diff * 0.08;
+            
+            // Leg animation
+            this.legCycle += speed * 0.35; 
+        }
+
+        // --- MAGNET LOGIC (Fixed: Single Owner) ---
+        if (typeof projectiles !== 'undefined') {
+            for (let p of projectiles) {
+                if (!p.active) continue;
+
+                let dx = this.x - p.x;
+                let dy = this.y - p.y;
+                let distSq = dx*dx + dy*dy;
+                let rangeSq = this.magnetRange * this.magnetRange;
+
+                // 1. Release Lock if Out of Range
+                // If I own this bullet but it's now too far away, let it go.
+                if (distSq >= rangeSq) {
+                    if (p.magnetOwner === this) {
+                        p.magnetOwner = null;
+                    }
+                    continue; // Skip attraction
+                }
+
+                // 2. Check Ownership
+                // If it is owned by someone else, AND that owner is still alive:
+                if (p.magnetOwner && p.magnetOwner !== this) {
+                    if (p.magnetOwner.hp > 0) {
+                        continue; // Don't touch it
+                    } else {
+                        // Previous owner is dead, I can steal it
+                        p.magnetOwner = null; 
+                    }
+                }
+
+                // 3. Apply Attraction
+                // Claim ownership
+                p.magnetOwner = this;
+                
+                // Hijack Homing Target (if applicable)
+                if (p.target && p.target !== this) p.target = this;
+
+                let dist = Math.sqrt(distSq);
+
+                // Stronger pull closer to center
+                let strength = 1 + (1 - dist/this.magnetRange); 
+                let force = this.magnetForce * strength;
+
+                p.vx += (dx / dist) * force;
+                p.vy += (dy / dist) * force;
+
+                if (typeof p.angle !== 'undefined') {
+                    let tA = Math.atan2(dy, dx);
+                    let aD = tA - p.angle;
+                    while (aD < -Math.PI) aD += Math.PI * 2;
+                    while (aD > Math.PI) aD -= Math.PI * 2;
+                    p.angle += aD * 0.2;
+                }
+            }
+        }
+        
+        if (typeof separate === 'function') separate(this, enemies, 0.45);
+        if (typeof resolveWallCollision === 'function') resolveWallCollision(this);
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // --- 1. FIELD AURA ---
+        let pulse = Math.sin(this.pulsePhase);
+        let fieldR = this.magnetRange * (0.9 + pulse * 0.03);
+        
+        ctx.beginPath();
+        ctx.arc(0, 0, fieldR, 0, Math.PI*2);
+        let grad = ctx.createRadialGradient(0, 0, 10, 0, 0, fieldR);
+        grad.addColorStop(0, "rgba(0,0,0,0)");
+        grad.addColorStop(0.9, `rgba(100, 40, 160, ${0.05 + pulse * 0.02})`);
+        grad.addColorStop(1, `rgba(100, 40, 160, 0)`);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // ROTATE & SCALE
+        ctx.rotate(this.angle);
+        ctx.scale(this.scale, this.scale); 
+
+        // --- 2. MULTI-JOINTED LEGS (SHORTER VERSION) ---
+        const legConfig = [
+            { side: 1,  yBase: -12, angle: -0.6, len: 28 },
+            { side: -1, yBase: -12, angle: -0.6, len: 28 },
+            { side: 1,  yBase: 0,   angle: 0,    len: 32 },
+            { side: -1, yBase: 0,   angle: 0,    len: 32 },
+            { side: 1,  yBase: 14,  angle: 0.8,  len: 30 },
+            { side: -1, yBase: 14,  angle: 0.8,  len: 30 }
+        ];
+
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        legConfig.forEach((leg, index) => {
+            ctx.save();
+            let isGroupA = (index === 0 || index === 3 || index === 4);
+            let legPhase = this.legCycle + (isGroupA ? 0 : Math.PI);
+            
+            let stride = Math.sin(legPhase) * 10; 
+            let lift = Math.cos(legPhase) * 5;
+            
+            let startX = 5;
+            let startY = leg.yBase;
+            let baseAngle = (leg.side === 1 ? Math.PI/2 : -Math.PI/2) + (leg.angle * leg.side);
+            
+            let footDist = 20 + leg.len + lift;
+            let footX = startX + Math.cos(baseAngle) * footDist + (stride * 0.5);
+            let footY = startY + Math.sin(baseAngle) * footDist + stride;
+
+            let coxaLen = 10;
+            let coxaX = startX + Math.cos(baseAngle) * coxaLen;
+            let coxaY = startY + Math.sin(baseAngle) * coxaLen;
+
+            let dx = footX - coxaX;
+            let dy = footY - coxaY;
+            let dist = Math.hypot(dx, dy);
+            let midX = coxaX + dx * 0.5;
+            let midY = coxaY + dy * 0.5;
+            
+            let kneePush = 16;
+            let perpX = -dy / dist;
+            let perpY = dx / dist;
+            if (leg.side === -1) { perpX = -perpX; perpY = -perpY; }
+            
+            let kneeX = midX + perpX * kneePush;
+            let kneeY = midY + perpY * kneePush;
+
+            // Draw Segments
+            ctx.strokeStyle = "#150a1a";
+            ctx.lineWidth = 7;
+            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(kneeX, kneeY); ctx.stroke();
+
+            ctx.strokeStyle = "#25152e";
+            ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(kneeX, kneeY); ctx.lineTo(footX, footY); ctx.stroke();
+
+            // Sharp tips
+            ctx.strokeStyle = "#4a2d54";
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(footX, footY); ctx.lineTo(footX + (footX-kneeX)*0.4, footY + (footY-kneeY)*0.4); ctx.stroke();
+
+            ctx.fillStyle = "#3d2a45";
+            ctx.beginPath(); ctx.arc(kneeX, kneeY, 4, 0, Math.PI*2); ctx.fill();
+
+            ctx.restore();
+        });
+
+        // --- 3. BODY STRUCTURE ---
+
+        // Abdomen
+        ctx.fillStyle = "#0d0612";
+        ctx.strokeStyle = "#2a1a35";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-10, -15);
+        ctx.lineTo(-30, -10);
+        ctx.lineTo(-40, 0);   
+        ctx.lineTo(-30, 10);
+        ctx.lineTo(-10, 15);
+        ctx.fill();
+        ctx.stroke();
+
+        // Thorax
+        ctx.fillStyle = "#1a0e21";
+        ctx.beginPath();
+        ctx.moveTo(0, -18);
+        ctx.lineTo(15, -12);
+        ctx.lineTo(20, 0);
+        ctx.lineTo(15, 12);
+        ctx.lineTo(0, 18);
+        ctx.lineTo(-10, 10);
+        ctx.lineTo(-10, -10);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.strokeStyle = "#3c2547";
+        ctx.beginPath();
+        ctx.moveTo(-5, -15); ctx.lineTo(10, -10);
+        ctx.moveTo(-5, 15);  ctx.lineTo(10, 10);
+        ctx.stroke();
+
+        // Head
+        ctx.fillStyle = "#25142e";
+        ctx.beginPath();
+        ctx.moveTo(20, -8);
+        ctx.lineTo(28, -10);
+        ctx.lineTo(32, -4);
+        ctx.lineTo(32, 4);
+        ctx.lineTo(28, 10);
+        ctx.lineTo(20, 8);
+        ctx.fill();
+
+        // --- 4. STATIC SHARP MANDIBLES ---
+        ctx.fillStyle = "#1a1a1a"; 
+        ctx.strokeStyle = "#604070"; 
+        ctx.lineWidth = 1;
+
+        // TOP MANDIBLE (Left)
+        ctx.beginPath();
+        ctx.moveTo(32, -5);         
+        ctx.lineTo(38, -10); 
+        ctx.lineTo(36, -12); 
+        ctx.lineTo(55, -18); // Sharp tip
+        ctx.lineTo(50, -8);  
+        ctx.lineTo(32, -2);          
+        ctx.fill();
+        ctx.stroke();
+
+        // BOTTOM MANDIBLE (Right)
+        ctx.beginPath();
+        ctx.moveTo(32, 5);
+        ctx.lineTo(38, 10);
+        ctx.lineTo(36, 12);
+        ctx.lineTo(55, 18); // Sharp tip
+        ctx.lineTo(50, 8);
+        ctx.lineTo(32, 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Eyes
+        ctx.fillStyle = "#ff0044";
+        ctx.shadowBlur = 8; 
+        ctx.shadowColor = "#ff0044";
+        ctx.beginPath(); ctx.arc(26, -7, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(26, 7, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // --- 5. GLOWING VENTS ---
+        let ventGlow = 0.5 + Math.sin(this.pulsePhase * 3) * 0.5;
+
+        ctx.save();
+        ctx.translate(-20, -6);
+        ctx.rotate(-0.2);
+        ctx.shadowColor = `rgba(255, 50, 80, ${ventGlow})`;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = `rgba(255, 50, 80, ${0.5 + ventGlow * 0.5})`;
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(10, -2); ctx.lineTo(0, -4); ctx.fill(); 
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(-20, 6);
+        ctx.rotate(0.2);
+        ctx.shadowColor = `rgba(50, 180, 255, ${ventGlow})`;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = `rgba(50, 180, 255, ${0.5 + ventGlow * 0.5})`;
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(10, 2); ctx.lineTo(0, 4); ctx.fill(); 
+        ctx.restore();
+
+        // Final Gloss
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.beginPath();
+        ctx.moveTo(5, -5); ctx.lineTo(15, -8); ctx.lineTo(10, 0); ctx.fill();
+
+        ctx.restore(); 
+
+        drawHealth(this.x, this.y, this.hp, this.maxHp);
+    }
+}
+
 class BossEnemy {
     constructor() {
         // --- SPAWN LOGIC ---
@@ -4201,6 +5256,371 @@ class ShieldSoldier {
     }
 }
 
+class BardTroop {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 12;
+        this.color = "#d633ff"; 
+        this.hp = 100;
+        this.maxHp = 100;
+
+        // --- STATS ---
+        this.lifeTimer = 600; 
+        this.tauntRange = 160; 
+        this.fleeThreshold = 120; 
+
+        // --- PATHFINDING & PHYSICS ---
+        this.speed = 1;         
+        this.vx = 0; 
+        this.vy = 0;
+        this.friction = 0.12;  
+        
+        this.pathTimer = Math.random() * 30; 
+        this.pathRefreshRate = 30; 
+        this.currentPath = [];
+        this.nodeReachThreshold = 15;
+
+        // --- ANIMATION ---
+        this.angle = 0;      
+        this.walkCycle = 0;  
+        this.targetAngle = 0;
+    }
+
+    update(dt) {
+        if (typeof dt === 'undefined') dt = 1;
+
+        this.lifeTimer--;
+        if (this.lifeTimer <= 0) this.hp = 0;
+
+        // 1. SCAN ENVIRONMENT
+        let nearest = null;
+        let minDist = Infinity;
+        let fleeCount = 0;
+
+        for (let e of enemies) {
+            let d = (e.x - this.x)**2 + (e.y - this.y)**2;
+            let dist = Math.sqrt(d);
+
+            // A. SEEKING: Track nearest enemy (even through walls)
+            if (d < minDist) { minDist = d; nearest = e; }
+
+            // B. INTERACTION: Check Line of Sight for Taunt/Flee
+            let canSee = true;
+            if (typeof hasLineOfSight === 'function') {
+                canSee = hasLineOfSight(this.x, this.y, e.x, e.y);
+            }
+
+            if (canSee) {
+                if (dist < this.tauntRange) e.tauntTarget = this;
+                if (dist < this.fleeThreshold) fleeCount++;
+            }
+        }
+
+        // 2. DETERMINE TARGET DESTINATION
+        let targetX = this.x;
+        let targetY = this.y;
+        let moving = false;
+        let mode = 'IDLE';
+
+        if (fleeCount > 0) {
+            // --- MODE: FLEE (RUN TO RIGHT SIDE) ---
+            mode = 'FLEE';
+            
+            // Target the far right edge of the map
+            // We assume COLS global exists, otherwise fallback to a large number
+            const rightEdge = (typeof COLS !== 'undefined') ? (COLS * CELL_SIZE) - 25 : 2000;
+            
+            targetX = rightEdge;
+            targetY = this.y; // Maintain current height, run straight right
+            
+        } else if (nearest) {
+            // --- MODE: SEEK ---
+            mode = 'SEEK';
+            targetX = nearest.x;
+            targetY = nearest.y;
+        }
+
+        // 3. APPLY PATHFINDING
+        if (mode !== 'IDLE') {
+            let usingPath = false;
+            
+            // Check Line of Sight to TARGET DESTINATION
+            let canSeeTarget = true;
+            if (typeof hasLineOfSight === 'function') {
+                 canSeeTarget = hasLineOfSight(this.x, this.y, targetX, targetY);
+            }
+
+            // If target blocked (by wall), use Pathfinding
+            if (!canSeeTarget && typeof findPath === 'function') {
+                this.pathTimer--;
+
+                if (this.pathTimer <= 0) {
+                    this.currentPath = findPath(this, {x: targetX, y: targetY});
+                    this.pathTimer = this.pathRefreshRate;
+                }
+
+                if (this.currentPath && this.currentPath.length > 0) {
+                    let nextNode = this.currentPath[0];
+                    targetX = nextNode.x;
+                    targetY = nextNode.y;
+                    usingPath = true;
+
+                    let dNode = Math.hypot(nextNode.x - this.x, nextNode.y - this.y);
+                    if (dNode < this.nodeReachThreshold) {
+                        this.currentPath.shift();
+                    }
+                }
+            }
+
+            if (!usingPath && canSeeTarget) {
+                this.currentPath = [];
+            }
+
+            // 4. PHYSICS MOVEMENT
+            let dx = targetX - this.x;
+            let dy = targetY - this.y;
+            let dist = Math.hypot(dx, dy);
+
+            if (dist > 5) {
+                let dirX = dx / dist;
+                let dirY = dy / dist;
+                
+                // Flee slightly faster
+                let currentSpeed = (mode === 'FLEE') ? this.speed * 1.2 : this.speed;
+
+                this.vx += (dirX * currentSpeed - this.vx) * this.friction;
+                this.vy += (dirY * currentSpeed - this.vy) * this.friction;
+                moving = true;
+
+                if (Math.hypot(this.vx, this.vy) > 0.1) {
+                    let desiredAngle = Math.atan2(this.vy, this.vx);
+                    let diff = desiredAngle - this.angle;
+                    while (diff < -Math.PI) diff += Math.PI * 2;
+                    while (diff > Math.PI) diff -= Math.PI * 2;
+                    this.angle += diff * 0.15;
+                }
+            }
+        }
+
+        if (!moving) {
+            this.vx *= 0.8;
+            this.vy *= 0.8;
+        }
+
+        if (moving) this.walkCycle += 0.25;
+        else this.walkCycle = 0;
+
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+
+        if(typeof separate === 'function') { separate(this, allies, 0.5); } 
+        if(typeof resolveWallCollision === 'function') resolveWallCollision(this);
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+
+        // Animation Variables
+        const bounce = Math.abs(Math.sin(this.walkCycle)) * 2;
+        const sway = Math.sin(this.walkCycle) * 0.15; 
+        const featherLag = Math.sin(this.walkCycle - 1.5) * 0.4; 
+
+        // --- 1. SOFT SHADOW ---
+        let shadowGrad = ctx.createRadialGradient(0, 4, 2, 0, 4, 10);
+        shadowGrad.addColorStop(0, "rgba(0,0,0,0.5)");
+        shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = shadowGrad;
+        ctx.beginPath();
+        ctx.scale(1, 0.6);
+        ctx.arc(0, 7, 10 - (bounce * 0.5), 0, Math.PI*2);
+        ctx.fill();
+        ctx.scale(1, 1 / 0.6); 
+
+        // --- 2. LEGS & BOOTS ---
+        let lPhase = Math.sin(this.walkCycle);
+        let rPhase = Math.sin(this.walkCycle + Math.PI);
+        
+        ctx.fillStyle = "#2d1b0e"; 
+        
+        const drawBoot = (x, y, phase) => {
+            ctx.save();
+            ctx.translate(x, y + (phase * 3)); 
+            ctx.rotate(phase * 0.2); 
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 3.5, 2.5, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#4e342e";
+            ctx.beginPath();
+            ctx.ellipse(1, -1, 1.5, 1, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+        };
+
+        drawBoot(-4, 0, lPhase);
+        drawBoot(4, 0, rPhase);
+
+        // --- APPLY BODY BOUNCE & SWAY ---
+        ctx.translate(0, -bounce);
+        ctx.rotate(sway);
+
+        // --- 3. BODY ---
+        let bodyGrad = ctx.createLinearGradient(-6, -6, 6, 6);
+        bodyGrad.addColorStop(0, "#e056fd"); 
+        bodyGrad.addColorStop(1, "#8e24aa"); 
+        
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.roundRect(-6, -6, 12, 12, 4);
+        ctx.fill();
+        
+        ctx.strokeStyle = "#FFD700";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-6, 6); ctx.lineTo(6, 6); 
+        ctx.stroke();
+
+        ctx.fillStyle = "#3e2723";
+        ctx.fillRect(-6.5, 0, 13, 2.5);
+        ctx.fillStyle = "#ffb300";
+        ctx.fillRect(-2, -0.5, 4, 3.5);
+        ctx.fillStyle = "#000"; 
+        ctx.fillRect(-1, 0.5, 2, 1.5);
+
+        // --- 4. THE LUTE ---
+        ctx.save();
+        ctx.translate(5, 2); 
+        ctx.rotate(0.3); 
+
+        let luteGrad = ctx.createRadialGradient(-2, -2, 1, 0, 0, 8);
+        luteGrad.addColorStop(0, "#D2691E"); 
+        luteGrad.addColorStop(1, "#5D4037"); 
+        ctx.fillStyle = luteGrad;
+        
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 7.5, 6, 0, 0, Math.PI*2); 
+        ctx.fill();
+
+        ctx.fillStyle = "#DEB887";
+        ctx.beginPath(); ctx.ellipse(0, -0.5, 6.5, 5, 0, 0, Math.PI*2); ctx.fill();
+
+        ctx.fillStyle = "#3e2723";
+        ctx.beginPath(); ctx.arc(0, -1, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = "#8d6e63"; ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(-2.5, -1); ctx.lineTo(2.5, -1); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, -3.5); ctx.lineTo(0, 1.5); ctx.stroke();
+
+        ctx.fillStyle = "#3e2723";
+        ctx.fillRect(-3, 3, 6, 1.5);
+
+        ctx.save();
+        ctx.rotate(-0.1); 
+        
+        ctx.fillStyle = "#1a1a1a"; 
+        ctx.fillRect(-16, -2, 12, 3.5);
+        
+        ctx.strokeStyle = "#888";
+        ctx.lineWidth = 0.5;
+        for(let i=0; i<4; i++) {
+            let fx = -6 - (i*2.5);
+            ctx.beginPath(); ctx.moveTo(fx, -2); ctx.lineTo(fx, 1.5); ctx.stroke();
+        }
+
+        ctx.translate(-16, -0.5); 
+        ctx.rotate(-1.2); 
+        ctx.fillStyle = "#5D4037";
+        ctx.fillRect(0, -2, 6, 4); 
+        
+        ctx.fillStyle = "#fff";
+        ctx.beginPath(); ctx.arc(2, -2, 1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(4, -2, 1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(2, 2, 1, 0, Math.PI*2); ctx.fill();
+        ctx.restore(); 
+
+        ctx.strokeStyle = "rgba(255,255,255,0.7)";
+        ctx.lineWidth = 0.4;
+        ctx.beginPath();
+        ctx.moveTo(-16, -1); ctx.lineTo(0, -1);
+        ctx.moveTo(-16, 0); ctx.lineTo(0, 0);
+        ctx.moveTo(-16, 1); ctx.lineTo(0, 1);
+        ctx.stroke();
+
+        // --- RIGHT HAND ---
+        let strumSpeed = Math.sin(Date.now() / 60) * 2; 
+        
+        ctx.save();
+        ctx.translate(1, 1); 
+        ctx.fillStyle = this.color;
+        ctx.beginPath(); ctx.arc(-2, -2, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.rotate(0.5 + (strumSpeed * 0.2)); 
+        ctx.fillStyle = "#ffcc80"; 
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 2.5, 2, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = "#e6b975"; 
+        ctx.beginPath();
+        ctx.ellipse(1, -1, 1.5, 0.8, 0.5, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.moveTo(1, 0); ctx.lineTo(4, 1); ctx.lineTo(2, 2); ctx.fill();
+        ctx.restore(); 
+
+        // --- LEFT HAND ---
+        ctx.save();
+        ctx.translate(-10, -1); 
+        ctx.fillStyle = this.color;
+        ctx.beginPath(); ctx.arc(2, 4, 3, 0, Math.PI*2); ctx.fill(); 
+        ctx.fillStyle = "#dcbfa6"; 
+        ctx.beginPath(); ctx.arc(0, 0, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#ffcc80"; 
+        ctx.beginPath(); ctx.roundRect(-1, -2.5, 1.5, 3, 1); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(0.5, -2.2, 1.5, 3, 1); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(2, -1.8, 1.5, 2.5, 1); ctx.fill();
+        ctx.restore(); 
+        ctx.restore(); 
+
+
+        // --- 5. HEAD & HAT ---
+        ctx.save();
+        ctx.translate(0, -5); 
+        ctx.rotate(sway * 0.5); 
+        
+        let faceGrad = ctx.createRadialGradient(-1, -2, 1, 0, 0, 6);
+        faceGrad.addColorStop(0, "#ffcc80"); 
+        faceGrad.addColorStop(1, "#e6b975"); 
+        ctx.fillStyle = faceGrad;
+        ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI*2); ctx.fill();
+        
+        ctx.fillStyle = "#3e2723";
+        ctx.beginPath(); ctx.arc(-1.5, 1, 5.5, 0, Math.PI*2); ctx.fill();
+        
+        ctx.fillStyle = "#2e7d32";
+        ctx.beginPath();
+        ctx.moveTo(-6, -2); ctx.quadraticCurveTo(0, -7, 6, -2); ctx.lineTo(7, 0); ctx.quadraticCurveTo(0, -2, -7, 0); ctx.fill();
+        
+        ctx.save();
+        ctx.translate(-3, -3); 
+        ctx.rotate(featherLag); 
+        ctx.fillStyle = "#d32f2f"; 
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.quadraticCurveTo(-4, -6, -8, -2); ctx.quadraticCurveTo(-4, -2, 0, 0); ctx.fill();
+        ctx.strokeStyle = "#b71c1c";
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-6, -3); ctx.stroke();
+        ctx.restore();
+        ctx.restore(); 
+
+        ctx.restore(); 
+
+        // --- 6. HP BAR ---
+        if (typeof drawHealth === 'function') {
+            drawHealth(this.x, this.y, this.hp, this.maxHp);
+        }
+    }
+}
 
 class Soldier {
     constructor(x, y) {
@@ -5123,7 +6543,7 @@ class MinigunBullet {
         this.damage = damage;
         this.speed = speed;
         this.active = true;
-        this.life = 70; 
+        this.life = 140; 
         
         // VISUALS: Size 0.7 as requested
         this.size = 0.7; 
@@ -5272,148 +6692,166 @@ class MinigunBullet {
     
     class MortarShell {
     constructor(x, y, tx, ty) {
-        this.x = x; this.y = y;
-        this.tx = tx; this.ty = ty;
+        this.x = x; 
+        this.y = y;
+        this.tx = tx; 
+        this.ty = ty;
         
         // 1. Calculate Geometry
         this.startDist = Math.hypot(tx - x, ty - y);
-        // Yaw (Ground direction)
+        // Yaw is the angle across the ground (2D plane)
         this.yaw = Math.atan2(ty - y, tx - x); 
         
         // 2. Flight Logic
-        const flightTime = 60; 
+        const flightTime = 60; // Frames to reach target
         this.speed = this.startDist / flightTime;
+        // Enforce minimum speed to prevent floating shells
         if (this.speed < 2) this.speed = 2; 
 
         this.active = true;
         
-        // Stats
+        // 3. Stats (Passed to explosion)
         this.damage = 50;
-        this.blastRadius = 60;
+        this.blastRadius = 100;
 
-        // Visuals
-        this.z = 0; 
+        // 4. Visuals
+        this.z = 0; // Height off ground
         this.trail = []; 
     }
 
     update(dt) {
+        if (!dt) dt = 1;
+
         let dx = this.tx - this.x;
         let dy = this.ty - this.y;
         let dist = Math.sqrt(dx*dx + dy*dy);
 
-        // Trail Logic
+        // --- Trail Logic ---
+        // Only spawn trail particles while moving
         if (dist > this.speed) {
              this.trail.push({x: this.x, y: this.y - this.z, alpha: 1.0});
-             if(this.trail.length > 25) this.trail.shift(); // Increased trail length slightly
+             if(this.trail.length > 25) this.trail.shift(); 
         }
+        // Fade out existing trail segments
         for(let p of this.trail) p.alpha -= 0.04;
 
-        // Target Reached check
+        // --- Target Reached Logic ---
         if (dist <= this.speed) {
             this.active = false;
-            createExplosion(this.tx, this.ty);
+            
+            // DAMAGE TRIGGER:
+            // We pass this shell's specific damage and radius to the global function
+            if (typeof createExplosion === 'function') {
+                createExplosion(this.tx, this.ty, this.damage, this.blastRadius);
+            }
         } else {
-            this.x += (dx/dist) * this.speed;
-            this.y += (dy/dist) * this.speed;
+            // Move towards target
+            this.x += (dx/dist) * this.speed * dt;
+            this.y += (dy/dist) * this.speed * dt;
         }
     }
 
-    // Helper to calculate Height at a specific distance traveled
+    // Helper: Calculates how high the shell is based on distance traveled
     getArcHeight(distTraveled) {
         let progress = distTraveled / this.startDist;
+        // Clamp progress between 0 and 1
         progress = Math.max(0, Math.min(1, progress));
+        
+        // Parabola height logic
         let maxArcHeight = 50 + (this.startDist * 0.15); 
         return Math.sin(progress * Math.PI) * maxArcHeight;
     }
 
     draw() {
-    // --- 1. Calculate Physics State ---
-    let distRemaining = Math.hypot(this.tx - this.x, this.ty - this.y);
-    let distTraveled = this.startDist - distRemaining;
-    this.z = this.getArcHeight(distTraveled);
+        // --- 1. Calculate Physics State ---
+        let distRemaining = Math.hypot(this.tx - this.x, this.ty - this.y);
+        let distTraveled = this.startDist - distRemaining;
+        this.z = this.getArcHeight(distTraveled);
 
-    // --- 2. Calculate Visual Rotation (The Fix) ---
-    // We look at where the shell will be 1 frame from now to find the "pointing" angle
-    let lookAhead = this.speed; 
-    let nextDistTraveled = distTraveled + lookAhead;
-    
-    // Future ground position
-    let nextX = this.x + Math.cos(this.yaw) * lookAhead;
-    let nextY = this.y + Math.sin(this.yaw) * lookAhead;
-    
-    // Future screen position (Y - Z)
-    let nextZ = this.getArcHeight(nextDistTraveled);
-    
-    // Calculate the angle between current screen pos and next screen pos
-    let currentScreenY = this.y - this.z;
-    let nextScreenY = nextY - nextZ;
-    
-    let visualRotation = Math.atan2(nextScreenY - currentScreenY, nextX - this.x);
+        // --- 2. Calculate Visual Rotation ---
+        // Predict where the shell will be in the next frame to point it correctly
+        let lookAhead = this.speed; 
+        let nextDistTraveled = distTraveled + lookAhead;
+        
+        // Future ground position
+        let nextX = this.x + Math.cos(this.yaw) * lookAhead;
+        let nextY = this.y + Math.sin(this.yaw) * lookAhead;
+        
+        // Future screen position (Y - Z)
+        let nextZ = this.getArcHeight(nextDistTraveled);
+        
+        // Angle between current screen pos and next screen pos
+        let currentScreenY = this.y - this.z;
+        let nextScreenY = nextY - nextZ;
+        
+        let visualRotation = Math.atan2(nextScreenY - currentScreenY, nextX - this.x);
 
-    // --- 3. Draw Shadow ---
-    let scale = 1.0 + (this.z / 300); 
-    let shadowSize = 6 * (1 - (this.z / 200)); 
-    let shadowAlpha = 0.4 * (1 - (this.z / 150));
-    
-    if (shadowSize > 0) {
+        // --- 3. Draw Shadow (Ground Level) ---
+        let scale = 1.0 + (this.z / 300); // Slight size increase with height
+        let shadowSize = 6 * (1 - (this.z / 200)); 
+        let shadowAlpha = 0.4 * (1 - (this.z / 150));
+        
+        if (shadowSize > 0) {
+            ctx.save();
+            ctx.fillStyle = `rgba(0,0,0,${Math.max(0, shadowAlpha)})`;
+            ctx.beginPath();
+            // Shadow stays on the ground, rotated by Yaw
+            ctx.ellipse(this.x, this.y, shadowSize * 1.5, shadowSize * 0.8, this.yaw, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // --- 4. Draw Trail ---
+        ctx.lineWidth = 3 * scale;
+        ctx.lineCap = "round";
+        // Draw segments connecting trail points
+        for (let i = 0; i < this.trail.length - 1; i++) {
+            let p1 = this.trail[i];
+            let p2 = this.trail[i+1];
+            if(p1.alpha <= 0) continue;
+            
+            ctx.strokeStyle = `rgba(200, 200, 200, ${p1.alpha * 0.5})`;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+        }
+
+        // --- 5. Draw Shell Sprite ---
         ctx.save();
-        ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
+        
+        // Translate to actual visual position (Ground Y - Height Z)
+        ctx.translate(this.x, this.y - this.z);
+        ctx.rotate(visualRotation);
+        ctx.scale(scale, scale); 
+
+        // Shell Body Shape
+        ctx.fillStyle = "#333";
         ctx.beginPath();
-        // Shadow only follows the ground yaw
-        ctx.ellipse(this.x, this.y, shadowSize * 1.5, shadowSize * 0.8, this.yaw, 0, Math.PI*2);
+        ctx.moveTo(14, 0);   // Nose
+        ctx.lineTo(-8, 4.5);  // Back Bottom
+        ctx.lineTo(-8, -4.5); // Back Top
         ctx.fill();
+
+        // Driving Band (Copper ring detail)
+        ctx.fillStyle = "#b87333"; 
+        ctx.fillRect(-5, -4.5, 4, 9);
+
+        // Metallic Highlight
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.fillRect(-7, -1.5, 18, 3);
+
+        // Engine/Thruster Glow
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#ff5500";
+        ctx.fillStyle = "#ff5500";
+        ctx.beginPath(); 
+        ctx.arc(-8, 0, 3, 0, Math.PI*2); 
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
         ctx.restore();
     }
-
-    // --- 4. Draw Trail ---
-    ctx.lineWidth = 3 * scale;
-    ctx.lineCap = "round";
-    for (let i = 0; i < this.trail.length - 1; i++) {
-        let p1 = this.trail[i];
-        let p2 = this.trail[i+1];
-        if(p1.alpha <= 0) continue;
-        ctx.strokeStyle = `rgba(200, 200, 200, ${p1.alpha * 0.5})`;
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-    }
-
-    // --- 5. Draw Shell ---
-    ctx.save();
-    
-    // Transform: Translate to screen position and rotate by the visual trajectory
-    ctx.translate(this.x, this.y - this.z);
-    ctx.rotate(visualRotation); // Only one rotation is needed now!
-    ctx.scale(scale, scale); 
-
-    // Shell Body
-    ctx.fillStyle = "#333";
-    ctx.beginPath();
-    ctx.moveTo(14, 0);   
-    ctx.lineTo(-8, 4.5);  
-    ctx.lineTo(-8, -4.5); 
-    ctx.fill();
-
-    // Driving Band (Copper ring)
-    ctx.fillStyle = "#b87333"; 
-    ctx.fillRect(-5, -4.5, 4, 9);
-
-    // Highlight
-    ctx.fillStyle = "rgba(255,255,255,0.4)";
-    ctx.fillRect(-7, -1.5, 18, 3);
-
-    // Engine Glow
-    ctx.shadowBlur = 8;
-    ctx.shadowColor = "#ff5500";
-    ctx.fillStyle = "#ff5500";
-    ctx.beginPath(); 
-    ctx.arc(-8, 0, 3, 0, Math.PI*2); 
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    ctx.restore();
-}
 }
 
 function drawBlueprint() {
@@ -6219,39 +7657,46 @@ function drawBlueprint() {
     }
 }
 
-function createExplosion(x, y) {
-    // 1. VISUALS (Draw the orange blast)
+function createExplosion(x, y, damage = 50, blastRadius = 60) {
+    // 1. VISUALS
+    // Add a simple particle burst if you have a particle system, otherwise just the circle
+    if (typeof particles !== 'undefined') {
+        // Example: Orange sparks
+        for(let i=0; i<8; i++) {
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+                life: 20, color: "orange"
+            });
+        }
+    }
+    
+    // Draw the blast circle (flash)
     ctx.fillStyle = "rgba(255, 100, 0, 0.5)";
     ctx.beginPath();
-    ctx.arc(x, y, 60, 0, Math.PI * 2); 
+    ctx.arc(x, y, blastRadius, 0, Math.PI * 2); 
     ctx.fill();
 
-    // 2. DAMAGE ONLY
-    // We do NOT remove enemies here. We just lower their HP.
-    // The main loop will handle the death, money, and removal.
-    let blastRadius = 60;
-    let damage = 50;
+    // 2. DAMAGE LOGIC
+    if (typeof enemies === 'undefined') return;
 
     for (let enemy of enemies) {
         // Safety Check
-        if (!enemy) continue;
+        if (!enemy || enemy.hp <= 0) continue;
 
         let dist = Math.hypot(enemy.x - x, enemy.y - y);
 
+        // Check if inside explosion range
         if (dist < blastRadius) {
             if (enemy.isInvincible) {
-                // BLOCKED! (Optional: Spawn a "Shield Block" particle or sound)
-                createParticles(enemy.x, enemy.y, "#00d2ff", 5); 
-                // Do NOT reduce HP
+                // BLOCKED!
+                if (typeof createParticles === 'function') {
+                    createParticles(enemy.x, enemy.y, "#00d2ff", 5); 
+                }
             } else {
-                // Normal damage
-                enemy.hp -= this.damage;
+                // FIXED: Use the argument 'damage', not 'this.damage'
+                enemy.hp -= damage;
             }
-            
-            // Optional: Add tiny knockback from explosion
-            // let angle = Math.atan2(enemy.y - y, enemy.x - x);
-            // enemy.vx += Math.cos(angle) * 2;
-            // enemy.vy += Math.sin(angle) * 2;
         }
     }
 }
@@ -6698,8 +8143,8 @@ class WallTurret {
         this.fov = 120 * (Math.PI / 180); 
 
         // Combat Stats
-        this.range = 210; 
-        this.damage = 75; 
+        this.range = 400; 
+        this.damage = 5; 
         this.cooldown = 0;
         this.maxCooldown = 90; 
         this.active = true;
@@ -7723,6 +9168,12 @@ function resize() {
         }
 
         // --- PLACEMENT TOOLS ---
+        else if (currentTool === 'bard_troop') {
+             if (money >= 100) {
+                 allies.push(new BardTroop(mouseX, mouseY));
+                 money -= 100;
+             }
+        }
         else if (currentTool === 'troop') {
              if (money >= 10) {
                  allies.push(new Soldier(mouseX, mouseY));
@@ -8193,12 +9644,10 @@ function resize() {
     // 2. Runners (Fast Swarm)
     let runnerChance = (wave > 2) ? 0.25 : (wave > 1 ? 0.2 : 0);
 
-    // [NEW] 3. Shielders (Support Unit)
-    // Starts at Wave 5. ~10% chance.
+    // 3. Shielders (Support Unit)
     let shielderChance = (wave > 12) ? 0.10 : 0;
 
     // 4. Leapers (Wall Jumpers)
-    // Starts at Wave 12.
     let leaperChance = (wave > 11) ? 0.10 : 0;
     
     // 5. Breachers (Wall Breakers)
@@ -8213,6 +9662,14 @@ function resize() {
     // 8. Broodmothers (Boss/Summoner)
     let broodChance = (wave > 10) ? 0.05 : 0; 
 
+    // [NEW] 9. Magnet Enemy (Bullet Attractor)
+    // Starts Wave 6. Serves as an early-mid game tank.
+    let magnetChance = (wave > 18) ? 0.05 : 0;
+
+    let reviverChance = (wave > 15) ? 0.05 : 0;
+
+    let flyingChance = (wave > 9) ? 0.08 : 0;
+
     // --- SELECTION LOGIC ---
     let currentTotal = 0;
     
@@ -8224,7 +9681,7 @@ function resize() {
     currentTotal += runnerChance;
     if (rand < currentTotal) { enemies.push(new RunnerEnemy()); return; }
 
-    // [NEW] Check Shielder
+    // Check Shielder
     currentTotal += shielderChance;
     if (rand < currentTotal) { enemies.push(new ShielderEnemy()); return; }
 
@@ -8247,6 +9704,18 @@ function resize() {
     // Check Broodmother
     currentTotal += broodChance;
     if (rand < currentTotal) { enemies.push(new BroodmotherEnemy()); return; }
+
+    // [NEW] Check Magnet
+    currentTotal += magnetChance;
+    if (rand < currentTotal) { enemies.push(new MagnetEnemy()); return; }
+
+    // Check Reviver
+    currentTotal += reviverChance;
+    if (rand < currentTotal) { enemies.push(new ReviverEnemy()); return; }
+
+    // Check Flying
+    currentTotal += flyingChance;
+    if (rand < currentTotal) { enemies.push(new FlyingEnemy()); return; }
 
     // Default: Basic Enemy
     enemies.push(new Enemy());
@@ -8694,6 +10163,14 @@ let lastTime = performance.now();
         if (!spikes[i].active) spikes.splice(i, 1);
     }
 
+    for (let i = corpses.length - 1; i >= 0; i--) {
+        corpses[i].update();
+        corpses[i].draw(); // Draw corpses below enemies
+        if (!corpses[i].active) {
+            corpses.splice(i, 1);
+        }
+    }
+
     // Enemies & Portal Damage
     let baseCenterX = (playerBase.x * CELL_SIZE) + CELL_SIZE;
     let baseCenterY = (playerBase.y * CELL_SIZE) + CELL_SIZE;
@@ -8718,6 +10195,9 @@ let lastTime = performance.now();
         
         if (e.hp <= 0) {
             money += e.bounty; 
+            if (e.type !== "SKELETON_UNIT") {
+            corpses.push(new Corpse(e.x, e.y)); 
+            }
             if(typeof createParticles === 'function') createParticles(e.x, e.y, "orange", 6);
             enemies.splice(i, 1);
         }
