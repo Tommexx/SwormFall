@@ -130,19 +130,135 @@
     color: white;
 }
         
-        #game-over {
-            display: none;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(20, 0, 0, 0.95);
-            padding: 50px;
-            text-align: center;
-            color: white;
-            border: 2px solid red;
-            border-radius: 10px;
-            z-index: 10;
-        }
+        /* --- FULL SCREEN OVERLAY --- */
+#game-over {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 0, 0, 0.85); /* Dark red-black tint */
+    backdrop-filter: blur(8px);       /* Blurs the game behind it */
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, monospace;
+    overflow: hidden;
+}
+
+/* --- SCANLINE EFFECT --- */
+#game-over::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+/* --- THE CARD CONTAINER --- */
+.game-over-card {
+    position: relative;
+    z-index: 5;
+    background: #0a0a0a;
+    border: 1px solid #ff0033;
+    box-shadow: 0 0 50px rgba(255, 0, 51, 0.2), inset 0 0 20px rgba(255, 0, 51, 0.1);
+    padding: 60px;
+    text-align: center;
+    max-width: 500px;
+    width: 80%;
+    /* "Cut corner" tech look */
+    clip-path: polygon(
+        0 0, 
+        100% 0, 
+        100% calc(100% - 30px), 
+        calc(100% - 30px) 100%, 
+        0 100%
+    );
+}
+
+/* --- TYPOGRAPHY --- */
+#game-over h1 {
+    margin: 0 0 10px 0;
+    font-size: 4rem;
+    color: #ff0033;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-shadow: 4px 4px 0px #330000;
+    animation: glitch 2s infinite;
+}
+
+.sub-text {
+    color: #ff6666;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #330000;
+    padding-bottom: 20px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    margin-bottom: 30px;
+    border-left: 4px solid #ff0033;
+}
+
+.stat-label {
+    display: block;
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+#final-wave {
+    font-size: 3.5rem;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* --- BUTTON --- */
+.retry-btn {
+    background: #ff0033;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+}
+
+.retry-btn:hover {
+    background: #ff3366;
+    box-shadow: 0 0 30px rgba(255, 0, 51, 0.6);
+    transform: translateY(-2px);
+}
+
+.retry-btn:active {
+    transform: translateY(1px);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes glitch {
+    0% { text-shadow: 4px 4px 0px #330000; }
+    2% { text-shadow: -4px -4px 0px #330000; transform: translate(-2px, 0); }
+    4% { text-shadow: 2px -2px 0px #330000; transform: translate(2px, 0); }
+    6% { text-shadow: 4px 4px 0px #330000; transform: translate(0, 0); }
+    100% { text-shadow: 4px 4px 0px #330000; }
+}
 
         /* --- MAIN MENU CONTAINER --- */
 #main-menu {
@@ -364,6 +480,494 @@
             box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
             transform: scale(1.05);
         }
+
+        /* --- ENEMY INTRO OVERLAY --- */
+#enemy-intro-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999; /* On top of everything */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.intro-card {
+    background: linear-gradient(135deg, #1a1a24 0%, #0f0f13 100%);
+    border: 1px solid #444;
+    border-left: 4px solid #ff0044; /* Red Accent */
+    width: 650px;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.intro-header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.intro-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 0, 68, 0.5);
+}
+
+.intro-sub {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.intro-content {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+/* THE PREVIEW CANVAS */
+#enemy-preview-canvas {
+    background: radial-gradient(circle at center, #2a2a35 0%, #000 100%);
+    border: 1px solid #555;
+    border-radius: 4px;
+    box-shadow: inset 0 0 20px #000;
+}
+
+.intro-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* STAT BARS (10 Rectangles) */
+.stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #aaa;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 80px;
+}
+
+.stat-bar-container {
+    display: flex;
+    gap: 4px; /* Space between rectangles */
+}
+
+.stat-pip {
+    width: 14px;
+    height: 10px;
+    background: #222; /* Empty color */
+    border-radius: 1px;
+    transition: background 0.3s;
+}
+
+/* Filled Colors */
+.stat-pip.filled.durability { background: #ff4444; box-shadow: 0 0 5px #ff4444; }
+.stat-pip.filled.speed { background: #ffcc00; box-shadow: 0 0 5px #ffcc00; }
+.stat-pip.filled.damage { background: #aa00ff; box-shadow: 0 0 5px #aa00ff; }
+
+.lore-text {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ddd;
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 2px solid #666;
+}
+
+.continue-btn {
+    width: 100%;
+    padding: 15px;
+    background: #ff0044;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+
+.continue-btn:hover {
+    background: #ff2266;
+    box-shadow: 0 0 20px rgba(255, 0, 68, 0.5);
+}
+
+/* --- SKILL TREE MODAL (The Window) --- */
+/* =========================================
+   FUTURE-TECH SKILL TREE CSS
+   ========================================= */
+
+/* --- VARIABLES --- */
+:root {
+    --neon-blue: #00f3ff;
+    --neon-purple: #bc13fe;
+    --neon-gold: #ffd700;
+    --void-bg: #050505;
+    --glass-bg: rgba(10, 15, 30, 0.85);
+}
+
+/* --- THE MAIN OVERLAY --- */
+#skill-tree-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: transparent;
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    font-family: 'Courier New', monospace; /* Tech font */
+}
+
+/* --- HEADER (HOLO-BAR) --- */
+.st-header {
+    height: 70px;
+    background: var(--glass-bg);
+    border-bottom: 2px solid var(--neon-purple);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
+}
+
+.st-title { 
+    font-size: 28px; 
+    color: #fff; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.st-currency { 
+    font-size: 22px; 
+    color: var(--neon-gold); 
+    font-weight: bold; 
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.st-close-btn { 
+    background: transparent; 
+    color: var(--neon-blue); 
+    border: 1px solid var(--neon-blue); 
+    padding: 10px 30px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    text-transform: uppercase;
+    transition: 0.3s;
+    letter-spacing: 2px;
+}
+.st-close-btn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* --- THE VIEWPORT (CAMERA) --- */
+#st-viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    background: transparent;
+}
+#st-viewport:active { cursor: grabbing; }
+
+/* --- THE WORLD (GRID SYSTEM) --- */
+#st-world {
+    width: 3000px;
+    height: 3000px;
+    position: relative;
+    
+    /* FUTURISTIC GRID BACKGROUND */
+    background-color: transparent;
+
+}
+
+/* Add a Vignette Overlay to focus the center */
+#st-world::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    /* Adjusted to be slightly see-through at edges (0.9 instead of solid #000) */
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 80%);
+    pointer-events: none;
+}
+
+/* --- CONNECTION LINES (SVG) --- */
+#st-connections {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+.connection-line {
+    stroke: #333;
+    stroke-width: 3;
+    transition: stroke 0.5s, stroke-width 0.5s;
+    opacity: 0.4;
+}
+
+/* --- THE NODES (HEXAGONS) --- */
+.skill-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                box-shadow 0.3s ease, 
+                border-color 0.3s ease, 
+                background-color 0.3s ease,
+                filter 0.3s ease,
+                opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 24px;
+    user-select: none;
+}
+
+/* 1. CORE NODE (Circle) */
+.node-core {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #444, #111);
+    border: 2px solid #fff;
+    box-shadow: 0 0 30px rgba(255,255,255, 0.2);
+}
+
+/* 2. STAT NODE (Circle) */
+.node-stat {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 2px solid #555;
+}
+
+/* 3. UNLOCK NODE (Hexagon) */
+.node-unlock {
+    width: 80px; height: 70px; /* Hexagon aspect ratio */
+    background: #222;
+    /* CSS MAGIC FOR HEXAGON SHAPE */
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    border: none; /* Borders don't work well with clip-path, we use box-shadow via a trick or background */
+}
+/* Hexagon Border Trick (Inner Shadow) */
+.node-unlock::before {
+    content: "";
+    position: absolute;
+    top: 2px; left: 2px; right: 2px; bottom: 2px;
+    background: #111;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    z-index: -1;
+}
+
+/* --- NODE STATES --- */
+
+/* LOCKED */
+.skill-node.locked {
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
+/* UNLOCKED (Available to buy) */
+.skill-node.unlocked {
+    border-color: var(--neon-gold);
+    animation: pulseGold 2s infinite;
+}
+
+
+/* PURCHASED */
+.skill-node.purchased {
+    background: var(--neon-purple);
+    box-shadow: 0 0 25px var(--neon-purple);
+    border-color: #fff;
+    z-index: 5;
+}
+.node-unlock.purchased {
+    background: var(--neon-purple); 
+    box-shadow: none; /* Drop shadow doesn't work on clip-path */
+    filter: drop-shadow(0 0 10px var(--neon-purple)); /* This works on shapes */
+}
+
+/* HOVER EFFECT */
+.skill-node:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    z-index: 100;
+}
+
+/* --- TOOLTIP (DATA CARD) --- */
+#st-tooltip {
+    position: absolute;
+    background: rgba(5, 5, 10, 0.95);
+    border: 1px solid var(--neon-blue);
+    padding: 0;
+    width: 300px;
+    pointer-events: none;
+    z-index: 3000;
+    display: none;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+    /* Corner cuts */
+    clip-path: polygon(
+        10px 0, 100% 0, 
+        100% calc(100% - 10px), calc(100% - 10px) 100%, 
+        0 100%, 0 10px
+    );
+}
+
+#tt-title { 
+    background: rgba(0, 243, 255, 0.1);
+    color: var(--neon-blue); 
+    margin: 0; padding: 12px;
+    font-size: 16px; 
+    text-transform: uppercase; 
+    border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+#tt-desc { 
+    padding: 12px; 
+    color: #ccc; 
+    font-size: 13px; 
+    line-height: 1.5; 
+    margin: 0;
+}
+
+#tt-cost {
+    padding: 10px 12px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+    border-top: 1px solid #333;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes pulseGold {
+    0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); border-color: #887000; }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); border-color: #ffd700; }
+    100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); border-color: #887000; }
+}
+/* --- TOOLTIP --- */
+#st-tooltip {
+    position: absolute;
+    background: rgba(15, 15, 20, 0.98);
+    border: 1px solid #666;
+    padding: 15px;
+    border-radius: 8px;
+    width: 280px;
+    pointer-events: none;
+    z-index: 3000;
+    display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,1);
+}
+#st-tooltip h3 { margin: 0 0 5px 0; color: #a388ee; border-bottom: 1px solid #444; padding-bottom: 5px; }
+#st-tooltip p { font-size: 13px; color: #ccc; line-height: 1.4; margin-bottom: 10px; }
+#st-tooltip .cost { font-weight: bold; color: #f1c40f; }
+
+.tool-btn {
+    position: relative; /* Needed for the overlay to sit on top */
+}
+
+/* The Lock Overlay */
+.tool-btn.is-locked::after {
+    content: "🔒"; 
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Darken the button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border-radius: 8px;
+    cursor: not-allowed;
+    z-index: 10;
+}
+
+/* Optional: Dim the icon behind the lock */
+.tool-btn.is-locked img, 
+.tool-btn.is-locked span {
+    opacity: 0.3;
+}
+
+/* --- VOID TECH BUTTON STYLE --- */
+.skill-btn {
+    /* Dark Purple Void Gradient */
+    background: linear-gradient(135deg, #1a0b2e 0%, #000000 100%);
+    
+    /* Neon Purple Border */
+    border: 1px solid #9b59b6; 
+    
+    /* Glowing Text */
+    color: #e0d0ff; 
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    /* Spacing & Layout */
+    margin-top: 15px; /* Separates it from the "Start Game" buttons */
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 6px;
+    
+    /* The Void Glow */
+    box-shadow: 0 0 10px rgba(155, 89, 182, 0.2);
+    transition: all 0.3s ease;
+    
+    /* Animation */
+    animation: voidPulse 3s infinite ease-in-out;
+}
+
+/* Hover Effect: Brightens and lifts */
+.skill-btn:hover {
+    background: linear-gradient(135deg, #381a5c 0%, #0f0f15 100%);
+    border-color: #be93d4;
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.6), inset 0 0 10px rgba(155, 89, 182, 0.2);
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(224, 208, 255, 0.8);
+}
+
+/* Active/Click Effect */
+.skill-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 5px rgba(155, 89, 182, 0.4);
+}
+
+/* The Pulse Animation */
+@keyframes voidPulse {
+    0% { box-shadow: 0 0 8px rgba(155, 89, 182, 0.2); border-color: #7d3c98; }
+    50% { box-shadow: 0 0 18px rgba(155, 89, 182, 0.5); border-color: #af7ac5; }
+    100% { box-shadow: 0 0 8px rgba(155, 89, 182, 0.2); border-color: #7d3c98; }
+}
     </style>
 </head>
 <body>
@@ -371,7 +975,6 @@
     <div id="main-menu">
     <h1>SWARM DEFENSE</h1>
     <p>System Initialized. Select Combat Simulation Level.</p>
-    
     <div class="difficulty-container">
         
         <div class="diff-card card-easy" onclick="startGame('easy')">
@@ -418,8 +1021,8 @@
             <div class="stats">Infinite Money</div>
             <div class="desc">Test your defenses with unlimited resources.</div>
         </div>
-        
     </div>
+    <button class="menu-btn skill-btn" onclick="openSkillTree()">Void Tech (Skills)</button>
 </div>
 
 <div id="ui">
@@ -523,10 +1126,20 @@
 
 
     <div id="game-over">
-        <h1 style="color: red; font-size: 50px;">BASE DESTROYED</h1>
-        <p>You survived <span id="final-wave">0</span> waves.</p>
-        <button onclick="location.reload()" style="margin-top: 20px; width:100%; text-align:center;">Try Again</button>
+    <div class="game-over-card">
+        <h1>CRITICAL FAILURE</h1>
+        <div class="sub-text">Base Integrity: 0%</div>
+        
+        <div class="stat-box">
+            <span class="stat-label">Waves Survived</span>
+            <span id="final-wave">0</span>
+        </div>
+
+        <button class="retry-btn" onclick="location.reload()">
+            Initialize Reboot
+        </button>
     </div>
+</div>
 
     <div id="pause-menu" style="display: none;">
         <h1>PAUSED</h1>
@@ -539,7 +1152,1069 @@
 
     <canvas id="gameCanvas"></canvas>
 
+    <div id="enemy-intro-overlay">
+    <div class="intro-card">
+        <div class="intro-header">
+            <div class="intro-title" id="intro-name">UNKNOWN ENTITY</div>
+            <div class="intro-sub">NEW INTEL ACQUIRED</div>
+        </div>
+
+        <div class="intro-content">
+            <canvas id="enemy-preview-canvas" width="250" height="250"></canvas>
+
+            <div class="intro-details">
+                <div id="intro-stats"></div>
+            </div>
+        </div>
+
+        <div class="lore-text" id="intro-lore">
+            Analyzing biological structure...
+        </div>
+
+        <button class="continue-btn" onclick="closeEnemyIntro()">RESUME DEFENSE</button>
+    </div>
+</div>
+<div id="skill-tree-overlay">
+    
+    <div class="st-header">
+        <div class="st-title">VOID RESEARCH</div>
+        <div class="st-currency">
+            <span>🟣</span> 
+            <span id="st-shard-count">0</span> 
+            <span style="font-size: 14px; color: #888; margin-left:5px;">Shards</span>
+        </div>
+        <button class="st-close-btn" onclick="closeSkillTree()">CLOSE</button>
+    </div>
+
+    <div id="st-viewport">
+        <div id="st-world">
+            
+            <svg id="st-connections"></svg>
+            
+            </div>
+    </div>
+
+    <div id="st-tooltip">
+        <h3 id="tt-title">Skill Name</h3>
+        <p id="tt-desc">Description text...</p>
+        <div class="cost" id="tt-cost">Cost: 100</div>
+    </div>
+
+</div>
 <script>
+
+    /* --- SKILL TREE SYSTEM --- */
+
+    // --- SKILL TREE BACKGROUND ANIMATION ---
+// --- SKILL TREE BACKGROUND: NEURAL CONSTELLATION ---
+let stCanvas, stCtx;
+let stAnimFrame;
+let stParticles = [];
+const PARTICLE_COUNT = 70;
+const CONNECTION_DIST = 150;
+const MOUSE_DIST = 200;
+
+// Track mouse relative to canvas
+let stMouse = { x: null, y: null };
+
+function initSkillTreeBackground() {
+    let container = document.getElementById('skill-tree-overlay');
+    
+    // 1. Force container transparency so canvas shows
+    container.style.background = "transparent"; 
+
+    // 2. Create or Reset Canvas
+    if (!document.getElementById('st-bg-canvas')) {
+        stCanvas = document.createElement('canvas');
+        stCanvas.id = 'st-bg-canvas';
+        stCanvas.style.position = 'absolute';
+        stCanvas.style.top = '0';
+        stCanvas.style.left = '0';
+        stCanvas.style.width = '100%';
+        stCanvas.style.height = '100%';
+        stCanvas.style.zIndex = '-1'; 
+        container.insertBefore(stCanvas, container.firstChild);
+        
+        stCtx = stCanvas.getContext('2d');
+
+        // Mouse Listeners for interactive background
+        container.addEventListener('mousemove', function(e) {
+            stMouse.x = e.clientX;
+            stMouse.y = e.clientY;
+        });
+        container.addEventListener('mouseleave', function() {
+            stMouse.x = null;
+            stMouse.y = null;
+        });
+    }
+
+    // 3. Initialize Particles
+    resizeCanvas(); // Set initial size
+    stParticles = [];
+    for(let i=0; i < PARTICLE_COUNT; i++) {
+        stParticles.push(new NetworkParticle());
+    }
+    
+    // 4. Start Loop
+    window.addEventListener('resize', resizeCanvas);
+    if (stAnimFrame) cancelAnimationFrame(stAnimFrame);
+    animateSkillTreeBg();
+}
+
+function resizeCanvas() {
+    if(!stCanvas) return;
+    stCanvas.width = window.innerWidth;
+    stCanvas.height = window.innerHeight;
+}
+
+class NetworkParticle {
+    constructor() {
+        this.x = Math.random() * window.innerWidth;
+        this.y = Math.random() * window.innerHeight;
+        this.vx = (Math.random() - 0.5) * 1.5; // Random velocity X
+        this.vy = (Math.random() - 0.5) * 1.5; // Random velocity Y
+        this.size = Math.random() * 2 + 1;
+        // Randomly assign colors based on your CSS variables
+        this.color = Math.random() > 0.5 ? "#00f3ff" : "#bc13fe"; 
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Bounce off edges
+        if (this.x < 0 || this.x > stCanvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > stCanvas.height) this.vy *= -1;
+
+        // Mouse Interaction: Flee from mouse slightly
+        if (stMouse.x != null) {
+            let dx = stMouse.x - this.x;
+            let dy = stMouse.y - this.y;
+            let distance = Math.sqrt(dx*dx + dy*dy);
+            if (distance < MOUSE_DIST) {
+                const forceDirectionX = dx / distance;
+                const forceDirectionY = dy / distance;
+                const force = (MOUSE_DIST - distance) / MOUSE_DIST;
+                this.vx -= forceDirectionX * force * 0.05;
+                this.vy -= forceDirectionY * force * 0.05;
+            }
+        }
+    }
+
+    draw() {
+        stCtx.beginPath();
+        stCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        stCtx.fillStyle = this.color;
+        stCtx.fill();
+    }
+}
+
+function animateSkillTreeBg() {
+    if (document.getElementById('skill-tree-overlay').style.display === 'none') return;
+
+    stCtx.clearRect(0, 0, stCanvas.width, stCanvas.height);
+    
+    // 1. Draw Subtle Background Gradient
+    let grad = stCtx.createRadialGradient(stCanvas.width/2, stCanvas.height/2, 0, stCanvas.width/2, stCanvas.height/2, stCanvas.width);
+    grad.addColorStop(0, "#0a0f1e"); // Dark Blue Center
+    grad.addColorStop(1, "#000000"); // Black Edges
+    stCtx.fillStyle = grad;
+    stCtx.fillRect(0, 0, stCanvas.width, stCanvas.height);
+
+    // 2. Update and Draw Particles
+    stParticles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+
+    // 3. Draw Connections
+    connectParticles();
+
+    stAnimFrame = requestAnimationFrame(animateSkillTreeBg);
+}
+
+function connectParticles() {
+    for (let a = 0; a < stParticles.length; a++) {
+        for (let b = a; b < stParticles.length; b++) {
+            let dx = stParticles[a].x - stParticles[b].x;
+            let dy = stParticles[a].y - stParticles[b].y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < CONNECTION_DIST) {
+                // Opacity based on distance (closer = brighter)
+                let opacity = 1 - (distance / CONNECTION_DIST);
+                stCtx.strokeStyle = `rgba(0, 243, 255, ${opacity * 0.2})`; // Neon Blue Lines
+                stCtx.lineWidth = 1;
+                stCtx.beginPath();
+                stCtx.moveTo(stParticles[a].x, stParticles[a].y);
+                stCtx.lineTo(stParticles[b].x, stParticles[b].y);
+                stCtx.stroke();
+            }
+        }
+        
+        // Connect to mouse
+        if (stMouse.x != null) {
+            let dx = stParticles[a].x - stMouse.x;
+            let dy = stParticles[a].y - stMouse.y;
+            let distance = Math.sqrt(dx*dx + dy*dy);
+            if (distance < MOUSE_DIST) {
+                let opacity = 1 - (distance / MOUSE_DIST);
+                stCtx.strokeStyle = `rgba(188, 19, 254, ${opacity * 0.4})`; // Neon Purple for Mouse
+                stCtx.beginPath();
+                stCtx.moveTo(stParticles[a].x, stParticles[a].y);
+                stCtx.lineTo(stMouse.x, stMouse.y);
+                stCtx.stroke();
+            }
+        }
+    }
+}
+
+    const skillData = {
+    // =========================================
+    // --- CENTER: CORE (Base Upgrades) ---
+    // =========================================
+    "core_vitality": { 
+        name: "Core Vitality", desc: "Base starts with +50 Max HP.", 
+        cost: 5, type: "core", x: 0, y: 0, parent: null 
+    },
+    "core_regen": { 
+        name: "Nano-Repair", desc: "Base regenerates 1 HP every 5 seconds.", 
+        cost: 100, type: "stat", x: 0, y: 80, parent: "core_vitality" 
+    },
+
+    // =========================================
+    // --- NORTH: INFANTRY (Sword, Shield, Bard) ---
+    // =========================================
+    
+    // --- Branch 1: Sword ---
+    "unlock_sword": {
+        name: "UNLOCK: Sword Soldier", desc: "Basic melee unit.",
+        cost: 15, type: "unlock", x: 0, y: -150, parent: "core_vitality"
+    },
+    "sword_dmg": {
+        name: "Sharpened Blades", desc: "Sword Soldiers deal +20 Damage.",
+        cost: 25, type: "stat", x: -80, y: -220, parent: "unlock_sword"
+    },
+    "sword_atk_spd": {
+        name: "Frenzy Stance", desc: "Sword Soldiers attack 15% faster.",
+        cost: 45, type: "stat", x: -140, y: -280, parent: "sword_dmg"
+    },
+    "sword_move_spd": {
+        name: "Lightweight Boots", desc: "Sword Soldiers move 20% faster.",
+        cost: 30, type: "stat", x: -80, y: -340, parent: "sword_dmg"
+    },
+
+    // --- Branch 2: Shield ---
+    "unlock_shield": {
+        name: "UNLOCK: Shield Guard", desc: "High HP tank unit.",
+        cost: 30, type: "unlock", x: 80, y: -220, parent: "unlock_sword"
+    },
+    "shield_hp": {
+        name: "Titan Armor", desc: "Shield Guards get +200 Max HP.",
+        cost: 40, type: "stat", x: 140, y: -280, parent: "unlock_shield"
+    },
+
+    // --- Branch 3: Bard ---
+    "unlock_bard": {
+        name: "UNLOCK: Bard", desc: "Lures enemies away from the base.",
+        cost: 50, type: "unlock", x: 0, y: -300, parent: "unlock_sword"
+    },
+    "bard_range": {
+        name: "Louder Music", desc: "Bard lure range increased by 30%.",
+        cost: 60, type: "stat", x: -40, y: -380, parent: "unlock_bard"
+    },
+    "bard_durability": {
+        name: "Stage Presence", desc: "Bards have +100 Max HP.",
+        cost: 40, type: "stat", x: 40, y: -380, parent: "unlock_bard"
+    },
+
+    // =========================================
+    // --- WEST: DEFENSE (Turret, Cryo, Spikes) ---
+    // =========================================
+
+    // --- Branch 1: Wall Turret ---
+    "unlock_wall_turret": {
+        name: "UNLOCK: Wall Turret", desc: "Basic defensive tower.",
+        cost: 15, type: "unlock", x: -150, y: 0, parent: "core_vitality"
+    },
+    "turret_fire_rate": {
+        name: "Rapid Loader", desc: "Wall Turret fires 20% faster.",
+        cost: 30, type: "stat", x: -240, y: -40, parent: "unlock_wall_turret"
+    },
+    "turret_range": {
+        name: "Sniper Lens", desc: "Wall Turret range +40%.",
+        cost: 45, type: "stat", x: -320, y: -80, parent: "turret_fire_rate"
+    },
+    "turret_dmg": {
+        name: "Depleted Uranium", desc: "Wall Turret deals +15 Damage.",
+        cost: 50, type: "stat", x: -240, y: -120, parent: "turret_fire_rate"
+    },
+
+    // --- Branch 2: Spikes ---
+    "unlock_spikes": {
+        name: "UNLOCK: Spike Trap", desc: "Damages enemies walking over it.",
+        cost: 25, type: "unlock", x: -240, y: 60, parent: "unlock_wall_turret"
+    },
+    "spike_dmg": {
+        name: "Serrated Tips", desc: "Spikes deal +50% Damage.",
+        cost: 40, type: "stat", x: -320, y: 100, parent: "unlock_spikes"
+    },
+
+    // --- Branch 3: Cryo Tower ---
+    "unlock_cryo": {
+        name: "UNLOCK: Cryo Tower", desc: "Slows enemies.",
+        cost: 45, type: "unlock", x: -350, y: -20, parent: "unlock_wall_turret"
+    },
+    "cryo_range": {
+        name: "High Pressure", desc: "Cryo Tower range +25%.",
+        cost: 60, type: "stat", x: -440, y: -20, parent: "unlock_cryo"
+    },
+    "cryo_slow": {
+        name: "Absolute Zero", desc: "Cryo slows enemies by an extra 15%.",
+        cost: 80, type: "stat", x: -530, y: -20, parent: "cryo_range"
+    },
+
+    // =========================================
+    // --- EAST: HEAVY & ECO (Farm, Barracks, Heavy) ---
+    // =========================================
+
+    // --- Branch 1: Economy (Farm) ---
+    "unlock_farm": {
+        name: "UNLOCK: Money Farm", desc: "Generates cash at end of wave.",
+        cost: 20, type: "unlock", x: 150, y: 0, parent: "core_vitality"
+    },
+    "farm_val": {
+        name: "Market Stocks", desc: "Farms give +$25 extra per wave.",
+        cost: 35, type: "stat", x: 250, y: -40, parent: "unlock_farm"
+    },
+    "farm_cap": {
+        name: "Offshore Accounts", desc: "Farms give another +$25 extra per wave.",
+        cost: 70, type: "stat", x: 340, y: -80, parent: "farm_val"
+    },
+
+    // --- Branch 2: Barracks ---
+    "unlock_barracks": {
+        name: "UNLOCK: Barracks", desc: "Auto-spawns soldiers.",
+        cost: 40, type: "unlock", x: 250, y: 60, parent: "unlock_farm"
+    },
+    "barracks_speed": {
+        name: "Drill Sergeant", desc: "Barracks spawn units 20% faster.",
+        cost: 60, type: "stat", x: 350, y: 100, parent: "unlock_barracks"
+    },
+
+    // --- Branch 3: Minigun ---
+    "unlock_minigun": {
+        name: "UNLOCK: Minigun", desc: "Fast fire rate, small damage.",
+        cost: 60, type: "unlock", x: 400, y: -40, parent: "unlock_farm"
+    },
+    "minigun_dmg": {
+        name: "Lubricated Barrels", desc: "Minigun does +2 Damage per shot.",
+        cost: 70, type: "stat", x: 500, y: -80, parent: "unlock_minigun"
+    },
+    "minigun_speed": {
+        name: "Motor Overdrive", desc: "Minigun attack speed is 15% faster.",
+        cost: 80, type: "stat", x: 580, y: -120, parent: "minigun_dmg"
+    },
+
+    // --- Branch 4: Mortar ---
+    "unlock_mortar": {
+        name: "UNLOCK: Mortar", desc: "Long range AoE damage.",
+        cost: 70, type: "unlock", x: 400, y: 20, parent: "unlock_farm"
+    },
+    "mortar_dmg": {
+        name: "High Explosive", desc: "Mortar deals +30 Damage.",
+        cost: 80, type: "stat", x: 500, y: 20, parent: "unlock_mortar"
+    },
+    "mortar_area": {
+        name: "Napalm Shells", desc: "Mortar explosion radius +25%.",
+        cost: 100, type: "stat", x: 600, y: 20, parent: "mortar_dmg"
+    }
+};
+
+// --- CUSTOM SKILL ICON RENDERER ---
+function drawSkillIcon(canvas, skillIdentifier) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    // Scale factor: allows the icon to resize if you change canvas size
+    const s = w / 50; 
+
+    // Clear and Setup
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 3 * s;
+
+    const id = (skillIdentifier || "").toLowerCase();
+
+    // Helper to start a path
+    const start = () => ctx.beginPath();
+    // Helper to stroke/fill
+    const finish = (strokeColor, fillColor = null) => {
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+        ctx.strokeStyle = strokeColor;
+        ctx.stroke();
+    };
+
+    // --- 1. CORE / VITALITY (Heart) ---
+    if (id.includes("core") || id.includes("vitality") || id.includes("hp")) {
+        start();
+        // Draw Heart shape
+        ctx.moveTo(0, 5 * s);
+        ctx.bezierCurveTo(0, -5 * s, -15 * s, -15 * s, -15 * s, 0);
+        ctx.bezierCurveTo(-15 * s, 15 * s, 0, 18 * s, 0, 22 * s);
+        ctx.bezierCurveTo(0, 18 * s, 15 * s, 15 * s, 15 * s, 0);
+        ctx.bezierCurveTo(15 * s, -15 * s, 0, -5 * s, 0, 5 * s);
+        finish("#ff4d4d", "#ff000033"); // Red outline, faint red fill
+    }
+
+    // --- 2. SWORD (Infantry) ---
+    else if (id.includes("sword") || id.includes("blade")) {
+        ctx.rotate(Math.PI / 4); // Tilt 45 degrees
+        start();
+        // Blade
+        ctx.moveTo(0, -15 * s);
+        ctx.lineTo(0, 10 * s);
+        // Hilt/Crossguard
+        ctx.moveTo(-5 * s, 10 * s);
+        ctx.lineTo(5 * s, 10 * s);
+        // Handle
+        ctx.moveTo(0, 10 * s);
+        ctx.lineTo(0, 16 * s);
+        // Pommel
+        ctx.moveTo(0, 17 * s);
+        ctx.arc(0, 17 * s, 1.5 * s, 0, Math.PI*2);
+        finish("#d1d5db"); // Silver
+    }
+
+    // --- 3. SHIELD (Guard) ---
+    else if (id.includes("shield") || id.includes("armor")) {
+        start();
+        // Shield shape
+        ctx.moveTo(-10 * s, -10 * s);
+        ctx.lineTo(10 * s, -10 * s);
+        ctx.lineTo(10 * s, 2 * s);
+        ctx.quadraticCurveTo(0, 18 * s, -10 * s, 2 * s);
+        ctx.closePath();
+        finish("#3b82f6", "#1e3a8a33"); // Blue
+        
+        // Inner cross
+        ctx.beginPath();
+        ctx.lineWidth = 2 * s;
+        ctx.moveTo(0, -6 * s); ctx.lineTo(0, 6 * s);
+        ctx.moveTo(-5 * s, 0); ctx.lineTo(5 * s, 0);
+        ctx.strokeStyle = "rgba(255,255,255,0.5)";
+        ctx.stroke();
+    }
+
+    // --- 4. BARD (Music Note) ---
+    else if (id.includes("bard") || id.includes("music")) {
+        start();
+        // Note head
+        ctx.ellipse(-5 * s, 10 * s, 4 * s, 3 * s, -0.2, 0, Math.PI * 2);
+        // Stem
+        ctx.moveTo(-2 * s, 10 * s);
+        ctx.lineTo(-2 * s, -10 * s);
+        // Flag
+        ctx.bezierCurveTo(-2 * s, -6 * s, 6 * s, -6 * s, 6 * s, 0);
+        finish("#d946ef"); // Magenta
+    }
+
+    // --- 5. TURRET (Basic Defense) ---
+    else if (id.includes("turret")) {
+        start();
+        // Base
+        ctx.rect(-8 * s, 8 * s, 16 * s, 6 * s);
+        // Turret Head
+        ctx.arc(0, 8 * s, 8 * s, Math.PI, 0);
+        // Barrel
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -12 * s);
+        finish("#10b981"); // Emerald Green
+    }
+
+    // --- 6. SPIKES (Trap) ---
+    else if (id.includes("spike")) {
+        start();
+        // Three triangles
+        const drawSpike = (ox, oy) => {
+            ctx.moveTo(ox - 5 * s, oy + 5 * s);
+            ctx.lineTo(ox, oy - 10 * s);
+            ctx.lineTo(ox + 5 * s, oy + 5 * s);
+            ctx.closePath();
+        };
+        drawSpike(-8 * s, 5 * s);
+        drawSpike(8 * s, 5 * s);
+        drawSpike(0, 8 * s); // Center lower
+        finish("#9ca3af"); // Grey
+    }
+
+    // --- 7. CRYO (Ice/Snowflake) ---
+    else if (id.includes("cryo") || id.includes("cold")) {
+        ctx.strokeStyle = "#06b6d4"; // Cyan
+        ctx.lineWidth = 2 * s;
+        for (let i = 0; i < 6; i++) {
+            start();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -12 * s);
+            // Little prongs
+            ctx.moveTo(0, -8 * s);
+            ctx.lineTo(-3 * s, -10 * s);
+            ctx.moveTo(0, -8 * s);
+            ctx.lineTo(3 * s, -10 * s);
+            ctx.stroke();
+            ctx.rotate(Math.PI / 3); // Rotate 60 degrees
+        }
+    }
+
+    // --- 8. FARM / MONEY (Coin) ---
+    else if (id.includes("farm") || id.includes("val") || id.includes("stocks")) {
+        start();
+        ctx.arc(0, 0, 12 * s, 0, Math.PI * 2);
+        finish("#eab308", "#facc1533"); // Gold
+
+        // Dollar Symbol
+        ctx.beginPath();
+        ctx.lineWidth = 2 * s;
+        ctx.moveTo(0, -8 * s); ctx.lineTo(0, 8 * s); // Vertical line
+        // S curve
+        ctx.moveTo(4 * s, -5 * s);
+        ctx.bezierCurveTo(-4 * s, -5 * s, -4 * s, 0, 0, 0);
+        ctx.bezierCurveTo(4 * s, 0, 4 * s, 5 * s, -4 * s, 5 * s);
+        ctx.stroke();
+    }
+
+    // --- 9. BARRACKS (Tent/House) ---
+    else if (id.includes("barracks")) {
+        start();
+        // Roof
+        ctx.moveTo(-12 * s, 0);
+        ctx.lineTo(0, -12 * s);
+        ctx.lineTo(12 * s, 0);
+        // Walls
+        ctx.lineTo(10 * s, 10 * s);
+        ctx.lineTo(-10 * s, 10 * s);
+        ctx.lineTo(-12 * s, 0);
+        finish("#f97316"); // Orange/Brown
+        
+        // Door
+        ctx.beginPath();
+        ctx.rect(-3*s, 4*s, 6*s, 6*s);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+    }
+
+    // --- 10. MINIGUN (Gatling) ---
+    else if (id.includes("minigun")) {
+        start();
+        // Barrel Ring
+        ctx.arc(0, 0, 8 * s, 0, Math.PI * 2);
+        finish("#475569"); // Slate
+        
+        // Small holes
+        ctx.fillStyle = "#fff";
+        const holes = [[0,-5], [4.5,-2.5], [4.5,2.5], [0,5], [-4.5,2.5], [-4.5,-2.5]];
+        holes.forEach(pos => {
+            ctx.beginPath();
+            ctx.arc(pos[0]*s, pos[1]*s, 1.5*s, 0, Math.PI*2);
+            ctx.fill();
+        });
+    }
+
+    // --- 11. MORTAR (Bomb) ---
+    else if (id.includes("mortar")) {
+        start();
+        // Bomb circle
+        ctx.arc(0, 4 * s, 9 * s, 0, Math.PI * 2);
+        ctx.fill(); // Filled black/dark
+        finish("#1f2937"); 
+        
+        // Fuse
+        ctx.beginPath();
+        ctx.lineWidth = 2 * s;
+        ctx.moveTo(2 * s, -4 * s);
+        ctx.quadraticCurveTo(5 * s, -10 * s, 10 * s, -8 * s);
+        ctx.strokeStyle = "#fbbf24";
+        ctx.stroke();
+        
+        // Spark
+        ctx.beginPath();
+        ctx.fillStyle = "#ef4444";
+        ctx.arc(10*s, -8*s, 2*s, 0, Math.PI*2);
+        ctx.fill();
+    }
+    
+    // Fallback
+    else {
+        start();
+        ctx.rect(-6*s, -6*s, 12*s, 12*s);
+        finish("#666");
+    }
+
+    ctx.restore();
+}
+
+// --- SKILL TREE SYSTEM ---
+
+// 1. STATE MANAGEMENT
+let playerProgress = JSON.parse(localStorage.getItem('swarm_save_v2')) || {
+    shards: 0,
+    unlocked: [] // Array of IDs
+};
+
+function saveProgress() {
+    localStorage.setItem('swarm_save_v2', JSON.stringify(playerProgress));
+    updateSkillVisuals();
+}
+
+// 2. RENDERING THE TREE
+function initSkillTree() {
+    const world = document.getElementById('st-world');
+    const svg = document.getElementById('st-connections');
+    
+    // Clear previous
+    world.innerHTML = '<svg id="st-connections"></svg>'; 
+    
+    // Center the map (1500, 1500 is center of 3000x3000)
+    const centerX = 1500;
+    const centerY = 1500;
+
+    // Draw Nodes
+    for (let id in skillData) {
+        const skill = skillData[id];
+        
+        // Create Node DOM
+        const node = document.createElement('div');
+        node.className = `skill-node node-${skill.type}`;
+        node.setAttribute('data-id', id);
+        
+        // Position relative to center
+        node.style.left = (centerX + skill.x) + 'px';
+        node.style.top = (centerY + skill.y) + 'px';
+        
+        // --- CUSTOM ICON INTEGRATION ---
+        const iconCanvas = document.createElement('canvas');
+        
+        // Size: Adjust these numbers to fit inside your skill node circles/squares
+        // 44px is usually a good balance for visibility
+        iconCanvas.width = 44; 
+        iconCanvas.height = 44;
+        
+        // Call the function we created to draw the specific icon
+        // We pass 'id' so it can match keywords like "sword", "shield", "farm"
+        drawSkillIcon(iconCanvas, id);
+        
+        // Append the canvas to the node
+        node.appendChild(iconCanvas);
+        // -------------------------------
+
+        // Events
+        node.onmouseover = () => showTooltip(node, skill);
+        node.onmouseout = () => hideTooltip();
+        node.onclick = () => attemptPurchase(id);
+
+        world.appendChild(node);
+
+        // Draw Line to Parent
+        if (skill.parent) {
+            const parentSkill = skillData[skill.parent];
+            drawLine(
+                centerX + parentSkill.x, 
+                centerY + parentSkill.y, 
+                centerX + skill.x, 
+                centerY + skill.y,
+                id // ID for coloring later
+            );
+        }
+    }
+    
+    updateSkillVisuals();
+}
+
+function hasSkill(id) {
+    return playerProgress && playerProgress.unlocked.includes(id);
+}
+
+function drawLine(x1, y1, x2, y2, id) {
+    const svg = document.getElementById('st-connections');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('class', 'connection-line');
+    line.setAttribute('id', 'line-' + id);
+    
+    svg.appendChild(line);
+}
+
+// 3. UPDATING VISUALS (Locked/Unlocked)
+function updateSkillVisuals() {
+    document.getElementById('st-shard-count').innerText = playerProgress.shards;
+
+    for (let id in skillData) {
+        const node = document.querySelector(`.skill-node[data-id="${id}"]`);
+        if (!node) continue;
+
+        const skill = skillData[id];
+        const isBought = playerProgress.unlocked.includes(id);
+        const parentBought = !skill.parent || playerProgress.unlocked.includes(skill.parent);
+
+        // Reset classes
+        node.className = `skill-node node-${skill.type}`;
+        
+        if (isBought) {
+    node.classList.add('purchased');
+    const line = document.getElementById('line-' + id);
+    if(line) {
+        // CHANGE THIS LINE:
+        line.style.stroke = "#bc13fe"; // Neon Purple
+        line.style.strokeWidth = "6"; // Thicker
+        line.style.opacity = "1";
+        // Add a glow filter if you want (requires defining filter in HTML), 
+        // but just making it bright purple works great against the dark grid.
+    }
+}
+    }
+}
+
+// 4. INTERACTION (Buying)
+function attemptPurchase(id) {
+    const skill = skillData[id];
+    
+    // Checks
+    if (playerProgress.unlocked.includes(id)) return; // Already have it
+    
+    // Check Parent
+    if (skill.parent && !playerProgress.unlocked.includes(skill.parent)) {
+        alert("You must unlock the previous node first!");
+        return;
+    }
+
+    // Check Cost
+    if (playerProgress.shards >= skill.cost) {
+        if(confirm(`Unlock ${skill.name} for ${skill.cost} Shards?`)) {
+            playerProgress.shards -= skill.cost;
+            playerProgress.unlocked.push(id);
+            saveProgress();
+        }
+    } else {
+        alert(`Not enough Shards! Need ${skill.cost}.`);
+    }
+}
+
+// 5. TOOLTIP LOGIC
+function showTooltip(element, skill) {
+    const tt = document.getElementById('st-tooltip');
+    document.getElementById('tt-title').innerText = skill.name;
+    document.getElementById('tt-desc').innerText = skill.desc;
+    
+    const isOwned = playerProgress.unlocked.includes(element.getAttribute('data-id'));
+    const costDiv = document.getElementById('tt-cost');
+    costDiv.innerText = isOwned ? "OWNED" : `COST: ${skill.cost}`;
+    costDiv.style.color = isOwned ? "#00ff00" : "#f1c40f";
+
+    // Position near mouse (handled by simple CSS for now, or use event)
+    const rect = element.getBoundingClientRect();
+    tt.style.left = (rect.right + 20) + 'px';
+    tt.style.top = rect.top + 'px';
+    tt.style.display = 'block';
+}
+function hideTooltip() { document.getElementById('st-tooltip').style.display = 'none'; }
+
+// 6. PANNING LOGIC (Drag the world)
+let isDragging = false;
+let startX, startY, scrollLeft, scrollTop;
+const viewport = document.getElementById('st-viewport');
+
+viewport.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.pageX - viewport.offsetLeft;
+    startY = e.pageY - viewport.offsetTop;
+    scrollLeft = viewport.scrollLeft;
+    scrollTop = viewport.scrollTop;
+});
+
+viewport.addEventListener('mouseleave', () => { isDragging = false; });
+viewport.addEventListener('mouseup', () => { isDragging = false; });
+
+viewport.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - viewport.offsetLeft;
+    const y = e.pageY - viewport.offsetTop;
+    const walkX = (x - startX) * 1; // Scroll speed
+    const walkY = (y - startY) * 1;
+    viewport.scrollLeft = scrollLeft - walkX;
+    viewport.scrollTop = scrollTop - walkY;
+});
+
+// 7. OPEN/CLOSE
+function openSkillTree() {
+    const overlay = document.getElementById('skill-tree-overlay');
+    const viewport = document.getElementById('st-viewport');
+
+    if (overlay && viewport) {
+        // 1. Show the menu
+        overlay.style.display = 'flex';
+        
+        // 2. Initialize the tree
+        initSkillTree(); 
+        initSkillTreeBackground();
+
+        // 3. FORCE CENTER (The Brute Force Math)
+        // We wrap this in a double requestAnimationFrame to ensure the 
+        // browser has finished "opening" the window before we scroll.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const worldSize = 3000; // This matches your CSS width/height
+                
+                // Formula: (WorldSize - YourWindowSize) / 2
+                // This gives us the top-left coordinate needed to put 1500,1500 in the center
+                const centerX = (worldSize - viewport.clientWidth) / 2;
+                const centerY = (worldSize - viewport.clientHeight) / 2;
+
+                // Apply the scroll
+                viewport.scrollLeft = centerX;
+                viewport.scrollTop = centerY;
+            });
+        });
+    }
+}
+
+function closeSkillTree() {
+    document.getElementById('skill-tree-overlay').style.display = 'none';
+    updateLockedButtons();
+}
+
+    // Track seen enemies
+const seenEnemies = new Set();
+
+// Database of Enemy Info (Keys must match Class Names exactly)
+const ENEMY_INTEL = {
+    'Enemy': {
+        name: "Chitin Scuttler",
+        stats: { durability: 2, speed: 5, threat: 2 },
+        lore: "The infantry of the void swarm. While individually weak, their strength lies in overwhelming numbers."
+    },
+    'RunnerEnemy': {
+        name: "Scythe Runner",
+        stats: { durability: 1, speed: 9, threat: 4 },
+        lore: "Evolved for pure velocity. These agile predators swarm in packs to overwhelm point-defense systems."
+    },
+    'TankEnemy': {
+        name: "Void Behemoth",
+        stats: { durability: 9, speed: 2, threat: 5 },
+        lore: "A slow-moving fortress of chitin. Heavy weaponry is required to penetrate its thick shell."
+    },
+    'MagnetEnemy': {
+        name: "Void Lodestone",
+        stats: { durability: 10, speed: 1, threat: 8 },
+        lore: "Generates a powerful magnetic field that forcibly redirects projectiles away from high-value targets."
+    },
+    'BreacherEnemy': {
+        name: "Razor Mantis",
+        stats: { durability: 4, speed: 8, threat: 6 },
+        lore: "A siege unit equipped with hyper-dense scythes. Uses a frenzied dash to shred through fortifications."
+    },
+    'DasherEnemy': {
+        name: "Phase Dasher",
+        stats: { durability: 3, speed: 10, threat: 5 },
+        lore: "Capable of short-range hyperspace jumps. It flickers in and out of reality to dodge heavy ordinance."
+    },
+    'SniperEnemy': {
+        name: "Spine Launcher",
+        stats: { durability: 2, speed: 3, threat: 8 },
+        lore: "A stationary organism that fires biological spikes from extreme range. Targets turrets directly."
+    },
+    'LeaperEnemy': {
+        name: "Wall Jumper",
+        stats: { durability: 3, speed: 7, threat: 6 },
+        lore: "Possesses powerful hydraulic-like legs capable of vaulting over standard walls."
+    },
+    'ShielderEnemy': {
+        name: "Aegis Drone",
+        stats: { durability: 5, speed: 4, threat: 7 },
+        lore: "Projects an energy barrier that protects nearby units. Neutralize immediately."
+    },
+    'ReviverEnemy': {
+        name: "Necro-Weaver",
+        stats: { durability: 4, speed: 4, threat: 10 },
+        lore: "Emits a regenerative pheromone that can reanimate fallen biomass."
+    },
+    'FlyingEnemy': {
+        name: "Void Ray",
+        stats: { durability: 3, speed: 6, threat: 5 },
+        lore: "An airborne unit that floats above the battlefield, bypassing all ground-based obstacles."
+    },
+    'BroodmotherEnemy': {
+        name: "Void Broodmother",
+        stats: { durability: 8, speed: 2, threat: 9 },
+        lore: "A massive reproductive host. It carries a gestating sack of larvae that it expels onto the battlefield."
+    },
+    'LarvaEnemy': {
+        name: "Parasitic Larva",
+        stats: { durability: 1, speed: 9, threat: 3 },
+        lore: "Newly hatched spawn. Fragile but moves with erratic speed to harass defenders."
+    },
+    'SkeletonEnemy': {
+        name: "Calcified Thrall",
+        stats: { durability: 6, speed: 3, threat: 4 },
+        lore: "Reanimated skeletal structure fused with void energy. Continues to advance even after critical damage."
+    }
+};
+
+// 1. The Trigger
+function checkForNewEnemy(enemy) {
+    if (!enemy) return;
+    const type = enemy.constructor.name;
+
+    // Check if new and if data exists
+    if (!seenEnemies.has(type) && ENEMY_INTEL[type]) {
+        seenEnemies.add(type);
+        
+        // PAUSE GAME
+        if (typeof isPaused !== 'undefined') isPaused = true;
+        
+        // OPEN UI
+        openEnemyIntro(enemy, ENEMY_INTEL[type]);
+    }
+}
+
+// 2. The UI Populator
+function openEnemyIntro(enemyInstance, data) {
+    const overlay = document.getElementById('enemy-intro-overlay');
+    const nameEl = document.getElementById('intro-name');
+    const loreEl = document.getElementById('intro-lore');
+    const statsEl = document.getElementById('intro-stats');
+
+    if (!overlay) return; // Safety check
+
+    nameEl.textContent = data.name;
+    loreEl.textContent = data.lore;
+
+    // Clear and build stats
+    statsEl.innerHTML = '';
+    createStatRow(statsEl, 'DURABILITY', data.stats.durability, 'durability');
+    createStatRow(statsEl, 'VELOCITY', data.stats.speed, 'speed');
+    createStatRow(statsEl, 'THREAT', data.stats.threat, 'damage');
+
+    // Render Visuals
+    renderEnemyPreview(enemyInstance);
+
+    // Show
+    overlay.style.display = 'flex';
+}
+
+function createStatRow(container, label, value, colorClass) {
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+
+    const text = document.createElement('div');
+    text.className = 'stat-label';
+    text.innerText = label;
+
+    const bars = document.createElement('div');
+    bars.className = 'stat-bar-container';
+
+    for (let i = 0; i < 10; i++) {
+        const pip = document.createElement('div');
+        pip.className = `stat-pip ${i < value ? 'filled ' + colorClass : ''}`;
+        bars.appendChild(pip);
+    }
+
+    row.appendChild(text);
+    row.appendChild(bars);
+    container.appendChild(row);
+}
+
+// 3. The Close Function
+function closeEnemyIntro() {
+    const overlay = document.getElementById('enemy-intro-overlay');
+    if (overlay) overlay.style.display = 'none';
+    
+    // UNPAUSE GAME
+    if (typeof isPaused !== 'undefined') isPaused = false;
+}
+
+// 4. The Renderer (Big, Upwards, Centered)
+function renderEnemyPreview(enemy) {
+    const pCanvas = document.getElementById('enemy-preview-canvas');
+    if (!pCanvas) return;
+    
+    const pCtx = pCanvas.getContext('2d');
+    const w = pCanvas.width;
+    const h = pCanvas.height;
+
+    // Clear
+    pCtx.clearRect(0, 0, w, h);
+    
+    // Background
+    const grad = pCtx.createRadialGradient(w/2, h/2, 20, w/2, h/2, w/2);
+    grad.addColorStop(0, "#2a2a35");
+    grad.addColorStop(1, "#15151a");
+    pCtx.fillStyle = grad;
+    pCtx.fillRect(0, 0, w, h);
+
+    // --- MAGIC SWAP ---
+    // We must swap the global context variable so the enemy draws here
+    const originalCtx = window.ctx; 
+    window.ctx = pCtx;
+
+    pCtx.save();
+    
+    // 1. Center
+    pCtx.translate(w / 2, h / 2);
+
+    // 2. Zoom (Big!)
+    const name = enemy.constructor.name;
+    let scale = 3.5; // Default Big Zoom
+    
+    if (name.includes("Brood")) scale = 1.3;      
+    else if (name.includes("Tank")) scale = 2.0;  
+    else if (name.includes("Magnet")) scale = 2.0;
+    else if (name.includes("Breacher")) scale = 2.5;
+
+    pCtx.scale(scale, scale);
+
+    // 3. Mock Position
+    const realX = enemy.x;
+    const realY = enemy.y;
+    const realAngle = enemy.angle;
+
+    enemy.x = 0; 
+    enemy.y = 0;
+    // 4. Force Upwards
+    enemy.angle = -Math.PI / 2; 
+
+    // 5. Draw
+    try {
+        if (enemy.draw) {
+            pCtx.shadowBlur = 20;
+            pCtx.shadowColor = "rgba(0,0,0,0.5)";
+            enemy.draw();
+            pCtx.shadowBlur = 0;
+        }
+    } catch(e) { console.log(e); }
+
+    // Restore
+    enemy.x = realX;
+    enemy.y = realY;
+    if (realAngle !== undefined) enemy.angle = realAngle;
+
+    pCtx.restore();
+    
+    // --- RESTORE MAGIC SWAP ---
+    window.ctx = originalCtx;
+}
 
     // Function to switch tabs
     function openTab(evt, tabName) {
@@ -567,7 +2242,7 @@
     const COLS = 41;
     const ROWS = 21;
 
-    let canvas, ctx;
+    var canvas, ctx;
     let grid = [];
     let currentAnnouncement = null;
     let isPathBlocked = false;
@@ -588,7 +2263,13 @@
     this.floaters = []; // Stores the floating money text particles
     
     // Place base in middle of rows
-    let playerBase = { x: 2, y: Math.floor(ROWS/2), hp: 100 };
+    playerBase = { 
+    x: 2, 
+    y: Math.floor(ROWS / 2), 
+    // Apply Core Vitality
+    hp: 100 + (hasSkill('core_vitality') ? 50 : 0), 
+    maxHp: 100 + (hasSkill('core_vitality') ? 50 : 0) 
+    };
     let money = 200;
     let wave = 1;
     let waveState = 'spawning'; // Options: 'spawning', 'fighting', 'cooldown'
@@ -3373,9 +5054,9 @@ class FlyingEnemy {
         // --- STATS ---
         this.radius = 9;       
         this.speed = 0.6;      
-        this.hp = 150 + (wave * 20)* difficultyMultiplier; 
+        this.hp = 150 + (wave * 10)* difficultyMultiplier; 
         this.maxHp = this.hp;
-        this.bounty = 3;
+        this.bounty = 7;
 
         this.vx = 0;
         this.vy = 0;
@@ -3911,9 +5592,10 @@ class BossEnemy {
         let targetY = (playerBase.y * CELL_SIZE) + CELL_SIZE;
         let dx = targetX - this.x;
         let dy = targetY - this.y;
-        let dist = Math.hypot(dx, dy);
+        let distSq = dx * dx + dy * dy; // Use squared distance to avoid sqrt
 
-        if (dist > 1) {
+        if (distSq > 1) {
+            let dist = Math.sqrt(distSq); // Only compute sqrt when needed
             this.x += (dx / dist) * this.speed;
             this.y += (dy / dist) * this.speed;
             
@@ -3925,34 +5607,40 @@ class BossEnemy {
             this.angle += diff * 0.04;
         }
 
-        // 2. WALL CRUSHER (Boss Logic)
-        // Destroys everything in a wide radius
-        let gridRadius = Math.ceil(this.radius / CELL_SIZE);
-        let cx = Math.floor(this.x / CELL_SIZE);
-        let cy = Math.floor(this.y / CELL_SIZE);
+        // 2. WALL CRUSHER (Boss Logic) - OPTIMIZED
+        // Only check walls every other frame
+        if (gameFrame % 2 === 0) {
+            let radiusSq = this.radius * this.radius;
+            let gridRadius = Math.ceil(this.radius / CELL_SIZE);
+            let cx = Math.floor(this.x / CELL_SIZE);
+            let cy = Math.floor(this.y / CELL_SIZE);
 
-        for (let i = -gridRadius; i <= gridRadius; i++) {
-            for (let j = -gridRadius; j <= gridRadius; j++) {
-                let c = cx + i;
-                let r = cy + j;
-                if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
-                    let cell = grid[c][r];
-                    if (cell.wall) {
-                        let cellX = c * CELL_SIZE + CELL_SIZE/2;
-                        let cellY = r * CELL_SIZE + CELL_SIZE/2;
-                        
-                        // Circle collision check
-                        if (Math.hypot(this.x - cellX, this.y - cellY) < this.radius + 15) {
-                            cell.wall = false;
-                            cell.occupied = false;
+            for (let i = -gridRadius; i <= gridRadius; i++) {
+                for (let j = -gridRadius; j <= gridRadius; j++) {
+                    let c = cx + i;
+                    let r = cy + j;
+                    if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
+                        let cell = grid[c][r];
+                        if (cell.wall) {
+                            let cellX = c * CELL_SIZE + CELL_SIZE/2;
+                            let cellY = r * CELL_SIZE + CELL_SIZE/2;
+                            let dx = this.x - cellX;
+                            let dy = this.y - cellY;
+                            let dSq = (this.radius + 15) * (this.radius + 15);
                             
-                            // Spawn Debris (Matching armor color)
-                            for(let k=0; k<6; k++) {
-                                particles.push({
-                                    x: cellX, y: cellY,
-                                    vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
-                                    life: 60, color: this.colors.armor, size: Math.random()*4
-                                });
+                            // Use squared distance to avoid sqrt
+                            if (dx * dx + dy * dy < dSq) {
+                                cell.wall = false;
+                                cell.occupied = false;
+                                
+                                // Reduce debris particles from 6 to 3 for performance
+                                for(let k=0; k<3; k++) {
+                                    particles.push({
+                                        x: cellX, y: cellY,
+                                        vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+                                        life: 60, color: this.colors.armor, size: Math.random()*4
+                                    });
+                                }
                             }
                         }
                     }
@@ -3961,7 +5649,7 @@ class BossEnemy {
         }
 
         // 3. BASE DESTRUCTION
-        if (dist < this.radius + 30) {
+        if (distSq < (this.radius + 30) * (this.radius + 30)) {
             this.hp = 0;
             takeDamage(this.damage);
         }
@@ -3995,7 +5683,7 @@ class BossEnemy {
         const breathe = Math.sin(this.animTimer * 0.8);
         const walkCycle = this.animTimer;
 
-        // --- HELPER: LEG ---
+        // --- HELPER: LEG (Optimized with fewer operations) ---
         const drawLeg = (ox, oy, restX, restY, phase, side) => {
             const cycle = walkCycle + phase;
             const lift = Math.max(0, Math.sin(cycle));
@@ -4010,14 +5698,10 @@ class BossEnemy {
             let kx = midX - (2 * s); 
             let ky = midY + (side * 6 * s); 
 
-            // Femur
+            // Femur + Joint (combined strokes to reduce drawing calls)
             ctx.lineCap = "round";
             ctx.strokeStyle = c.chitinMid;
             ctx.lineWidth = 3.5 * s;
-            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(kx, ky); ctx.stroke();
-            
-            ctx.strokeStyle = c.joint; 
-            ctx.lineWidth = 1.5 * s;
             ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(kx, ky); ctx.stroke();
 
             // Tibia
@@ -4025,7 +5709,7 @@ class BossEnemy {
             ctx.lineWidth = 2 * s;
             ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(fx, fy); ctx.stroke();
 
-            // Joint
+            // Joint + Spike (combined)
             ctx.fillStyle = c.joint;
             ctx.beginPath(); ctx.arc(kx, ky, 2.2 * s, 0, Math.PI*2); ctx.fill();
             
@@ -4048,7 +5732,7 @@ class BossEnemy {
         drawLeg(-6, 3, -8, 8, Math.PI, 1);
         ctx.filter = "none";
 
-        // --- LAYER: ABDOMEN (Corrected) ---
+        // --- LAYER: ABDOMEN (Optimized) ---
         const sacPulse = 1 + (breathe * 0.05);
         
         // 1. Define Shape Path
@@ -4061,8 +5745,7 @@ class BossEnemy {
         ctx.save(); 
         ctx.clip(); 
 
-        // 2. Translucent Gradient (Extended Radius to cover tip)
-        // Increased radius from 18*s to 22*s to prevent fade-out at the tip
+        // 2. Translucent Gradient (Optimized gradient creation)
         const sacGrad = ctx.createRadialGradient(-20*s, 0, 2*s, -20*s, 0, 22*s);
         sacGrad.addColorStop(0, c.sacInner); 
         sacGrad.addColorStop(0.6, c.sacOuter); 
@@ -4082,10 +5765,8 @@ class BossEnemy {
         }
 
         ctx.restore(); // Remove Clip
-        
-        // 4. (Removed the Rim Light Stroke here to fix white stripe)
 
-        // 5. Spinal Armor Plates
+        // 5. Spinal Armor Plates (simplified)
         ctx.fillStyle = c.chitinDark;
         for(let i=0; i<6; i++) {
             let spX = -8*s - (i * 5 * s);
@@ -4140,10 +5821,8 @@ class BossEnemy {
         ctx.fill();
         ctx.stroke();
 
-        // Vents
+        // Vents (Simplified - removed shadow blur for performance)
         ctx.fillStyle = c.ventGlow;
-        ctx.shadowColor = "orange";
-        ctx.shadowBlur = 8 * (0.5 + breathe * 0.5); 
         
         for(let i=0; i<3; i++) {
             ctx.beginPath();
@@ -4153,172 +5832,129 @@ class BossEnemy {
             ctx.ellipse(0 + (i*2.5*s), 5.5*s, 0.6*s, 1.5*s, -0.4, 0, Math.PI*2);
             ctx.fill();
         }
-        ctx.shadowBlur = 0;
 
-        // --- LAYER: HEAD (NIGHTMARE VARIANT) ---
-ctx.save();
-ctx.translate(13 * s, 0); // Head locked to body
+        // --- LAYER: HEAD (OPTIMIZED) ---
+        ctx.save();
+        ctx.translate(13 * s, 0); // Head locked to body
 
-// --- 0. PALETTE ---
-const c_bone     = "#1a1616"; // Dark Chitin
-const c_blood    = "#4a0a0a"; // Dried blood
-const c_tip      = "#000000"; // Sharp tip
-const c_highlight= "rgba(255, 255, 255, 0.1)";
+        // --- 0. PALETTE ---
+        const c_bone     = "#1a1616";
+        const c_blood    = "#4a0a0a";
+        const c_tip      = "#000000";
+        const c_highlight= "rgba(255, 255, 255, 0.1)";
 
-// --- 1. THE MAW (Inner Mouth) ---
-ctx.fillStyle = "#000000";
-ctx.beginPath();
-ctx.arc(0, 0, 4.5 * s, 0, Math.PI * 2);
-ctx.fill();
+        // --- 1. THE MAW ---
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.arc(0, 0, 4.5 * s, 0, Math.PI * 2);
+        ctx.fill();
 
-// --- 2. INNER GRASPERS (Secondary Mandibles) ---
-// These are small, fast-moving claws inside the mouth that "fiddle"
-const innerTwitch = Math.sin(this.animTimer * 8) * 0.3;
-ctx.fillStyle = "#2e1a1a";
-for(let dir = -1; dir <= 1; dir+=2) {
-    ctx.save();
-    ctx.translate(2.5 * s, dir * 1.0 * s); // Positioned inside
-    ctx.scale(1, dir); // Flip for bottom/top
-    ctx.rotate(innerTwitch);
-    
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.quadraticCurveTo(2*s, -0.5*s, 3*s, 0.5*s); // Hook
-    ctx.lineTo(2.5*s, 0.8*s); // Thickness
-    ctx.lineTo(0, 0.5*s);
-    ctx.fill();
-    // Add a glowing tip to the inner claws
-    ctx.fillStyle = "#ff0000";
-    ctx.beginPath(); ctx.arc(3*s, 0.5*s, 0.2*s, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = "#2e1a1a"; // Reset
-    ctx.restore();
-}
+        // --- 2. INNER GRASPERS (Simplified) ---
+        const innerTwitch = Math.sin(this.animTimer * 8) * 0.3;
+        ctx.fillStyle = "#2e1a1a";
+        for(let dir = -1; dir <= 1; dir+=2) {
+            ctx.save();
+            ctx.translate(2.5 * s, dir * 1.0 * s);
+            ctx.scale(1, dir);
+            ctx.rotate(innerTwitch);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(2*s, -0.5*s, 3*s, 0.5*s);
+            ctx.lineTo(2.5*s, 0.8*s);
+            ctx.lineTo(0, 0.5*s);
+            ctx.fill();
+            ctx.fillStyle = "#ff0000";
+            ctx.beginPath(); ctx.arc(3*s, 0.5*s, 0.2*s, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#2e1a1a";
+            ctx.restore();
+        }
 
-// --- 3. MAIN MANDIBLES (Serrated Crushers) ---
-// Heavy, breathing motion
-const biteOpen = 0.2 + (Math.sin(this.animTimer * 1.5) * 0.15); 
+        // --- 3. MAIN MANDIBLES (Simplified) ---
+        const biteOpen = 0.2 + (Math.sin(this.animTimer * 1.5) * 0.15);
 
-const drawNightmareMandible = (scaleY) => {
-    ctx.save();
-    ctx.scale(1, scaleY); 
-    ctx.rotate(-biteOpen); 
-    
-    // 1. COMPLEX GRADIENT (Chitin -> Bone -> Blood)
-    const mGrad = ctx.createLinearGradient(0, 0, 14*s, 0);
-    mGrad.addColorStop(0,   c_bone);
-    mGrad.addColorStop(0.4, "#2d2424"); // Grayish armor
-    mGrad.addColorStop(0.7, c_blood);   // Reddening
-    mGrad.addColorStop(1,   c_tip);     // Black tip
-    
-    ctx.fillStyle = mGrad;
-    ctx.strokeStyle = "#0d0505";
-    ctx.lineWidth = 0.3 * s;
+        const drawNightmareMandible = (scaleY) => {
+            ctx.save();
+            ctx.scale(1, scaleY); 
+            ctx.rotate(-biteOpen); 
+            
+            // Simplified gradient with fewer stops
+            const mGrad = ctx.createLinearGradient(0, 0, 14*s, 0);
+            mGrad.addColorStop(0,   c_bone);
+            mGrad.addColorStop(0.5, c_blood);
+            mGrad.addColorStop(1,   c_tip);
+            
+            ctx.fillStyle = mGrad;
+            ctx.strokeStyle = "#0d0505";
+            ctx.lineWidth = 0.3 * s;
 
-    ctx.beginPath();
-    ctx.moveTo(0, -2*s); // Wide, muscular attachment base
-    
-    // --- OUTER ARMOR PLATING ---
-    // Instead of one curve, we break it into two "plates"
-    ctx.bezierCurveTo(3*s, -3.5*s, 5*s, -3.5*s, 7*s, -2*s); // Plate 1
-    ctx.lineTo(7.2*s, -2.2*s); // Jagged transition
-    ctx.bezierCurveTo(9*s, -3*s, 12*s, -1.5*s, 14*s, 0.5*s); // The Main Hook Tip
+            ctx.beginPath();
+            ctx.moveTo(0, -2*s);
+            ctx.bezierCurveTo(3*s, -3.5*s, 5*s, -3.5*s, 7*s, -2*s);
+            ctx.lineTo(7.2*s, -2.2*s);
+            ctx.bezierCurveTo(9*s, -3*s, 12*s, -1.5*s, 14*s, 0.5*s);
+            ctx.lineTo(13*s, 0.8*s);
+            ctx.lineTo(11*s, 0); 
+            ctx.lineTo(10.5*s, 0.8*s); 
+            ctx.lineTo(9*s, 0.2*s);
+            ctx.lineTo(8*s, 1.2*s);
+            ctx.lineTo(6*s, 0.5*s);
+            ctx.lineTo(5*s, 1.5*s);
+            ctx.lineTo(0, 1.5*s);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Simplified texture (fewer details)
+            ctx.strokeStyle = "rgba(0,0,0,0.5)";
+            ctx.lineWidth = 0.15 * s;
+            ctx.beginPath();
+            ctx.moveTo(2*s, -1*s);
+            ctx.quadraticCurveTo(7*s, -1.5*s, 12*s, 0.2*s);
+            ctx.stroke();
 
-    // --- INNER SERRATED EDGE ---
-    // We draw the return path manually to add TEETH
-    ctx.lineTo(13*s, 0.8*s); // Thickness of tip
-    
-    // Tooth 1 (The Ripper)
-    ctx.lineTo(11*s, 0); 
-    ctx.lineTo(10.5*s, 0.8*s); 
-    
-    // Tooth 2 (The Crusher)
-    ctx.lineTo(9*s, 0.2*s);
-    ctx.lineTo(8*s, 1.2*s);
-    
-    // Tooth 3 (The Grinder - closer to mouth)
-    ctx.lineTo(6*s, 0.5*s);
-    ctx.lineTo(5*s, 1.5*s);
+            ctx.restore();
+        };
 
-    ctx.lineTo(0, 1.5*s); // Back to base
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    
-    // --- TEXTURE DETAILS ---
-    
-    // A. The "Ridge" (3D volume line)
-    ctx.strokeStyle = "rgba(0,0,0,0.5)";
-    ctx.beginPath();
-    ctx.moveTo(2*s, -1*s);
-    ctx.quadraticCurveTo(7*s, -1.5*s, 12*s, 0.2*s);
-    ctx.stroke();
+        ctx.save();
+        ctx.translate(3*s, -1.5*s);
+        drawNightmareMandible(1); 
+        ctx.restore();
 
-    // B. Sensory Spikes (Hairs/Setae on the chin)
-    ctx.strokeStyle = "#5c4040";
-    ctx.lineWidth = 0.15 * s;
-    ctx.beginPath();
-    // Draw 3 little hairs sticking out of the bottom jaw
-    ctx.moveTo(4*s, 1.2*s); ctx.lineTo(4.2*s, 2.0*s);
-    ctx.moveTo(5.5*s, 1.0*s); ctx.lineTo(5.8*s, 1.8*s);
-    ctx.moveTo(7*s, 0.5*s); ctx.lineTo(7.3*s, 1.2*s);
-    ctx.stroke();
+        ctx.save();
+        ctx.translate(3*s, 1.5*s);
+        drawNightmareMandible(-1); 
+        ctx.restore();
 
-    // C. Specular Highlight (Slimy look)
-    ctx.strokeStyle = c_highlight;
-    ctx.lineWidth = 0.4 * s;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(3*s, -2.5*s);
-    ctx.quadraticCurveTo(6*s, -2.8*s, 9*s, -1.5*s);
-    ctx.stroke();
+        // --- 4. HEAD CARAPACE ---
+        const skullGrad = ctx.createRadialGradient(2*s, 0, 1*s, 4*s, 0, 8*s);
+        skullGrad.addColorStop(0, "#2a2222");
+        skullGrad.addColorStop(1, "#0a0a0a");
 
-    ctx.restore();
-};
+        ctx.fillStyle = skullGrad;
+        ctx.beginPath();
+        ctx.moveTo(-2*s, -4*s); 
+        ctx.bezierCurveTo(3*s, -4.5*s, 6*s, -3*s, 8*s, 0); 
+        ctx.bezierCurveTo(6*s, 3*s, 3*s, 4.5*s, -2*s, 4*s);
+        ctx.lineTo(-2.5*s, 0);
+        ctx.fill();
 
-// Draw Left and Right
-ctx.save();
-ctx.translate(3*s, -1.5*s);
-drawNightmareMandible(1); 
-ctx.restore();
+        // --- 5. EYES ---
+        const acid = "#aaff00";
+        const drawEye = (x, y, r) => {
+            ctx.save();
+            ctx.translate(x*s, y*s);
+            ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(0,0,r*s,0,Math.PI*2); ctx.fill();
+            ctx.fillStyle = acid; ctx.beginPath(); ctx.arc(0,0,r*0.6*s,0,Math.PI*2); ctx.fill();
+            ctx.restore();
+        }
+        drawEye(4, -2, 1); drawEye(4, 2, 1);
+        drawEye(2.5, -3.5, 0.6); drawEye(2.5, 3.5, 0.6);
 
-ctx.save();
-ctx.translate(3*s, 1.5*s);
-drawNightmareMandible(-1); 
-ctx.restore();
+        ctx.restore(); 
+        ctx.restore();
 
-// --- 4. HEAD CARAPACE ---
-// Reusing the beetle shape but darkening it to match the new jaw
-const skullGrad = ctx.createRadialGradient(2*s, 0, 1*s, 4*s, 0, 8*s);
-skullGrad.addColorStop(0, "#2a2222");
-skullGrad.addColorStop(1, "#0a0a0a");
-
-ctx.fillStyle = skullGrad;
-ctx.beginPath();
-ctx.moveTo(-2*s, -4*s); 
-ctx.bezierCurveTo(3*s, -4.5*s, 6*s, -3*s, 8*s, 0); 
-ctx.bezierCurveTo(6*s, 3*s, 3*s, 4.5*s, -2*s, 4*s);
-ctx.lineTo(-2.5*s, 0);
-ctx.fill();
-
-// --- 5. EYES ---
-// Standard predatory setup
-const acid = "#aaff00";
-const drawEye = (x, y, r) => {
-    ctx.save();
-    ctx.translate(x*s, y*s);
-    ctx.shadowColor = acid; ctx.shadowBlur = 10;
-    ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(0,0,r*s,0,Math.PI*2); ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = acid; ctx.beginPath(); ctx.arc(0,0,r*0.6*s,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-}
-drawEye(4, -2, 1); drawEye(4, 2, 1);
-drawEye(2.5, -3.5, 0.6); drawEye(2.5, 3.5, 0.6);
-
-ctx.restore(); 
-ctx.restore();
-
-        // --- 2. FLOATING HEALTH BAR ---
+        // --- 2. FLOATING HEALTH BAR (Optimized) ---
         ctx.save();
         ctx.translate(this.x, this.y); 
         
@@ -4589,18 +6225,18 @@ class SwordTroop {
         // STATS
         this.hp = 250; this.maxHp = 250; 
         this.range = 45; 
-        this.damage = 50; 
+        this.damage = 50 + (hasSkill('sword_dmg') ? 20 : 0); 
         this.lifeTimer = 1800; // 30s
 
         // MOVEMENT
-        this.speed = 2.2; 
+        this.speed = 2.2 * (hasSkill('sword_move_spd') ? 1.2 : 1); 
         this.vx = 0; this.vy = 0;
         this.friction = 0.12;
         this.angle = 0; 
 
         // ANIMATION STATE
         this.cooldown = 0;
-        this.maxCooldown = 50; 
+        this.maxCooldown = 50 * (hasSkill('sword_atk_spd') ? 0.85 : 1); 
         this.swingState = "IDLE"; 
         this.swingProgress = 0;
         
@@ -4943,8 +6579,8 @@ class ShieldSoldier {
         this.type = "SHIELD_ALLY";
         
         // --- STATS ---
-        this.hp = 600;      
-        this.maxHp = 600;
+        this.hp = 600 + (hasSkill('shield_hp') ? 200 : 0);      
+        this.maxHp = 600 + (hasSkill('shield_hp') ? 200 : 0);
         this.range = 45;     
         this.damage = 15;   
         this.lifeTimer = 1800; 
@@ -5262,12 +6898,12 @@ class BardTroop {
         this.y = y;
         this.radius = 12;
         this.color = "#d633ff"; 
-        this.hp = 100;
-        this.maxHp = 100;
+        this.hp = 100 + (hasSkill('bard_durability') ? 100 : 0);
+        this.maxHp = 100 + (hasSkill('bard_durability') ? 100 : 0);
 
         // --- STATS ---
         this.lifeTimer = 600; 
-        this.tauntRange = 160; 
+        this.tauntRange = 160 * (hasSkill('bard_range') ? 1.3 : 1.0);
         this.fleeThreshold = 120; 
 
         // --- PATHFINDING & PHYSICS ---
@@ -6044,7 +7680,7 @@ class Soldier {
         this.col = col;
         this.row = row;
         this.timer = 0;
-        this.spawnRate = 600; // Keeps 600 (approx 10 sec at 60fps baseline)
+        this.spawnRate = 600 * (hasSkill('barracks_speed') ? 0.8 : 1); // Keeps 600 (approx 10 sec at 60fps baseline)
         
         // Animation Variables
         this.angleOuter = 0;
@@ -6711,8 +8347,8 @@ class MinigunBullet {
         this.active = true;
         
         // 3. Stats (Passed to explosion)
-        this.damage = 50;
-        this.blastRadius = 100;
+        this.damage = 50 + (hasSkill('mortar_dmg') ? 30 : 0);
+        this.blastRadius = 100 * (hasSkill('mortar_area') ? 1.25 : 1);
 
         // 4. Visuals
         this.z = 0; // Height off ground
@@ -7040,7 +8676,7 @@ function drawBlueprint() {
         ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
         ctx.moveTo(0, 0);
         // Note: Adjusted radius to 210 to match the new turret range
-        ctx.arc(0, 0, 210, buildRotation - Math.PI / 3, buildRotation + Math.PI / 3);
+        ctx.arc(0, 0, 210 * (hasSkill('turret_range') ? 1.4 : 1), buildRotation - Math.PI / 3, buildRotation + Math.PI / 3);
         ctx.lineTo(0, 0);
         ctx.fill();
         ctx.stroke();
@@ -7557,7 +9193,7 @@ function drawBlueprint() {
             // keeping natural colors as requested.
 
             // --- 1. FROST AURA FLOOR ---
-            const r = 160; // Range
+            const r = 160 * (hasSkill('cryo_range') ? 1.25 : 1); // Range
             let grad = ctx.createRadialGradient(0, 0, 10, 0, 0, r * 0.7);
             grad.addColorStop(0, "rgba(200, 240, 255, 0.1)");
             grad.addColorStop(1, "rgba(0, 0, 0, 0)");
@@ -7710,7 +9346,7 @@ class Trap {
 
         this.type = "TRAP";
         this.hp = 150;
-        this.damage = 80;
+        this.damage = 80 * (hasSkill('spike_dmg') ? 1.5 : 1.0);
         this.radius = 22;
         
         this.state = "READY";
@@ -7900,8 +9536,8 @@ class CryoTower {
         this.x = col * CELL_SIZE + CELL_SIZE / 2;
         this.y = row * CELL_SIZE + CELL_SIZE / 2;
         this.type = "CRYO";
-        this.range = 160;
-        this.slowFactor = 0.5;
+        this.range = 160 * (hasSkill('cryo_range') ? 1.25 : 1);
+        this.slowFactor = 0.5 + (hasSkill('cryo_slow') ? 0.15 : 0);
 
         // Animation State
         this.hoverY = 0;
@@ -8143,10 +9779,10 @@ class WallTurret {
         this.fov = 120 * (Math.PI / 180); 
 
         // Combat Stats
-        this.range = 400; 
-        this.damage = 5; 
+        this.range = 400 * (hasSkill('turret_range') ? 1.4 : 1); 
+        this.damage = 75 + (hasSkill('turret_dmg') ? 25 : 0); 
         this.cooldown = 0;
-        this.maxCooldown = 90; 
+        this.maxCooldown = 90 * (hasSkill('turret_fire_rate') ? 0.8 : 1.0); 
         this.active = true;
 
         // Health
@@ -8366,8 +10002,8 @@ class Minigun {
 
         // --- STATS ---
         this.range = 280;
-        this.damage = 3;
-        this.maxFireRate = 2;
+        this.damage = 3 + (hasSkill('minigun_dmg') ? 2 : 0);
+        this.maxFireRate = 2 * (hasSkill('minigun_speed') ? 0.8 : 1);
         this.currentFireTimer = 0;
         this.maxHp = 500;
         this.hp = this.maxHp;
@@ -8627,7 +10263,7 @@ class MoneyFarm {
         this.y = row * CELL_SIZE;
         
         // Stats
-        this.amount = 50;        // Money per wave
+        this.amount = 50 + (hasSkill('farm_val') ? 25 : 0) + (hasSkill('farm_cap') ? 50 : 0);        // Money per wave
         this.active = true;
         
         // Wave Tracking
@@ -9044,37 +10680,81 @@ function resize() {
         }
     }
 
-    // TOOL SELECTION FUNCTION
-    function setTool(toolName) {
-        currentTool = toolName;
+    function updateLockedButtons() {
+    // 1. Define the Map: Button ID -> Skill ID needed
+    const lockMap = {
+        'btn-sword':      'unlock_sword',
+        'btn-shield':     'unlock_shield',
+        'btn-bard':       'unlock_bard',
+        'btn-wallturret': 'unlock_wall_turret',
+        'btn-trap':       'unlock_spikes',
+        'btn-cryo':       'unlock_cryo',
+        'btn-farm':       'unlock_farm',
+        'btn-barracks':   'unlock_barracks',
+        'btn-minigun':    'unlock_minigun',
+        'btn-mortar':     'unlock_mortar'
+    };
+
+    // 2. Loop through every button
+    for (const [btnId, skillId] of Object.entries(lockMap)) {
+        const btn = document.getElementById(btnId);
         
-        // Remove 'active' class from all buttons
-        const buttons = document.getElementsByClassName('tool-btn');
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].classList.remove('active');
-        }
-
-        // Highlight the correct button
-        let btnId = '';
-        switch(toolName) {
-            case 'wall':        btnId = 'btn-wall'; break;
-            case 'cryo_tower':  btnId = 'btn-cryo'; break;
-            case 'trap':        btnId = 'btn-trap'; break;
-            case 'wall_turret': btnId = 'btn-wallturret'; break;
-            case 'troop':       btnId = 'btn-troop'; break;
-            case 'sword_troop': btnId = 'btn-sword'; break;
-            case 'barracks':    btnId = 'btn-barracks'; break;
-            case 'mortar':      btnId = 'btn-mortar'; break;
-            case 'money_farm':  btnId = 'btn-farm'; break;
-            case 'delete':      btnId = 'btn-delete'; break;
-            case 'minigun':     btnId = 'btn-minigun'; break; // <--- NEW LINE
-        }
-
-        if (btnId) {
-            const btn = document.getElementById(btnId);
-            if (btn) btn.classList.add('active');
+        if (btn) {
+            // Check if we have the skill
+            if (playerProgress.unlocked.includes(skillId)) {
+                // UNLOCKED: Remove the lock class
+                btn.classList.remove('is-locked');
+            } else {
+                // LOCKED: Add the lock class
+                btn.classList.add('is-locked');
+            }
         }
     }
+}
+
+    // TOOL SELECTION FUNCTION
+    function setTool(toolName) {
+    // --- 1. CHECK IF LOCKED ---
+    // Mapping Tool Names to Button IDs for checking the class
+    let btnIdCheck = '';
+    switch(toolName) {
+        case 'sword_troop': btnIdCheck = 'btn-sword'; break;
+        case 'shield_troop':btnIdCheck = 'btn-shield'; break;
+        case 'bard_troop':  btnIdCheck = 'btn-bard'; break;
+        case 'wall_turret': btnIdCheck = 'btn-wallturret'; break;
+        case 'trap':        btnIdCheck = 'btn-trap'; break;
+        case 'cryo_tower':  btnIdCheck = 'btn-cryo'; break;
+        case 'money_farm':  btnIdCheck = 'btn-farm'; break;
+        case 'barracks':    btnIdCheck = 'btn-barracks'; break;
+        case 'minigun':     btnIdCheck = 'btn-minigun'; break;
+        case 'mortar':      btnIdCheck = 'btn-mortar'; break;
+    }
+
+    // If the button exists and has the 'is-locked' class, STOP.
+    const btnCheck = document.getElementById(btnIdCheck);
+    if (btnCheck && btnCheck.classList.contains('is-locked')) {
+        console.log("This item is locked.");
+        return; 
+    }
+
+    // --- 2. NORMAL SELECTION LOGIC ---
+    currentTool = toolName;
+    
+    const buttons = document.getElementsByClassName('tool-btn');
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+    }
+
+    // Re-use the ID we found above to set active state
+    if (btnIdCheck) {
+        const btn = document.getElementById(btnIdCheck);
+        if (btn) btn.classList.add('active');
+    } else {
+        // Handle special cases not in the lock list (like Wall or Delete)
+        if (toolName === 'wall') document.getElementById('btn-wall').classList.add('active');
+        if (toolName === 'delete') document.getElementById('btn-delete').classList.add('active');
+    }
+}
 
     function handleInput() {
         if (gameOver) return;
@@ -9317,14 +10997,50 @@ function resize() {
     }
 
     function takeDamage(amount) {
-        playerBase.hp -= amount;
-        if (playerBase.hp <= 0) {
-            playerBase.hp = 0;
-            gameOver = true;
-            document.getElementById('game-over').style.display = 'block';
-            document.getElementById('final-wave').innerText = wave;
+    playerBase.hp -= amount;
+    
+    if (playerBase.hp <= 0) {
+        playerBase.hp = 0;
+        gameOver = true;
+
+        // --- NEW: Calculate Shards ---
+        // 1 Shard per wave, plus a bonus 10 shards if you pass Wave 10
+        let shardsEarned = Math.floor(wave)*difficultyMultiplier;
+
+        // --- NEW: Save to Skill Tree ---
+        if (typeof playerProgress !== 'undefined') {
+            playerProgress.shards += shardsEarned;
+            saveProgress(); // Saves to LocalStorage
         }
+
+        // --- Show Game Over Screen ---
+        const gameOverScreen = document.getElementById('game-over');
+        gameOverScreen.style.display = 'flex';
+        
+        // Update Wave Count
+        document.getElementById('final-wave').innerText = wave;
+
+        // --- NEW: Show Shards Earned on UI ---
+        // We try to find an element to show shards, or create one if it's missing
+        let shardDisplay = document.getElementById('earned-shards-text');
+        
+        if (!shardDisplay) {
+            // Dynamically create the text element if you haven't added it to HTML yet
+            shardDisplay = document.createElement('div');
+            shardDisplay.id = 'earned-shards-text';
+            shardDisplay.style.color = '#a388ee'; // Void Purple
+            shardDisplay.style.fontSize = '24px';
+            shardDisplay.style.marginTop = '15px';
+            shardDisplay.style.fontWeight = 'bold';
+            
+            // Append it to the game over content
+            // Assuming the parent of 'final-wave' is the main box
+            document.getElementById('final-wave').parentNode.appendChild(shardDisplay);
+        }
+        
+        shardDisplay.innerText = `+${shardsEarned} Void Shards`;
     }
+}
 
     function createParticles(x, y, color, count) {
         for(let i=0; i<count; i++) {
@@ -9633,92 +11349,83 @@ function resize() {
         return { x: startEntity.x, y: startEntity.y };
     }
 
-    function spawnEnemy() {
+function spawnEnemy() {
     let rand = Math.random();
     
     // --- CHANCE CONFIGURATION ---
-    
-    // 1. Tanks (Big, Slow)
     let tankChance = (wave > 8) ? 0.15 : (wave > 3 ? 0.1 : 0);
-    
-    // 2. Runners (Fast Swarm)
     let runnerChance = (wave > 2) ? 0.25 : (wave > 1 ? 0.2 : 0);
-
-    // 3. Shielders (Support Unit)
     let shielderChance = (wave > 12) ? 0.10 : 0;
-
-    // 4. Leapers (Wall Jumpers)
     let leaperChance = (wave > 11) ? 0.10 : 0;
-    
-    // 5. Breachers (Wall Breakers)
     let breacherChance = (wave > 7) ? 0.05 : 0; 
-    
-    // 6. Dashers (Fast Burst)
     let dasherChance = (wave > 6) ? 0.10 : 0; 
-    
-    // 7. Snipers (Ranged)
     let sniperChance = (wave > 8) ? 0.05 : 0;
-
-    // 8. Broodmothers (Boss/Summoner)
     let broodChance = (wave > 10) ? 0.05 : 0; 
-
-    // [NEW] 9. Magnet Enemy (Bullet Attractor)
-    // Starts Wave 6. Serves as an early-mid game tank.
     let magnetChance = (wave > 18) ? 0.05 : 0;
-
     let reviverChance = (wave > 15) ? 0.05 : 0;
-
     let flyingChance = (wave > 9) ? 0.08 : 0;
 
     // --- SELECTION LOGIC ---
     let currentTotal = 0;
     
+    // 1. DEFINE THE VARIABLE HERE
+    let newEnemy = null; 
+
     // Check Tank
     currentTotal += tankChance;
-    if (rand < currentTotal) { enemies.push(new TankEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new TankEnemy(); }
     
     // Check Runner
     currentTotal += runnerChance;
-    if (rand < currentTotal) { enemies.push(new RunnerEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new RunnerEnemy(); }
 
     // Check Shielder
     currentTotal += shielderChance;
-    if (rand < currentTotal) { enemies.push(new ShielderEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new ShielderEnemy(); }
 
     // Check Leaper
     currentTotal += leaperChance;
-    if (rand < currentTotal) { enemies.push(new LeaperEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new LeaperEnemy(); }
 
     // Check Breacher
     currentTotal += breacherChance;
-    if (rand < currentTotal) { enemies.push(new BreacherEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new BreacherEnemy(); }
 
     // Check Dasher
     currentTotal += dasherChance;
-    if (rand < currentTotal) { enemies.push(new DasherEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new DasherEnemy(); }
     
     // Check Sniper
     currentTotal += sniperChance;
-    if (rand < currentTotal) { enemies.push(new SniperEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new SniperEnemy(); }
     
     // Check Broodmother
     currentTotal += broodChance;
-    if (rand < currentTotal) { enemies.push(new BroodmotherEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new BroodmotherEnemy(); }
 
-    // [NEW] Check Magnet
+    // Check Magnet
     currentTotal += magnetChance;
-    if (rand < currentTotal) { enemies.push(new MagnetEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new MagnetEnemy(); }
 
     // Check Reviver
     currentTotal += reviverChance;
-    if (rand < currentTotal) { enemies.push(new ReviverEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new ReviverEnemy(); }
 
     // Check Flying
     currentTotal += flyingChance;
-    if (rand < currentTotal) { enemies.push(new FlyingEnemy()); return; }
+    if (!newEnemy && rand < currentTotal) { newEnemy = new FlyingEnemy(); }
 
-    // Default: Basic Enemy
-    enemies.push(new Enemy());
+    // 2. FALLBACK (If nothing was picked, spawn basic enemy)
+    if (!newEnemy) { 
+        newEnemy = new Enemy(); 
+    }
+
+    // 3. PUSH TO GAME LOOP
+    enemies.push(newEnemy);
+
+    // 4. CHECK FOR INTEL CARD
+    // Now 'newEnemy' is defined, so this will work!
+    checkForNewEnemy(newEnemy);
 }
 
     function startNextWave() {
@@ -9916,8 +11623,9 @@ function findPath(unit, target) {
 }
 
 let lastTime = performance.now();
+let gameFrame = 0;
 
-        function gameLoop(timestamp) {
+function gameLoop(timestamp) {
     if (!timestamp) timestamp = performance.now();
     let deltaTime = timestamp - lastTime;
     lastTime = timestamp;
@@ -9932,20 +11640,23 @@ let lastTime = performance.now();
 
     if (gameOver) return;
 
+    gameFrame++; // Increment frame counter for optimizations
+
+    if (hasSkill('core_regen') && gameFrame % 300 === 0 && playerBase.hp < playerBase.maxHp) {
+    playerBase.hp += 1;
+    }
+
     // --- 1. CLEAR PHYSICAL SCREEN ---
-    // Fill the whole window with black to handle the letterboxing (black bars)
     ctx.fillStyle = "#050505";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // --- 2. START SCALING SYSTEM ---
-    // We save the context state, translate to the center, and scale everything down
     ctx.save();
     ctx.translate(offsetX, offsetY); 
     ctx.scale(scale, scale);         
 
     // --- 3. DRAW GAME WORLD (Inside Virtual 64x36 Grid) ---
-    // From here on, we use VIRTUAL dimensions (3200x1800), the scale handles the rest.
-
+    
     // Background
     ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
@@ -9958,14 +11669,21 @@ let lastTime = performance.now();
     for (let y = 0; y <= ROWS; y++) { ctx.moveTo(0,y*CELL_SIZE); ctx.lineTo(VIRTUAL_WIDTH, y*CELL_SIZE); }
     ctx.stroke();
 
+    // --- SKILL CHECK: Wall Regeneration ---
+    // We check if the player owns the skill inside the playerProgress object
+    const hasWallRegen = (typeof playerProgress !== 'undefined' && playerProgress.unlocked.includes('wall_regen'));
+
     // Walls Logic
     for (let x = 0; x < COLS; x++) {
         for (let y = 0; y < ROWS; y++) {
             let cell = grid[x][y];
             if (cell.wall && !cell.occupied) {
-                // Regeneration
-                if (cell.wallHp < 100) cell.wallHp += 0.05 *dt;
-                if (cell.wallHp > 100) cell.wallHp = 100;
+                
+                // SKILL TREE: Only regen if skill is unlocked
+                if (hasWallRegen) {
+                    if (cell.wallHp < 100) cell.wallHp += 0.05 * dt;
+                    if (cell.wallHp > 100) cell.wallHp = 100;
+                }
 
                 // Colors
                 let hpPct = cell.wallHp / 100;
@@ -10091,8 +11809,11 @@ let lastTime = performance.now();
     }
     ctx.restore();
 
-    // Health Bar
-    const hpPct = Math.max(0, playerBase.hp / 100);
+    // --- SKILL INTEGRATION: Health Bar ---
+    // Use playerBase.maxHp if it exists (from Skills), otherwise 100
+    const maxHp = playerBase.maxHp || 100;
+    const hpPct = Math.max(0, playerBase.hp / maxHp);
+    
     const barW = bSize * 0.6;
     const barX = centerBx - barW / 2;
     const barY = by - 10;
@@ -10108,7 +11829,6 @@ let lastTime = performance.now();
     if (gc >= 0 && gc < COLS && gr >= 0 && gr < ROWS) {
         ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
         ctx.strokeRect(gc*CELL_SIZE, gr*CELL_SIZE, CELL_SIZE, CELL_SIZE);
-
     }
 
     // --- GAME LOGIC ---
@@ -10132,14 +11852,12 @@ let lastTime = performance.now();
     for (let i = structures.length - 1; i >= 0; i--) {
         let s = structures[i];
         if (s.update) s.update(dt);
-        // Note: Draw is removed from here to handle depth sorting below
         if ((s.active === false) || (s.hp !== undefined && s.hp <= 0)) {
             structures.splice(i, 1);
         }
     }
 
     // Structures - Depth Sort & Draw
-    // Sort by row (Y-coordinate) so lower buildings (higher Y) are drawn last (on top)
     structures.sort((a, b) => a.row - b.row);
 
     for (let s of structures) {
@@ -10165,7 +11883,7 @@ let lastTime = performance.now();
 
     for (let i = corpses.length - 1; i >= 0; i--) {
         corpses[i].update();
-        corpses[i].draw(); // Draw corpses below enemies
+        corpses[i].draw(); 
         if (!corpses[i].active) {
             corpses.splice(i, 1);
         }
@@ -10245,7 +11963,7 @@ let lastTime = performance.now();
     // --- 4. END SCALING SYSTEM ---
     ctx.restore();
 
-    // --- 5. UI UPDATES (No scaling needed for HTML Overlay) ---
+    // --- 5. UI UPDATES ---
     document.getElementById('hp').innerText = Math.ceil(playerBase.hp);
     document.getElementById('money').innerText = Math.floor(money);
     document.getElementById('wave').innerText = wave;
@@ -10256,7 +11974,7 @@ let lastTime = performance.now();
 }
 
     let currentDifficulty = 'medium'; // Default
-
+    updateLockedButtons();
     // 1. Hook into startGame to capture the chosen difficulty
     const _originalStartGame = startGame;
     startGame = function(mode) {
