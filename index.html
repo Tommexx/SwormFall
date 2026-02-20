@@ -1060,15 +1060,15 @@
                 <span class="btn-cost">$40</span>
                 <span class="btn-hotkey">[6]</span>
             </button>
-            <button id="btn-wallturret" class="tool-btn" onclick="setTool('wall_turret')">
-                <span class="btn-label">Wall Turret</span>
-                <span class="btn-cost">$150</span>
-                <span class="btn-hotkey">[7]</span>
-            </button>
             <button id="btn-bard" class="tool-btn" onclick="setTool('bard_troop')">
                 <span class="btn-label">Bard</span>
                 <span class="btn-cost">$100</span>
                 <span class="btn-hotkey">[B]</span>
+            </button>
+            <button id="btn-sucker" class="tool-btn" onclick="setTool('sucker')">
+                <span class="btn-label">Sucker Tower</span>
+                <span class="btn-cost">$150</span>
+                <span class="btn-hotkey">[V]</span>
             </button>
         </div>
 
@@ -1093,6 +1093,11 @@
                 <span class="btn-cost">$200</span>
                 <span class="btn-hotkey">[3]</span>
             </button>
+            <button id="btn-wallturret" class="tool-btn" onclick="setTool('wall_turret')">
+                <span class="btn-label">Wall Turret</span>
+                <span class="btn-cost">$150</span>
+                <span class="btn-hotkey">[7]</span>
+            </button>
             <button id="btn-mortar" class="tool-btn" onclick="setTool('mortar')">
                 <span class="btn-label">Mortar</span>
                 <span class="btn-cost">$200</span>
@@ -1103,6 +1108,16 @@
                 <span class="btn-cost">$400</span>
                 <span class="btn-hotkey">[M]</span>
             </button>
+            <button id="btn-tesla" class="tool-btn" onclick="setTool('tesla')">
+                <span class="btn-label">Tesla Coil</span>
+                <span class="btn-cost">$250</span>
+                <span class="btn-hotkey">[T]</span>
+            </button>
+            <button id="btn-railgun" class="tool-btn" onclick="setTool('railgun')">
+                <span class="btn-label">Titan Railgun</span>
+                <span class="btn-cost">$1500</span>
+                <span class="btn-hotkey">[A]</span>
+            </button>
         </div>
 
         <div id="tab-economy" class="tab-content">
@@ -1110,6 +1125,11 @@
                 <span class="btn-label">Money Farm</span>
                 <span class="btn-cost">$350</span>
                 <span class="btn-hotkey">[8]</span>
+            </button>
+            <button id="btn-bounty" class="tool-btn" onclick="setTool('bounty')">
+                <span class="btn-label">Bounty Tower</span>
+                <span class="btn-cost">$150</span>
+                <span class="btn-hotkey">[Y]</span>
             </button>
             <button id="btn-delete" class="tool-btn btn-delete" onclick="setTool('delete')">
                 <span class="btn-label">Salvage</span>
@@ -1379,7 +1399,7 @@ function connectParticles() {
     },
     "core_regen": { 
         name: "Nano-Repair", desc: "Base regenerates 1 HP every 5 seconds.", 
-        cost: 100, type: "stat", x: 0, y: 80, parent: "core_vitality" 
+        cost: 100, type: "stat", x: 0, y: 150, parent: "core_vitality" 
     },
 
     // =========================================
@@ -1393,15 +1413,15 @@ function connectParticles() {
     },
     "sword_dmg": {
         name: "Sharpened Blades", desc: "Sword Soldiers deal +20 Damage.",
-        cost: 25, type: "stat", x: -80, y: -220, parent: "unlock_sword"
+        cost: 25, type: "stat", x: -120, y: -160, parent: "unlock_sword"
     },
     "sword_atk_spd": {
         name: "Frenzy Stance", desc: "Sword Soldiers attack 15% faster.",
-        cost: 45, type: "stat", x: -140, y: -280, parent: "sword_dmg"
+        cost: 45, type: "stat", x: -140, y: -250, parent: "unlock_sword"
     },
     "sword_move_spd": {
         name: "Lightweight Boots", desc: "Sword Soldiers move 20% faster.",
-        cost: 30, type: "stat", x: -80, y: -340, parent: "sword_dmg"
+        cost: 30, type: "stat", x: -80, y: -300, parent: "unlock_sword"
     },
 
     // --- Branch 2: Shield ---
@@ -1439,15 +1459,15 @@ function connectParticles() {
     },
     "turret_fire_rate": {
         name: "Rapid Loader", desc: "Wall Turret fires 20% faster.",
-        cost: 30, type: "stat", x: -240, y: -40, parent: "unlock_wall_turret"
+        cost: 30, type: "stat", x: -240, y: -80, parent: "unlock_wall_turret"
     },
     "turret_range": {
         name: "Sniper Lens", desc: "Wall Turret range +40%.",
-        cost: 45, type: "stat", x: -320, y: -80, parent: "turret_fire_rate"
+        cost: 45, type: "stat", x: -150, y: -90, parent: "unlock_wall_turret"
     },
     "turret_dmg": {
         name: "Depleted Uranium", desc: "Wall Turret deals +15 Damage.",
-        cost: 50, type: "stat", x: -240, y: -120, parent: "turret_fire_rate"
+        cost: 50, type: "stat", x: -80, y: -100, parent: "unlock_wall_turret"
     },
 
     // --- Branch 2: Spikes ---
@@ -1467,11 +1487,11 @@ function connectParticles() {
     },
     "cryo_range": {
         name: "High Pressure", desc: "Cryo Tower range +25%.",
-        cost: 60, type: "stat", x: -440, y: -20, parent: "unlock_cryo"
+        cost: 60, type: "stat", x: -500, y: -60, parent: "unlock_cryo"
     },
     "cryo_slow": {
         name: "Absolute Zero", desc: "Cryo slows enemies by an extra 15%.",
-        cost: 80, type: "stat", x: -530, y: -20, parent: "cryo_range"
+        cost: 80, type: "stat", x: -470, y: 20, parent: "unlock_cryo"
     },
 
     // =========================================
@@ -1485,21 +1505,21 @@ function connectParticles() {
     },
     "farm_val": {
         name: "Market Stocks", desc: "Farms give +$25 extra per wave.",
-        cost: 35, type: "stat", x: 250, y: -40, parent: "unlock_farm"
+        cost: 35, type: "stat", x: 150, y: -110, parent: "unlock_farm"
     },
     "farm_cap": {
         name: "Offshore Accounts", desc: "Farms give another +$25 extra per wave.",
-        cost: 70, type: "stat", x: 340, y: -80, parent: "farm_val"
+        cost: 70, type: "stat", x: 250, y: -110, parent: "unlock_farm"
     },
 
     // --- Branch 2: Barracks ---
     "unlock_barracks": {
         name: "UNLOCK: Barracks", desc: "Auto-spawns soldiers.",
-        cost: 40, type: "unlock", x: 250, y: 60, parent: "unlock_farm"
+        cost: 40, type: "unlock", x: 150, y: 100, parent: "unlock_farm"
     },
     "barracks_speed": {
         name: "Drill Sergeant", desc: "Barracks spawn units 20% faster.",
-        cost: 60, type: "stat", x: 350, y: 100, parent: "unlock_barracks"
+        cost: 60, type: "stat", x: 100, y: 200, parent: "unlock_barracks"
     },
 
     // --- Branch 3: Minigun ---
@@ -1509,26 +1529,69 @@ function connectParticles() {
     },
     "minigun_dmg": {
         name: "Lubricated Barrels", desc: "Minigun does +2 Damage per shot.",
-        cost: 70, type: "stat", x: 500, y: -80, parent: "unlock_minigun"
+        cost: 70, type: "stat", x: 450, y: -140, parent: "unlock_minigun"
     },
     "minigun_speed": {
         name: "Motor Overdrive", desc: "Minigun attack speed is 15% faster.",
-        cost: 80, type: "stat", x: 580, y: -120, parent: "minigun_dmg"
+        cost: 80, type: "stat", x: 350, y: -170, parent: "unlock_minigun"
     },
 
     // --- Branch 4: Mortar ---
     "unlock_mortar": {
         name: "UNLOCK: Mortar", desc: "Long range AoE damage.",
-        cost: 70, type: "unlock", x: 400, y: 20, parent: "unlock_farm"
+        cost: 70, type: "unlock", x: 300, y: 70, parent: "unlock_farm"
     },
     "mortar_dmg": {
         name: "High Explosive", desc: "Mortar deals +30 Damage.",
-        cost: 80, type: "stat", x: 500, y: 20, parent: "unlock_mortar"
+        cost: 80, type: "stat", x: 370, y: 140, parent: "unlock_mortar"
     },
     "mortar_area": {
         name: "Napalm Shells", desc: "Mortar explosion radius +25%.",
-        cost: 100, type: "stat", x: 600, y: 20, parent: "mortar_dmg"
+        cost: 100, type: "stat", x: 300, y: 200, parent: "unlock_mortar"
+    },
+
+    // --- Branch 5: Sucker ---
+    "unlock_sucker": {
+        name: "UNLOCK: Sucker", desc: "Medium range support tower.",
+        cost: 60, type: "unlock", x: -350, y: -150, parent: "unlock_cryo"
+    },
+    "sucker_area": {
+        name: "Bigger ventilator", desc: "Sucker gains 15% range",
+        cost: 40, type: "stat", x: -450, y: -200, parent: "unlock_sucker"
+    },
+    "sucker_strenght": {
+        name: "Stronger engine", desc: "Sucker sucks 10% more",
+        cost: 50, type: "stat", x: -250, y: -200, parent: "unlock_sucker"
+    },
+
+    // --- Branch 6: Tesla ---
+    "unlock_tesla": {
+        name: "UNLOCK: Tesla", desc: "Medium range chain tower.",
+        cost: 100, type: "unlock", x: -150, y: 150, parent: "unlock_wall_turret"
+    },
+    "tesla_chain": {
+        name: "Better power suply", desc: "Tesla gains 2 more chains",
+        cost: 80, type: "stat", x: -230, y: 200, parent: "unlock_tesla"
+    },
+    "tesla_range": {
+        name: "Improved materials", desc: "Tesla gains 20% more range",
+        cost: 70, type: "stat", x: -70, y: 200, parent: "unlock_tesla"
+    },
+
+    // --- Branch 6: Railgun ---
+    "unlock_railgun": {
+        name: "UNLOCK: Railgun", desc: "Endgame devastating ray of death",
+        cost: 1000, type: "unlock", x: 600, y: -40, parent: "unlock_minigun"
+    },
+    "railgun_width": {
+        name: "Better barrel mobility", desc: "Beam is 20% wider",
+        cost: 300, type: "stat", x: 700, y: -90, parent: "unlock_railgun"
+    },
+    "railgun_damage": {
+        name: "Railgun overdrive", desc: "Railgun does 50% more damage",
+        cost: 700, type: "stat", x: 700, y: 10, parent: "unlock_railgun"
     }
+//negr
 };
 
 // --- CUSTOM SKILL ICON RENDERER ---
@@ -2348,9 +2411,11 @@ function renderEnemyPreview(enemy) {
     /** CLASSES **/
 
 class Corpse {
-    constructor(x, y) {
+    constructor(x, y, bounty) { // Added 'bounty' parameter
         this.x = x;
         this.y = y; // This is the "Ground" Y position
+        this.bounty = bounty; // Store the enemy's worth
+        this.isTargeted = false; // Tells the tower if it's already being grabbed
         
         this.life = 600; 
         this.maxLife = 600;
@@ -2366,38 +2431,54 @@ class Corpse {
     }
 
     update() {
+        // --- BOUNTY TOWER OVERRIDE ---
+        // If an arm grabs this corpse, freeze its physics and life timer
+        if (this.isTargeted) return; 
+
         // 1. FALLING LOGIC
         if (!this.landed) {
             this.velocity += this.gravity;
             this.dropY += this.velocity;
 
-            // Hit the ground
-            if (this.dropY >= 0) {
-                this.dropY = 0;
-                // If moving fast enough, do a small bounce
-                if (Math.abs(this.velocity) > 2) {
-                    this.velocity = -this.velocity * 0.3; // 30% energy return (Heavy stone feel)
-                } else {
-                    this.landed = true; // Stop simulating physics
+            if (this.fallingIntoHole) {
+                // Falls straight into the hole — shrink and fade, then vanish
+                if (this.dropY > 30) this.active = false;
+            } else {
+                // Normal ground bounce
+                if (this.dropY >= 0) {
+                    this.dropY = 0;
+                    if (Math.abs(this.velocity) > 2) {
+                        this.velocity = -this.velocity * 0.3; 
+                    } else {
+                        this.landed = true; 
+                    }
                 }
             }
         }
 
         // 2. LIFE LOGIC
-        this.life--;
-        if (this.life <= 0) this.active = false;
+        if (!this.fallingIntoHole) {
+            this.life--;
+            if (this.life <= 0) this.active = false;
+        }
     }
 
     draw() {
         ctx.save();
         
-        // Sinking logic (End of life)
+        // Sinking logic (End of life) - Don't sink if it's being carried
         let sink = 0;
-        if (this.life < 120) sink = (1 - (this.life / 120)) * 10;
+        if (!this.isTargeted && this.life < 120) sink = (1 - (this.life / 120)) * 10;
 
         // Combine Falling (dropY) + Sinking (sink)
         ctx.translate(this.x, this.y + this.dropY + sink);
-        ctx.scale(this.sizeMod, this.sizeMod);
+
+        // Shrink into the hole when falling in
+        let holeShrink = 1;
+        if (this.fallingIntoHole && this.dropY > 0) {
+            holeShrink = Math.max(0, 1 - (this.dropY / 30));
+        }
+        ctx.scale(this.sizeMod * holeShrink, this.sizeMod * holeShrink);
         
         // Fade out
         ctx.globalAlpha = Math.min(1.0, (this.life / this.maxLife) * 3);
@@ -2409,7 +2490,6 @@ class Corpse {
             let shadowAlpha = 1 - (Math.abs(this.dropY) / 20);
             ctx.fillStyle = `rgba(0, 0, 0, ${0.4 * shadowAlpha})`;
             ctx.beginPath();
-            // Shadow grows as object gets closer
             let sScale = 1 - (Math.abs(this.dropY) / 40); 
             ctx.ellipse(0, 4, 10 * sScale, 5 * sScale, 0, 0, Math.PI * 2);
             ctx.fill();
@@ -5229,7 +5309,7 @@ class MagnetEnemy {
 
         // --- STATS ---
         this.radius = 22;          
-        this.hp = 3500 + (wave * 550); 
+        this.hp = 3000 + (wave * 150); 
         this.maxHp = this.hp;
         this.speed = 0.50;         
         this.bounty = 280;       
@@ -5554,426 +5634,327 @@ class MagnetEnemy {
 
 class BossEnemy {
     constructor() {
-        // --- SPAWN LOGIC ---
-        this.col = COLS - 1; 
+        this.col = COLS - 1;
         this.row = Math.floor(ROWS / 2);
-        this.x = this.col * CELL_SIZE + CELL_SIZE / 2;
-        this.y = this.row * CELL_SIZE + CELL_SIZE / 2;
+        this.x   = this.col * CELL_SIZE + CELL_SIZE / 2;
+        this.y   = this.row * CELL_SIZE + CELL_SIZE / 2;
 
-        // --- BOSS STATS ---
-        this.radius = 45; // Huge hitbox
-        this.speed = 0.4; // Slow, heavy, unstoppable
-        this.maxHp = 1000 * difficultyMultiplier * (wave * 0.3);
-        this.hp = this.maxHp;
-        this.damage = 9999; // Instakill structures
+        this.radius = 45;
+        this.speed  = 0.4;
+        this.maxHp  = 1000 * difficultyMultiplier * (wave * 0.3);
+        this.hp     = this.maxHp;
+        this.damage = 9999;
         this.bounty = 500;
         this.active = true;
 
-        // --- PHYSICS (Unstoppable) ---
         this.vx = 0; this.vy = 0;
-        this.angle = Math.PI; // Facing left
+        this.angle     = Math.PI;
         this.animTimer = 0;
 
-        // --- VISUALS (Evolved Spider Theme) ---
-        this.colors = {
-            armor: "#5c5443",      // Darker, dirtier bone color
-            highlight: "#8c8260",  // Aged Chitin
-            joints: "#1a0b0b",     // Dark organic joints
-            core: "#ff4400",       // Burning orange/red core
-            eyes: "#ccff00",       // The signature Acid Green eyes
-            blood: "#5e0e0e"       // Dried blood tips
-        };
+        this.armorColor = "#5c5443";
+
+        // Pre-compute constants used every frame
+        this._baseSq      = (this.radius + 30) * (this.radius + 30);
+        this._crushSq     = (this.radius + 15) * (this.radius + 15);
+        this._gridRadius  = Math.ceil(this.radius / CELL_SIZE);
+        this._halfCell    = CELL_SIZE / 2;
+        this._TWO_PI      = Math.PI * 2;
     }
 
     update(dt) {
-        // 1. UNSTOPPABLE MOVEMENT (Ignores Knockback)
-        // We move the coordinates directly towards the base
-        let targetX = (playerBase.x * CELL_SIZE) + CELL_SIZE; 
-        let targetY = (playerBase.y * CELL_SIZE) + CELL_SIZE;
-        let dx = targetX - this.x;
-        let dy = targetY - this.y;
-        let distSq = dx * dx + dy * dy; // Use squared distance to avoid sqrt
+        const targetX = playerBase.x * CELL_SIZE + CELL_SIZE;
+        const targetY = playerBase.y * CELL_SIZE + CELL_SIZE;
+        const dx = targetX - this.x;
+        const dy = targetY - this.y;
+        const distSq = dx * dx + dy * dy;
 
         if (distSq > 1) {
-            let dist = Math.sqrt(distSq); // Only compute sqrt when needed
-            this.x += (dx / dist) * this.speed;
-            this.y += (dy / dist) * this.speed;
-            
-            // Heavy Rotation
-            let desiredAngle = Math.atan2(dy, dx);
-            let diff = desiredAngle - this.angle;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            while (diff > Math.PI) diff -= Math.PI * 2;
+            const invDist = 1 / Math.sqrt(distSq);
+            this.x += dx * invDist * this.speed;
+            this.y += dy * invDist * this.speed;
+
+            let diff = Math.atan2(dy, dx) - this.angle;
+            if (diff < -Math.PI) diff += this._TWO_PI;
+            else if (diff > Math.PI) diff -= this._TWO_PI;
             this.angle += diff * 0.04;
         }
 
-        // 2. WALL CRUSHER (Boss Logic) - OPTIMIZED
-        // Only check walls every other frame
+        // Wall crush — every other frame only
         if (gameFrame % 2 === 0) {
-            let radiusSq = this.radius * this.radius;
-            let gridRadius = Math.ceil(this.radius / CELL_SIZE);
-            let cx = Math.floor(this.x / CELL_SIZE);
-            let cy = Math.floor(this.y / CELL_SIZE);
+            const cx = Math.floor(this.x / CELL_SIZE);
+            const cy = Math.floor(this.y / CELL_SIZE);
+            const gr = this._gridRadius;
+            const cSq = this._crushSq;
+            const hc = this._halfCell;
+            const tp = this._TWO_PI;
 
-            for (let i = -gridRadius; i <= gridRadius; i++) {
-                for (let j = -gridRadius; j <= gridRadius; j++) {
-                    let c = cx + i;
-                    let r = cy + j;
-                    if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
-                        let cell = grid[c][r];
-                        if (cell.wall) {
-                            let cellX = c * CELL_SIZE + CELL_SIZE/2;
-                            let cellY = r * CELL_SIZE + CELL_SIZE/2;
-                            let dx = this.x - cellX;
-                            let dy = this.y - cellY;
-                            let dSq = (this.radius + 15) * (this.radius + 15);
-                            
-                            // Use squared distance to avoid sqrt
-                            if (dx * dx + dy * dy < dSq) {
-                                cell.wall = false;
-                                cell.occupied = false;
-                                
-                                // Reduce debris particles from 6 to 3 for performance
-                                for(let k=0; k<3; k++) {
-                                    particles.push({
-                                        x: cellX, y: cellY,
-                                        vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
-                                        life: 60, color: this.colors.armor, size: Math.random()*4
-                                    });
-                                }
-                            }
+            for (let i = -gr; i <= gr; i++) {
+                const col = cx + i;
+                if (col < 0 || col >= COLS) continue;
+                for (let j = -gr; j <= gr; j++) {
+                    const row = cy + j;
+                    if (row < 0 || row >= ROWS) continue;
+                    const cell = grid[col][row];
+                    if (!cell.wall) continue;
+                    const cellX = col * CELL_SIZE + hc;
+                    const cellY = row * CELL_SIZE + hc;
+                    const wx = this.x - cellX;
+                    const wy = this.y - cellY;
+                    if (wx * wx + wy * wy < cSq) {
+                        cell.wall = false;
+                        cell.occupied = false;
+                        for (let k = 0; k < 3; k++) {
+                            particles.push({
+                                x: cellX, y: cellY,
+                                vx: (Math.random() - 0.5) * 10,
+                                vy: (Math.random() - 0.5) * 10,
+                                life: 60, color: this.armorColor,
+                                size: Math.random() * 4
+                            });
                         }
                     }
                 }
             }
         }
 
-        // 3. BASE DESTRUCTION
-        if (distSq < (this.radius + 30) * (this.radius + 30)) {
+        if (distSq < this._baseSq) {
             this.hp = 0;
             takeDamage(this.damage);
         }
 
-        this.animTimer += 0.08; // Slower animation than small enemies
+        this.animTimer += 0.08;
     }
 
     draw() {
-        // --- 1. DRAW BOSS (Rotated) ---
+        const TWO_PI = this._TWO_PI;
+
+        // Body (rotated)
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
 
-        const s = 2.8; // Scale
-        
-        // --- PALETTE ---
-        const c = {
-            chitinDark:  "#120b05",
-            chitinMid:   "#3d3215",
-            chitinLight: "#6e5d38",
-            bone:        "#8c8260", 
-            joint:       "#0f0505", 
-            acid:        "#ccff00", 
-            
-            // Abdomen Palette
-            sacInner:    "#ff5500", 
-            sacOuter:    "#3b2010", 
-            ventGlow:    "rgba(255, 100, 0, 0.8)"
-        };
+        const s  = 2.8;
+        const s2 = 2 * s, s3 = 3 * s, s4 = 4 * s, s5 = 5 * s,
+              s6 = 6 * s, s7 = 7 * s, s8 = 8 * s, s9 = 9 * s,
+              s10 = 10 * s, s11 = 11 * s, s12 = 12 * s, s13 = 13 * s,
+              s14 = 14 * s, s22 = 22 * s;
 
-        const breathe = Math.sin(this.animTimer * 0.8);
+        const chitinDark  = "#120b05";
+        const chitinMid   = "#3d3215";
+        const chitinLight = "#6e5d38";
+        const bone        = "#8c8260";
+        const joint       = "#0f0505";
+        const ventGlow    = "rgba(255, 100, 0, 0.8)";
+
+        const breathe   = Math.sin(this.animTimer * 0.8);
         const walkCycle = this.animTimer;
 
-        // --- HELPER: LEG (Optimized with fewer operations) ---
         const drawLeg = (ox, oy, restX, restY, phase, side) => {
-            const cycle = walkCycle + phase;
-            const lift = Math.max(0, Math.sin(cycle));
+            const cycle  = walkCycle + phase;
+            const lift   = Math.max(0, Math.sin(cycle));
             const stride = Math.cos(cycle);
+            const sx = ox * s, sy = oy * s;
+            const fx = sx + restX * s + stride * 5 * s;
+            const fy = sy + restY * s + lift * -4 * side * s;
+            const kx = (sx + fx) / 2 - s2;
+            const ky = (sy + fy) / 2 + side * s6;
 
-            let sx = ox * s; 
-            let sy = oy * s;
-            let fx = sx + (restX * s) + (stride * 5 * s);
-            let fy = sy + (restY * s) + (lift * -4 * side * s);
-            let midX = (sx + fx) / 2;
-            let midY = (sy + fy) / 2;
-            let kx = midX - (2 * s); 
-            let ky = midY + (side * 6 * s); 
-
-            // Femur + Joint (combined strokes to reduce drawing calls)
             ctx.lineCap = "round";
-            ctx.strokeStyle = c.chitinMid;
-            ctx.lineWidth = 3.5 * s;
+            ctx.strokeStyle = chitinMid; ctx.lineWidth = 3.5 * s;
             ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(kx, ky); ctx.stroke();
 
-            // Tibia
-            ctx.strokeStyle = c.bone;
-            ctx.lineWidth = 2 * s;
+            ctx.strokeStyle = bone; ctx.lineWidth = s2;
             ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(fx, fy); ctx.stroke();
 
-            // Joint + Spike (combined)
-            ctx.fillStyle = c.joint;
-            ctx.beginPath(); ctx.arc(kx, ky, 2.2 * s, 0, Math.PI*2); ctx.fill();
-            
-            // Spike
-            ctx.fillStyle = c.bone;
+            ctx.fillStyle = joint;
+            ctx.beginPath(); ctx.arc(kx, ky, 2.2 * s, 0, TWO_PI); ctx.fill();
+
+            ctx.fillStyle = bone;
             ctx.beginPath();
             ctx.moveTo(kx, ky);
-            ctx.lineTo(kx - (1*s), ky - (side * 4 * s)); 
-            ctx.lineTo(kx + (1*s), ky);
+            ctx.lineTo(kx - s, ky - side * s4);
+            ctx.lineTo(kx + s, ky);
             ctx.fill();
 
-            // Foot
             ctx.fillStyle = "#5e0e0e";
-            ctx.beginPath(); ctx.arc(fx, fy, 0.8 * s, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(fx, fy, 0.8 * s, 0, TWO_PI); ctx.fill();
         };
 
-        // --- LAYER: REAR LEGS ---
-        ctx.filter = "brightness(0.6)"; 
+        // Rear legs (dimmed)
+        ctx.filter = "brightness(0.6)";
         drawLeg(-6, -3, -8, -8, 0, -1);
-        drawLeg(-6, 3, -8, 8, Math.PI, 1);
+        drawLeg(-6,  3, -8,  8, Math.PI, 1);
         ctx.filter = "none";
 
-        // --- LAYER: ABDOMEN (Optimized) ---
-        const sacPulse = 1 + (breathe * 0.05);
-        
-        // 1. Define Shape Path
+        // Abdomen
+        const sacPulse = 1 + breathe * 0.05;
         ctx.beginPath();
-        ctx.moveTo(-4*s, -5*s); 
-        ctx.bezierCurveTo(-15*s, -12*s*sacPulse, -32*s, -9*s, -38*s, 0); 
-        ctx.bezierCurveTo(-32*s, 9*s, -15*s, 12*s*sacPulse, -4*s, 5*s);  
-        ctx.lineTo(-4*s, -5*s); 
-        
-        ctx.save(); 
-        ctx.clip(); 
+        ctx.moveTo(-4*s, -5*s);
+        ctx.bezierCurveTo(-15*s, -12*s*sacPulse, -32*s, -s9, -38*s, 0);
+        ctx.bezierCurveTo(-32*s,  s9,  -15*s,  12*s*sacPulse, -4*s, 5*s);
+        ctx.lineTo(-4*s, -5*s);
 
-        // 2. Translucent Gradient (Optimized gradient creation)
-        const sacGrad = ctx.createRadialGradient(-20*s, 0, 2*s, -20*s, 0, 22*s);
-        sacGrad.addColorStop(0, c.sacInner); 
-        sacGrad.addColorStop(0.6, c.sacOuter); 
-        sacGrad.addColorStop(1, "#1a0f05"); 
+        ctx.save();
+        ctx.clip();
+
+        const sacGrad = ctx.createRadialGradient(-20*s, 0, s2, -20*s, 0, s22);
+        sacGrad.addColorStop(0,   "#ff5500");
+        sacGrad.addColorStop(0.6, "#3b2010");
+        sacGrad.addColorStop(1,   "#1a0f05");
         ctx.fillStyle = sacGrad;
         ctx.fill();
 
-        // 3. Ribbed Segmentation (Dark Lines)
-        ctx.strokeStyle = "rgba(0,0,0,0.5)";
-        ctx.lineWidth = 2 * s;
-        for(let i=1; i<=4; i++) {
-            let rx = -8*s - (i * 6 * s);
+        ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = s2;
+        for (let i = 1; i <= 4; i++) {
+            const rx = -s8 - i * s6;
             ctx.beginPath();
-            ctx.moveTo(rx, -10*s);
-            ctx.quadraticCurveTo(rx - (4*s), 0, rx, 10*s);
+            ctx.moveTo(rx, -s10);
+            ctx.quadraticCurveTo(rx - s4, 0, rx, s10);
             ctx.stroke();
         }
+        ctx.restore();
 
-        ctx.restore(); // Remove Clip
-
-        // 5. Spinal Armor Plates (simplified)
-        ctx.fillStyle = c.chitinDark;
-        for(let i=0; i<6; i++) {
-            let spX = -8*s - (i * 5 * s);
-            let h = 4 * s * (1 - (i/7)); 
+        // Spinal plates
+        ctx.fillStyle = chitinDark;
+        ctx.strokeStyle = "rgba(110, 93, 56, 0.5)"; ctx.lineWidth = 0.5;
+        for (let i = 0; i < 6; i++) {
+            const spX = -s8 - i * 5 * s;
+            const h   = s4 * (1 - i / 7);
             ctx.beginPath();
-            ctx.moveTo(spX + 3*s, 0);
-            ctx.lineTo(spX, -h); 
-            ctx.lineTo(spX - 3*s, 0);
-            ctx.lineTo(spX, h);  
+            ctx.moveTo(spX + s3, 0); ctx.lineTo(spX, -h);
+            ctx.lineTo(spX - s3, 0); ctx.lineTo(spX,  h);
             ctx.fill();
-            
-            // Highlight (Darkened slightly)
-            ctx.strokeStyle = "rgba(110, 93, 56, 0.5)";
-            ctx.lineWidth = 0.5;
-            ctx.beginPath(); ctx.moveTo(spX, -h); ctx.lineTo(spX - 2*s, 0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(spX, -h); ctx.lineTo(spX - s2, 0); ctx.stroke();
         }
 
-        // --- LAYER: LEGS ---
-        drawLeg(-2, -4, -4, -11, Math.PI*0.5, -1); 
-        drawLeg(-2, 4, -4, 11, Math.PI*1.5, 1);
-        drawLeg(4, -4, 4, -10, 0, -1); 
-        drawLeg(4, 4, 4, 10, Math.PI, 1);
-        drawLeg(8, -3, 10, -5, Math.PI, -1); 
-        drawLeg(8, 3, 10, 5, 0, 1);
+        // Front legs
+        drawLeg(-2, -4, -4, -11, Math.PI * 0.5, -1);
+        drawLeg(-2,  4, -4,  11, Math.PI * 1.5,  1);
+        drawLeg( 4, -4,  4, -10, 0, -1);
+        drawLeg( 4,  4,  4,  10, Math.PI, 1);
+        drawLeg( 8, -3, 10,  -5, Math.PI, -1);
+        drawLeg( 8,  3, 10,   5, 0, 1);
 
-        // --- LAYER: THORAX ---
-        const thoraxGrad = ctx.createRadialGradient(0, 0, 1*s, 0, 0, 14*s);
-        thoraxGrad.addColorStop(0, c.chitinMid);
-        thoraxGrad.addColorStop(1, c.chitinDark);
-        
+        // Thorax
+        const thoraxGrad = ctx.createRadialGradient(0, 0, s, 0, 0, s14);
+        thoraxGrad.addColorStop(0, chitinMid);
+        thoraxGrad.addColorStop(1, chitinDark);
         ctx.fillStyle = thoraxGrad;
         ctx.beginPath();
-        ctx.moveTo(10*s, -5*s); 
-        ctx.lineTo(14*s, -2*s); 
-        ctx.lineTo(14*s, 2*s);
-        ctx.lineTo(10*s, 5*s);
-        ctx.lineTo(-4*s, 7*s);  
-        ctx.lineTo(-8*s, 0);    
-        ctx.lineTo(-4*s, -7*s); 
-        ctx.fill();
+        ctx.moveTo(s10, -5*s); ctx.lineTo(s14, -s2);
+        ctx.lineTo(s14,  s2);  ctx.lineTo(s10,  5*s);
+        ctx.lineTo(-4*s, s7);  ctx.lineTo(-s8,  0);
+        ctx.lineTo(-4*s, -s7); ctx.fill();
 
-        // Central Shield
-        ctx.fillStyle = c.chitinDark;
-        ctx.strokeStyle = c.chitinLight; 
-        ctx.lineWidth = 1;
+        ctx.fillStyle = chitinDark; ctx.strokeStyle = chitinLight; ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(8*s, 0);
-        ctx.lineTo(2*s, -3.5*s);
-        ctx.lineTo(-6*s, 0);
-        ctx.lineTo(2*s, 3.5*s);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+        ctx.moveTo(s8, 0); ctx.lineTo(s2, -3.5*s);
+        ctx.lineTo(-s6, 0); ctx.lineTo(s2, 3.5*s);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
 
-        // Vents (Simplified - removed shadow blur for performance)
-        ctx.fillStyle = c.ventGlow;
-        
-        for(let i=0; i<3; i++) {
-            ctx.beginPath();
-            ctx.ellipse(0 + (i*2.5*s), -5.5*s, 0.6*s, 1.5*s, 0.4, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(0 + (i*2.5*s), 5.5*s, 0.6*s, 1.5*s, -0.4, 0, Math.PI*2);
-            ctx.fill();
+        ctx.fillStyle = ventGlow;
+        for (let i = 0; i < 3; i++) {
+            const vx = i * 2.5 * s;
+            ctx.beginPath(); ctx.ellipse(vx, -5.5*s, 0.6*s, 1.5*s,  0.4, 0, TWO_PI); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(vx,  5.5*s, 0.6*s, 1.5*s, -0.4, 0, TWO_PI); ctx.fill();
         }
 
-        // --- LAYER: HEAD (OPTIMIZED) ---
+        // Head
         ctx.save();
-        ctx.translate(13 * s, 0); // Head locked to body
+        ctx.translate(13 * s, 0);
 
-        // --- 0. PALETTE ---
-        const c_bone     = "#1a1616";
-        const c_blood    = "#4a0a0a";
-        const c_tip      = "#000000";
-        const c_highlight= "rgba(255, 255, 255, 0.1)";
-
-        // --- 1. THE MAW ---
         ctx.fillStyle = "#000000";
-        ctx.beginPath();
-        ctx.arc(0, 0, 4.5 * s, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(0, 0, 4.5 * s, 0, TWO_PI); ctx.fill();
 
-        // --- 2. INNER GRASPERS (Simplified) ---
         const innerTwitch = Math.sin(this.animTimer * 8) * 0.3;
-        ctx.fillStyle = "#2e1a1a";
-        for(let dir = -1; dir <= 1; dir+=2) {
+        for (let dir = -1; dir <= 1; dir += 2) {
             ctx.save();
-            ctx.translate(2.5 * s, dir * 1.0 * s);
+            ctx.translate(2.5 * s, dir * s);
             ctx.scale(1, dir);
             ctx.rotate(innerTwitch);
-            
+            ctx.fillStyle = "#2e1a1a";
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            ctx.quadraticCurveTo(2*s, -0.5*s, 3*s, 0.5*s);
-            ctx.lineTo(2.5*s, 0.8*s);
-            ctx.lineTo(0, 0.5*s);
+            ctx.quadraticCurveTo(s2, -0.5*s, s3, 0.5*s);
+            ctx.lineTo(2.5*s, 0.8*s); ctx.lineTo(0, 0.5*s);
             ctx.fill();
             ctx.fillStyle = "#ff0000";
-            ctx.beginPath(); ctx.arc(3*s, 0.5*s, 0.2*s, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "#2e1a1a";
+            ctx.beginPath(); ctx.arc(s3, 0.5*s, 0.2*s, 0, TWO_PI); ctx.fill();
             ctx.restore();
         }
 
-        // --- 3. MAIN MANDIBLES (Simplified) ---
-        const biteOpen = 0.2 + (Math.sin(this.animTimer * 1.5) * 0.15);
+        const biteOpen = 0.2 + Math.sin(this.animTimer * 1.5) * 0.15;
+        const mGrad = ctx.createLinearGradient(0, 0, s14, 0);
+        mGrad.addColorStop(0,   "#1a1616");
+        mGrad.addColorStop(0.5, "#4a0a0a");
+        mGrad.addColorStop(1,   "#000000");
 
         const drawNightmareMandible = (scaleY) => {
             ctx.save();
-            ctx.scale(1, scaleY); 
-            ctx.rotate(-biteOpen); 
-            
-            // Simplified gradient with fewer stops
-            const mGrad = ctx.createLinearGradient(0, 0, 14*s, 0);
-            mGrad.addColorStop(0,   c_bone);
-            mGrad.addColorStop(0.5, c_blood);
-            mGrad.addColorStop(1,   c_tip);
-            
-            ctx.fillStyle = mGrad;
-            ctx.strokeStyle = "#0d0505";
-            ctx.lineWidth = 0.3 * s;
-
+            ctx.scale(1, scaleY);
+            ctx.rotate(-biteOpen);
+            ctx.fillStyle = mGrad; ctx.strokeStyle = "#0d0505"; ctx.lineWidth = 0.3 * s;
             ctx.beginPath();
-            ctx.moveTo(0, -2*s);
-            ctx.bezierCurveTo(3*s, -3.5*s, 5*s, -3.5*s, 7*s, -2*s);
+            ctx.moveTo(0, -s2);
+            ctx.bezierCurveTo(s3, -3.5*s, s5, -3.5*s, s7, -s2);
             ctx.lineTo(7.2*s, -2.2*s);
-            ctx.bezierCurveTo(9*s, -3*s, 12*s, -1.5*s, 14*s, 0.5*s);
-            ctx.lineTo(13*s, 0.8*s);
-            ctx.lineTo(11*s, 0); 
-            ctx.lineTo(10.5*s, 0.8*s); 
-            ctx.lineTo(9*s, 0.2*s);
-            ctx.lineTo(8*s, 1.2*s);
-            ctx.lineTo(6*s, 0.5*s);
-            ctx.lineTo(5*s, 1.5*s);
-            ctx.lineTo(0, 1.5*s);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            
-            // Simplified texture (fewer details)
-            ctx.strokeStyle = "rgba(0,0,0,0.5)";
-            ctx.lineWidth = 0.15 * s;
+            ctx.bezierCurveTo(s9, -s3, s12, -1.5*s, s14, 0.5*s);
+            ctx.lineTo(s13, 0.8*s); ctx.lineTo(s11, 0);
+            ctx.lineTo(10.5*s, 0.8*s); ctx.lineTo(s9, 0.2*s);
+            ctx.lineTo(s8, 1.2*s);    ctx.lineTo(s6, 0.5*s);
+            ctx.lineTo(s5, 1.5*s);    ctx.lineTo(0, 1.5*s);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 0.15 * s;
             ctx.beginPath();
-            ctx.moveTo(2*s, -1*s);
-            ctx.quadraticCurveTo(7*s, -1.5*s, 12*s, 0.2*s);
-            ctx.stroke();
-
+            ctx.moveTo(s2, -s); ctx.quadraticCurveTo(s7, -1.5*s, s12, 0.2*s); ctx.stroke();
             ctx.restore();
         };
 
-        ctx.save();
-        ctx.translate(3*s, -1.5*s);
-        drawNightmareMandible(1); 
-        ctx.restore();
+        ctx.save(); ctx.translate(s3, -1.5*s); drawNightmareMandible( 1); ctx.restore();
+        ctx.save(); ctx.translate(s3,  1.5*s); drawNightmareMandible(-1); ctx.restore();
 
-        ctx.save();
-        ctx.translate(3*s, 1.5*s);
-        drawNightmareMandible(-1); 
-        ctx.restore();
-
-        // --- 4. HEAD CARAPACE ---
-        const skullGrad = ctx.createRadialGradient(2*s, 0, 1*s, 4*s, 0, 8*s);
+        // Head carapace
+        const skullGrad = ctx.createRadialGradient(s2, 0, s, s4, 0, s8);
         skullGrad.addColorStop(0, "#2a2222");
         skullGrad.addColorStop(1, "#0a0a0a");
-
         ctx.fillStyle = skullGrad;
         ctx.beginPath();
-        ctx.moveTo(-2*s, -4*s); 
-        ctx.bezierCurveTo(3*s, -4.5*s, 6*s, -3*s, 8*s, 0); 
-        ctx.bezierCurveTo(6*s, 3*s, 3*s, 4.5*s, -2*s, 4*s);
-        ctx.lineTo(-2.5*s, 0);
-        ctx.fill();
+        ctx.moveTo(-s2, -s4);
+        ctx.bezierCurveTo(s3, -4.5*s, s6, -s3, s8, 0);
+        ctx.bezierCurveTo(s6,  s3,    s3,  4.5*s, -s2, s4);
+        ctx.lineTo(-2.5*s, 0); ctx.fill();
 
-        // --- 5. EYES ---
-        const acid = "#aaff00";
+        // Eyes
         const drawEye = (x, y, r) => {
-            ctx.save();
-            ctx.translate(x*s, y*s);
-            ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(0,0,r*s,0,Math.PI*2); ctx.fill();
-            ctx.fillStyle = acid; ctx.beginPath(); ctx.arc(0,0,r*0.6*s,0,Math.PI*2); ctx.fill();
-            ctx.restore();
-        }
+            const ex = x * s, ey = y * s;
+            ctx.fillStyle = "#000";
+            ctx.beginPath(); ctx.arc(ex, ey, r * s, 0, TWO_PI); ctx.fill();
+            ctx.fillStyle = "#aaff00";
+            ctx.beginPath(); ctx.arc(ex, ey, r * 0.6 * s, 0, TWO_PI); ctx.fill();
+        };
         drawEye(4, -2, 1); drawEye(4, 2, 1);
         drawEye(2.5, -3.5, 0.6); drawEye(2.5, 3.5, 0.6);
 
-        ctx.restore(); 
-        ctx.restore();
+        ctx.restore(); // head
+        ctx.restore(); // body
 
-        // --- 2. FLOATING HEALTH BAR (Optimized) ---
+        // Health bar (unrotated)
         ctx.save();
-        ctx.translate(this.x, this.y); 
-        
-        const barY = -(20 * s); 
+        ctx.translate(this.x, this.y);
+
+        const barY = -(20 * s);
         const barW = 100;
         const hpPct = this.hp / this.maxHp;
-        
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.beginPath();
-        ctx.roundRect(-barW/2, barY, barW, 8, 3);
-        ctx.fill();
-        
-        const barGrad = ctx.createLinearGradient(-barW/2, 0, barW/2, 0);
-        barGrad.addColorStop(0, "#ff3300"); 
-        barGrad.addColorStop(1, "#ccff00"); 
-        
+
+        ctx.fillStyle = "rgba(0,0,0,0.8)";
+        ctx.beginPath(); ctx.roundRect(-50, barY, barW, 8, 3); ctx.fill();
+
+        const barGrad = ctx.createLinearGradient(-50, 0, 50, 0);
+        barGrad.addColorStop(0, "#ff3300");
+        barGrad.addColorStop(1, "#ccff00");
         ctx.fillStyle = barGrad;
         ctx.beginPath();
-        ctx.roundRect(-barW/2 + 1, barY + 1, Math.max(0, (barW-2) * hpPct), 6, 2);
+        ctx.roundRect(-49, barY + 1, Math.max(0, 98 * hpPct), 6, 2);
         ctx.fill();
 
         ctx.fillStyle = "#fff";
@@ -8348,7 +8329,7 @@ class MinigunBullet {
         
         // 3. Stats (Passed to explosion)
         this.damage = 50 + (hasSkill('mortar_dmg') ? 30 : 0);
-        this.blastRadius = 100 * (hasSkill('mortar_area') ? 1.25 : 1);
+        this.blastRadius = 150 * (hasSkill('mortar_area') ? 1.25 : 1);
 
         // 4. Visuals
         this.z = 0; // Height off ground
@@ -9178,6 +9159,48 @@ function drawBlueprint() {
             ctx.restore(); // Restore context to remove transparency
         }
     }
+    else if (currentTool === 'bounty') {
+        // 1. Grid Snap Calculations
+        let col = Math.floor(mouseX / CELL_SIZE);
+        let row = Math.floor(mouseY / CELL_SIZE);
+        let snapX = col * CELL_SIZE + CELL_SIZE / 2;
+        let snapY = row * CELL_SIZE + CELL_SIZE / 2;
+
+        ctx.save();
+        ctx.translate(snapX, snapY);
+
+        // 2. Trigger Radius (150 range)
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(0, 210, 255, 0.15)"; // Neon blue tint
+        ctx.strokeStyle = "rgba(0, 210, 255, 0.5)";
+        ctx.arc(0, 0, 150, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 3. Bounty Tower Visuals (Blueprint preview)
+        ctx.globalAlpha = 0.8; // Make it slightly transparent 
+        
+        // Draw Tower Base
+        ctx.fillStyle = "#222";
+        ctx.fillRect(-15, -15, 30, 30);
+
+        // Draw Roof (Closed state)
+        ctx.fillStyle = "#00d2ff"; // Neon blue roof
+        // Left Roof Half
+        ctx.fillRect(-15, -15, 15, 30);
+        // Right Roof Half
+        ctx.fillRect(0, -15, 15, 30);
+        
+        // Draw a slight seam line down the middle where it opens
+        ctx.strokeStyle = "#050505";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -15);
+        ctx.lineTo(0, 15);
+        ctx.stroke();
+
+        ctx.restore();
+    }
     else if (currentTool === 'cryo_tower') {
         if (col >= 0 && col < COLS && row >= 0 && row < ROWS) {
             const x = col * CELL_SIZE + CELL_SIZE / 2;
@@ -9993,6 +10016,1878 @@ class WallTurret {
     }
 }
 
+// --- NEW TOWER: TESLA COIL ---
+const TWO_PI = Math.PI * 2;
+const PI_4 = 0.785398; // 45 degrees in radians
+
+class TeslaTower {
+    constructor(col, row) {
+        this.col = col;
+        this.row = row;
+        this.x = col * CELL_SIZE + CELL_SIZE / 2;
+        this.y = row * CELL_SIZE + CELL_SIZE / 2;
+
+        // Precalculate Scale & Ranges for fast math
+        this.scaleFactor = (CELL_SIZE * 0.95) / 80;
+        this.range = 180 * (hasSkill('tesla_range') ? 1.2 : 1);
+        this.rangeSq = this.range * this.range; 
+        this.chainRange = 180 * (hasSkill('tesla_range') ? 1.2 : 1);
+        this.chainRangeSq = this.chainRange * this.chainRange;
+        
+        // Stats & Timing
+        this.continuousDamage = 0.5; 
+        this.chainLimit = 4 + (hasSkill('tesla_chain') ? 2 : 0);
+        this.cooldown = 0;
+        this.maxCooldown = 50;
+        this.fireTimer = 0;
+        this.maxFireDuration = 30; 
+
+        // Visuals & Object Pooling (Optimization)
+        this.targetCoords = []; // Flat array [x1, y1, x2, y2...] to prevent object allocation
+        this.hitList = [];      // Reusable array to prevent new Set() allocations
+        this.pulse = 0;
+        this.ringGradients = null; 
+        
+        // Lightning Geometry Caching
+        this.lightningPath = new Path2D(); 
+        this.lightningTimer = 0;
+    }
+
+    update(dt) {
+        if (this.cooldown > 0) this.cooldown--;
+        this.pulse += 0.1;
+
+        let primaryTarget = null;
+
+        // Handle firing state
+        if (this.fireTimer > 0) {
+            this.fireTimer--;
+            primaryTarget = this.getPrimaryTarget();
+            
+            if (primaryTarget) {
+                this.executeChainLightning(primaryTarget);
+            } else {
+                this.fireTimer = 0; 
+                this.targetCoords.length = 0; // Fast clear without reallocating
+            }
+        } 
+        // Handle trigger state
+        else if (this.cooldown <= 0) {
+            primaryTarget = this.getPrimaryTarget();
+            if (primaryTarget) {
+                this.fireTimer = this.maxFireDuration;
+                this.cooldown = this.maxCooldown + this.maxFireDuration; 
+                this.executeChainLightning(primaryTarget); 
+            }
+        } else {
+            this.targetCoords.length = 0; 
+        }
+    }
+
+    getPrimaryTarget() {
+        let primaryTarget = null;
+        let minDistSq = this.rangeSq;
+        
+        // Cache properties locally to reduce property lookups in the loop
+        const tx = this.x;
+        const ty = this.y;
+        const len = enemies.length; 
+
+        for (let i = 0; i < len; i++) {
+            let e = enemies[i];
+            let dx = e.x - tx;
+            let dy = e.y - ty;
+            let distSq = dx * dx + dy * dy;
+
+            if (distSq <= minDistSq) {
+                minDistSq = distSq;
+                primaryTarget = e;
+            }
+        }
+        return primaryTarget;
+    }
+
+    executeChainLightning(firstEnemy) {
+        let currentEnemy = firstEnemy;
+        
+        // Reuse hitList instead of allocating a new Set
+        const hitList = this.hitList;
+        hitList.length = 0; 
+        hitList.push(firstEnemy);
+
+        // Reuse targetCoords flat array instead of allocating {x, y} objects
+        const coords = this.targetCoords;
+        coords.length = 0;
+        coords.push(this.x, this.y, currentEnemy.x, currentEnemy.y);
+
+        currentEnemy.hp -= this.continuousDamage;
+
+        const len = enemies.length;
+        const chainRangeSq = this.chainRangeSq;
+
+        for (let i = 0; i < this.chainLimit - 1; i++) {
+            let nextEnemy = null;
+            let closestDistSq = chainRangeSq;
+            let cx = currentEnemy.x;
+            let cy = currentEnemy.y;
+
+            for (let j = 0; j < len; j++) {
+                let e = enemies[j];
+                
+                // Array.includes is faster than Set.has for small limits (N <= 4)
+                if (hitList.includes(e)) continue;
+
+                let dx = e.x - cx;
+                let dy = e.y - cy;
+                let distSq = dx * dx + dy * dy;
+
+                if (distSq <= closestDistSq) {
+                    closestDistSq = distSq;
+                    nextEnemy = e;
+                }
+            }
+
+            if (nextEnemy) {
+                nextEnemy.hp -= this.continuousDamage; 
+                hitList.push(nextEnemy);
+                coords.push(nextEnemy.x, nextEnemy.y);
+                currentEnemy = nextEnemy;
+            } else {
+                break;
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.scaleFactor, this.scaleFactor); 
+
+        const isReady = this.cooldown <= this.maxCooldown; 
+
+        // --- 0. GROUND SHADOW ---
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.beginPath();
+        ctx.arc(2, 2, 38, 0, TWO_PI); 
+        ctx.fill();
+
+        // --- 1. HEAVY INDUSTRIAL BASE ---
+        ctx.lineWidth = 3;
+        
+        ctx.fillStyle = "#1f1f1f";
+        ctx.strokeStyle = "#0a0a0a";
+        this.drawOctagon(38, 15.2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#2b2b2b";
+        this.drawOctagon(30, 12);
+        ctx.fill();
+        ctx.stroke();
+
+        // --- 2. GLOWING VENTS & SUPPORT STRUTS ---
+        ctx.fillStyle = isReady ? "#00ffff" : "#004444";
+        if (isReady) {
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = "#00ffff";
+        }
+
+        ctx.beginPath();
+        ctx.rect(-6, 22, 12, 4);   // Bottom
+        ctx.rect(-6, -26, 12, 4);  // Top
+        ctx.rect(22, -6, 4, 12);   // Right
+        ctx.rect(-26, -6, 4, 12);  // Left
+        ctx.fill();
+
+        if (isReady) ctx.shadowBlur = 0; 
+        
+        ctx.fillStyle = "#444";
+        ctx.strokeStyle = "#111";
+        ctx.lineWidth = 2;
+        
+        ctx.beginPath();
+        ctx.moveTo(-4, 18); ctx.lineTo(4, 18); ctx.lineTo(3, 34); ctx.lineTo(-3, 34);
+        ctx.moveTo(-4, -18); ctx.lineTo(4, -18); ctx.lineTo(3, -34); ctx.lineTo(-3, -34);
+        ctx.moveTo(18, -4); ctx.lineTo(18, 4); ctx.lineTo(34, 3); ctx.lineTo(34, -3);
+        ctx.moveTo(-18, -4); ctx.lineTo(-18, 4); ctx.lineTo(-34, 3); ctx.lineTo(-34, -3);
+        ctx.fill();
+        ctx.stroke();
+
+        // --- 3. HIGH-VOLTAGE COILS ---
+        if (!this.ringGradients) {
+            this.ringGradients = [
+                { r: 20, line: "#704e03", grad: ctx.createRadialGradient(0, 0, 10, 0, 0, 20) },
+                { r: 15, line: "#8a6608", grad: ctx.createRadialGradient(0, 0, 7.5, 0, 0, 15) },
+                { r: 10, line: "#a87b00", grad: ctx.createRadialGradient(0, 0, 5, 0, 0, 10) }
+            ];
+            this.ringGradients[0].grad.addColorStop(0, "#b8860b"); this.ringGradients[0].grad.addColorStop(1, "#704e03");
+            this.ringGradients[1].grad.addColorStop(0, "#daa520"); this.ringGradients[1].grad.addColorStop(1, "#8a6608");
+            this.ringGradients[2].grad.addColorStop(0, "#ffd700"); this.ringGradients[2].grad.addColorStop(1, "#a87b00");
+        }
+
+        for (let i = 0; i < 3; i++) {
+            let ring = this.ringGradients[i];
+            ctx.fillStyle = ring.grad;
+            ctx.strokeStyle = ring.line;
+            ctx.beginPath();
+            ctx.arc(0, 0, ring.r, 0, TWO_PI);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // --- 4. EMITTER PRONGS ---
+        ctx.fillStyle = "#555";
+        ctx.strokeStyle = "#111";
+        ctx.lineWidth = 1;
+        
+        ctx.save();
+        ctx.rotate(PI_4); 
+        ctx.beginPath();
+        ctx.moveTo(-3, 6); ctx.lineTo(3, 6); ctx.lineTo(2, 14); ctx.lineTo(-2, 14);
+        ctx.moveTo(6, -3); ctx.lineTo(6, 3); ctx.lineTo(14, 2); ctx.lineTo(14, -2);
+        ctx.moveTo(-3, -6); ctx.lineTo(3, -6); ctx.lineTo(2, -14); ctx.lineTo(-2, -14);
+        ctx.moveTo(-6, -3); ctx.lineTo(-6, 3); ctx.lineTo(-14, 2); ctx.lineTo(-14, -2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // --- 5. CENTRAL EMITTER BALL ---
+        if (isReady) {
+            let pulseSize = Math.sin(this.pulse * 3) * 2;
+            ctx.shadowBlur = 12 + pulseSize;
+            ctx.shadowColor = "#e6ac00";
+        }
+
+        ctx.fillStyle = "#ffdf00";
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0, TWO_PI);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#fff";
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = "#fff";
+        ctx.beginPath();
+        ctx.arc(0, 0, 2, 0, TWO_PI);
+        ctx.fill();
+
+        ctx.restore(); 
+
+        // --- 6. LIGHTNING EFFECTS ---
+        if (this.fireTimer > 0 && this.targetCoords.length > 2) {
+            this.renderLightning();
+        }
+    }
+
+    drawOctagon(size, s) {
+        ctx.beginPath();
+        ctx.moveTo(-size, -s); ctx.lineTo(-s, -size);
+        ctx.lineTo(s, -size); ctx.lineTo(size, -s);
+        ctx.lineTo(size, s); ctx.lineTo(s, size);
+        ctx.lineTo(-s, size); ctx.lineTo(-size, s);
+        ctx.closePath();
+    }
+
+    renderLightning() {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // Only recalculate the jagged lines every 4 frames to save CPU
+        if (this.lightningTimer <= 0) {
+            this.generateLightningPath();
+            this.lightningTimer = 4; 
+        }
+        this.lightningTimer--;
+
+        // --- FAKE GLOW (Extremely fast compared to shadowBlur) ---
+        ctx.strokeStyle = "rgba(0, 255, 255, 0.35)"; 
+        ctx.lineWidth = 8;
+        ctx.stroke(this.lightningPath); 
+
+        // --- INNER CORE (Solid White) ---
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke(this.lightningPath);
+
+        // --- SPARKS ---
+        const coords = this.targetCoords;
+        const len = coords.length;
+        for (let i = 2; i < len; i += 2) { // Start at 2 to skip the tower itself
+            this.drawSpark(coords[i], coords[i+1]);
+        }
+
+        ctx.restore();
+    }
+
+    generateLightningPath() {
+        const coords = this.targetCoords;
+        const len = coords.length;
+        
+        // Reset the path
+        this.lightningPath = new Path2D(); 
+
+        for (let i = 0; i < len - 2; i += 2) {
+            let x1 = coords[i];
+            let y1 = coords[i+1];
+            let x2 = coords[i+2];
+            let y2 = coords[i+3];
+
+            let dx = x2 - x1;
+            let dy = y2 - y1;
+            
+            // Fast approximate distance (Chebyshev / Octagonal)
+            let absDx = Math.abs(dx);
+            let absDy = Math.abs(dy);
+            let dist = Math.max(absDx, absDy) + 0.4 * Math.min(absDx, absDy); 
+            
+            let steps = Math.max(dist * 0.1, 2) | 0; 
+            let stepInv = 1 / steps; 
+
+            this.lightningPath.moveTo(x1, y1);
+            for (let j = 1; j < steps; j++) {
+                let t = j * stepInv;
+                let lx = x1 + dx * t;
+                let ly = y1 + dy * t;
+                
+                // Jitter
+                let ox = (Math.random() - 0.5) * 8;
+                let oy = (Math.random() - 0.5) * 8;
+                
+                this.lightningPath.lineTo(lx + ox, ly + oy);
+            }
+            this.lightningPath.lineTo(x2, y2);
+        }
+    }
+
+    drawSpark(x, y) {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, TWO_PI); 
+        ctx.fill();
+        
+        ctx.fillStyle = "rgba(0, 255, 255, 0.5)";
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, TWO_PI); 
+        ctx.fill();
+    }
+}
+
+class BountyTower {
+    constructor(c, r) {
+        this.col = c;
+        this.row = r;
+        this.x = c * CELL_SIZE + CELL_SIZE / 2;
+        this.y = r * CELL_SIZE + CELL_SIZE / 2;
+        
+        this.range = 160; 
+        this.roofOpenTimer = 0; 
+        this.gearSpin = 0; 
+        
+        // --- ASYMMETRICAL OFFSETS ---
+        this.armBaseX = -14; // Crane is mounted on the left
+        this.armBaseY = 0;
+        this.crusherX = 14;  // Crusher is on the right
+        this.crusherY = 0;
+
+        // --- PERSISTENT MAGNETIC ARM ---
+        this.arm = {
+            state: "IDLE", 
+            x: this.x + this.crusherX + 20,
+            y: this.y - 50,
+            target: null
+        };
+    }
+
+    update() {
+        this.gearSpin += 0.1;
+
+        if (this.roofOpenTimer > 0) {
+            this.roofOpenTimer--;
+        }
+
+        let speed = 0.8; // Slow, heavy industrial crawl
+
+        // Rest position: arm hangs naturally to the right of the tower (above the crusher)
+        const restX = this.x + this.crusherX + 20;
+        const restY = this.y - 50;
+
+        if (this.arm.state === "IDLE" || this.arm.state === "RETURNING") {
+            // Move smoothly back to rest position
+            let dx = restX - this.arm.x;
+            let dy = restY - this.arm.y;
+            let dist = Math.hypot(dx, dy);
+
+            if (dist > speed) {
+                this.arm.x += (dx / dist) * speed;
+                this.arm.y += (dy / dist) * speed;
+            } else {
+                this.arm.x = restX;
+                this.arm.y = restY;
+                this.arm.state = "IDLE";
+            }
+
+            // Only scan for new targets once fully at rest
+            if (this.arm.state === "IDLE") {
+                for (let corpse of corpses) {
+                    if (!corpse.isTargeted && corpse.landed && corpse.active) {
+                        let cDist = Math.hypot(corpse.x - this.x, corpse.y - this.y);
+                        if (cDist <= this.range) {
+                            corpse.isTargeted = true;
+                            this.arm.target = corpse;
+                            this.arm.state = "EXTENDING";
+                            break; 
+                        }
+                    }
+                }
+            }
+        } else {
+            // Active Target Coordinates
+            const grabOffset = 35; // How far above the gravestone top the claw hovers
+            let tx = this.arm.target.x;
+            let ty = this.arm.target.y - grabOffset;
+
+            if (this.arm.state === "RETRACTING") {
+                // Pull the gravestone to hover ABOVE the crusher hole
+                tx = this.x + this.crusherX;
+                ty = this.y + this.crusherY - 40; // High enough so gravestone hangs above, not in, the hole
+                
+                // Stick gravestone below the claw — offset matches grabOffset so no teleport
+                this.arm.target.x = this.arm.x;
+                this.arm.target.y = this.arm.y + grabOffset + 20; // Hangs lower below the claw
+                this.arm.target.dropY = -20; // Lifted off the ground
+            }
+
+            let dx = tx - this.arm.x;
+            let dy = ty - this.arm.y;
+            let dist = Math.hypot(dx, dy);
+
+            if (dist < speed) {
+                this.arm.x = tx;
+                this.arm.y = ty;
+
+                if (this.arm.state === "EXTENDING") {
+                    this.arm.state = "RETRACTING";
+                } else if (this.arm.state === "RETRACTING") {
+                    // Release the gravestone above the crusher hole so it falls in
+                    this.roofOpenTimer = 40; 
+                    money += Math.ceil(this.arm.target.bounty / 2);
+
+                    // Position gravestone above the crusher, release physics
+                    let dropped = this.arm.target;
+                    dropped.isTargeted = false;        // Re-enable physics
+                    dropped.x = this.x + this.crusherX;
+                    dropped.y = this.y + this.crusherY; // Ground level at crusher
+                    dropped.dropY = -30;               // Start above the hole
+                    dropped.velocity = 3;              // Falling downward fast
+                    dropped.gravity = 1.5;             // Heavy drop into the hole
+                    dropped.landed = false;
+                    dropped.fallingIntoHole = true;    // Flag to skip bounce, sink into hole
+
+                    this.arm.target = null;
+                    this.arm.state = "RETURNING";
+                }
+            } else {
+                this.arm.x += (dx / dist) * speed;
+                this.arm.y += (dy / dist) * speed;
+            }
+        }
+    }
+
+    draw() {
+        // --- ROOT CONTEXT SAVE (Prevents Map Shifting) ---
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // ==========================================
+        // 1. HEAVY INDUSTRIAL CHASSIS & SHADOWS
+        // ==========================================
+        ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetY = 5;
+
+        // Base Armor Plating 
+        ctx.fillStyle = "#16191e";
+        ctx.strokeStyle = "#090a0c";
+        ctx.lineWidth = 3;
+        
+        ctx.beginPath();
+        ctx.moveTo(-28, -20);
+        ctx.lineTo(12, -22); 
+        ctx.lineTo(30, -14); 
+        ctx.lineTo(32, 16);  
+        ctx.lineTo(10, 22);  
+        ctx.lineTo(-26, 20); 
+        ctx.lineTo(-32, 0);  
+        ctx.closePath();
+        ctx.fill(); 
+        ctx.stroke();
+
+        ctx.shadowBlur = 0; 
+        ctx.shadowOffsetY = 0;
+
+        // Inner Metallic Sheen
+        let baseGrad = ctx.createLinearGradient(-30, -20, 30, 20);
+        baseGrad.addColorStop(0, "#2a3038");
+        baseGrad.addColorStop(0.5, "#1b1f24");
+        baseGrad.addColorStop(1, "#101216");
+        ctx.fillStyle = baseGrad;
+        ctx.fill();
+
+        // Warning Hazard Stripes
+        ctx.save();
+        ctx.clip();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "rgba(255, 150, 0, 0.6)";
+        for (let i = -10; i < 40; i += 8) {
+            ctx.beginPath(); ctx.moveTo(i, 10); ctx.lineTo(i - 15, 30); ctx.stroke();
+        }
+        ctx.restore();
+
+        // Exhaust Vents
+        ctx.fillStyle = "#050608";
+        for (let i = 0; i < 4; i++) {
+            ctx.fillRect(-22 + (i * 5), 12, 3, 6);
+        }
+
+        ctx.fillStyle = "#404854";
+        const rivets = [[-24, -16], [8, -18], [24, -10], [26, 12], [8, 18], [-22, 16]];
+        for (let r of rivets) {
+            ctx.beginPath(); ctx.arc(r[0], r[1], 1.5, 0, Math.PI * 2); ctx.fill();
+        }
+
+
+        // ==========================================
+        // 2. THE PLASMA FUSION CRUSHER 
+        // ==========================================
+        ctx.save();
+        ctx.translate(this.crusherX, this.crusherY);
+
+        let ringGrad = ctx.createRadialGradient(0, 0, 8, 0, 0, 16);
+        ringGrad.addColorStop(0, "#1a1e24");
+        ringGrad.addColorStop(1, "#0a0c0f");
+        ctx.fillStyle = ringGrad;
+        ctx.strokeStyle = "#30363d";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        ctx.strokeStyle = "#404854";
+        ctx.lineWidth = 1.5;
+        for (let i = 0; i < 12; i++) {
+            ctx.save();
+            ctx.rotate((i * Math.PI) / 6 + this.gearSpin * 0.1); 
+            ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(18, 0); ctx.stroke();
+            ctx.restore();
+        }
+
+        ctx.fillStyle = "#020203";
+        ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fill();
+
+        ctx.save();
+        ctx.clip(new Path2D(`M -12 -12 h 24 v 24 h -24 Z`)); 
+        
+        ctx.fillStyle = "#2c313a";
+        ctx.strokeStyle = "#16191e";
+        ctx.lineWidth = 1;
+        
+        ctx.save();
+        ctx.translate(-5, 0);
+        ctx.rotate(this.gearSpin * 1.5);
+        for(let i=0; i<5; i++) { 
+            ctx.rotate((Math.PI*2)/5); 
+            ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(6, -1); ctx.lineTo(6, 1); ctx.lineTo(0, 2); ctx.fill(); ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI*2); ctx.fill(); 
+        ctx.restore();
+        
+        ctx.save();
+        ctx.translate(5, 0);
+        ctx.rotate(-this.gearSpin * 1.5); 
+        for(let i=0; i<5; i++) { 
+            ctx.rotate((Math.PI*2)/5); 
+            ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(6, -1); ctx.lineTo(6, 1); ctx.lineTo(0, 2); ctx.fill(); ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI*2); ctx.fill(); 
+        ctx.restore();
+        ctx.restore(); 
+
+        let openPulse = this.roofOpenTimer > 0 ? 1 : 0.2;
+        let timePulse = Math.abs(Math.sin(Date.now() / 100)) * 0.5;
+        let pAlpha = (0.3 + timePulse) * openPulse;
+        
+        if (pAlpha > 0.05) {
+            let coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 14);
+            coreGrad.addColorStop(0, `rgba(0, 255, 255, ${pAlpha + 0.2})`); 
+            coreGrad.addColorStop(0.4, `rgba(0, 150, 255, ${pAlpha})`);    
+            coreGrad.addColorStop(1, "rgba(0, 50, 255, 0)");               
+            ctx.fillStyle = coreGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 1;
+            for(let i=0; i<3; i++) {
+                let sparkAngle = Math.random() * Math.PI * 2;
+                let sparkDist = Math.random() * 8;
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(sparkAngle)*sparkDist, Math.sin(sparkAngle)*sparkDist);
+                ctx.lineTo(Math.cos(sparkAngle)*(sparkDist+4), Math.sin(sparkAngle)*(sparkDist+4));
+                ctx.stroke();
+            }
+        }
+        ctx.restore(); 
+
+
+        // ==========================================
+        // 3. THE CRANE ARM & IK MATH
+        // ==========================================
+        ctx.save();
+        ctx.translate(this.armBaseX, this.armBaseY);
+
+        ctx.fillStyle = "#1b1f24";
+        ctx.strokeStyle = "#404854";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        
+        ctx.fillStyle = "#0c0e12";
+        ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+        
+        ctx.fillStyle = "#00ffff"; 
+        ctx.beginPath(); ctx.arc(0, -6, 1.5, 0, Math.PI * 2); ctx.fill();
+
+        let targetX = (this.arm.x - this.x) - this.armBaseX;
+        let targetY = (this.arm.y - this.y) - this.armBaseY;
+        
+        let maxReach = 165; 
+        let dist = Math.hypot(targetX, targetY);
+        if (dist > maxReach) {
+            targetX = (targetX / dist) * maxReach;
+            targetY = (targetY / dist) * maxReach;
+        }
+
+        let L1 = 60, L2 = 55, L3 = 35; 
+        if (dist < 5) { targetX = 0; targetY = -0.1; }
+
+        let pts = [
+            {x: 0, y: 0},
+            {x: targetX * 0.33, y: targetY * 0.33 - 45}, 
+            {x: targetX * 0.66, y: targetY * 0.66 - 45},
+            {x: targetX, y: targetY}
+        ];
+
+        for (let iter = 0; iter < 3; iter++) {
+            pts[3] = {x: targetX, y: targetY};
+            for (let i = 2; i >= 0; i--) {
+                let dx = pts[i].x - pts[i+1].x; let dy = pts[i].y - pts[i+1].y;
+                let d = Math.hypot(dx, dy) || 0.001; let L = (i === 2) ? L3 : (i === 1) ? L2 : L1;
+                pts[i].x = pts[i+1].x + (dx / d) * L; pts[i].y = pts[i+1].y + (dy / d) * L;
+            }
+            pts[0] = {x: 0, y: 0};
+            for (let i = 1; i <= 3; i++) {
+                let dx = pts[i].x - pts[i-1].x; let dy = pts[i].y - pts[i-1].y;
+                let d = Math.hypot(dx, dy) || 0.001; let L = (i === 3) ? L3 : (i === 2) ? L2 : L1;
+                pts[i].x = pts[i-1].x + (dx / d) * L; pts[i].y = pts[i-1].y + (dy / d) * L;
+            }
+        }
+
+        for (let i = 0; i < 3; i++) {
+            let start = pts[i];
+            let end = pts[i+1];
+            let angle = Math.atan2(end.y - start.y, end.x - start.x);
+            let length = Math.hypot(end.x - start.x, end.y - start.y);
+            
+            ctx.save();
+            ctx.translate(start.x, start.y);
+            ctx.rotate(angle);
+            
+            ctx.fillStyle = "#20252b";
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(0, 0, (i === 0) ? 6 : (i === 1) ? 5 : 4, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+            
+            if (i === 0) {
+                let boomGrad = ctx.createLinearGradient(0, -6, 0, 6);
+                boomGrad.addColorStop(0, "#4a5361");
+                boomGrad.addColorStop(0.5, "#2f353e");
+                boomGrad.addColorStop(1, "#1a1e24");
+                
+                ctx.fillStyle = boomGrad;
+                ctx.beginPath(); 
+                ctx.moveTo(0, -6); ctx.lineTo(length, -4); ctx.lineTo(length, 4); ctx.lineTo(0, 6);
+                ctx.closePath();
+                ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = "#e6a100";
+                ctx.fillRect(10, -2, length - 25, 4);
+                ctx.fillStyle = "#222";
+                for(let k=12; k<length-16; k+=6) ctx.fillRect(k, -2, 2, 4); 
+
+                ctx.fillStyle = "#111";
+                ctx.fillRect(5, 6, length*0.6, 2); 
+                ctx.fillStyle = "#a8b2bd";
+                ctx.fillRect(5 + length*0.6, 6.5, length*0.2, 1); 
+
+            } else if (i === 1) {
+                ctx.fillStyle = "#555d66"; 
+                ctx.fillRect(0, -4, length, 2);
+                ctx.fillRect(0, 2, length, 2);
+                
+                ctx.strokeStyle = "#00ffff";
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(length, 0); ctx.stroke();
+                
+                ctx.fillStyle = "#111";
+                ctx.fillRect(length*0.3, -5, 4, 10);
+                ctx.fillRect(length*0.7, -5, 4, 10);
+
+            } else if (i === 2) {
+                ctx.fillStyle = "#1b1f24";
+                ctx.beginPath();
+                ctx.moveTo(0, -3); 
+                ctx.lineTo(length - 5, -5); 
+                ctx.lineTo(length, -2);
+                ctx.lineTo(length, 2);
+                ctx.lineTo(length - 5, 5); 
+                ctx.lineTo(0, 3); 
+                ctx.closePath();
+                ctx.fill(); ctx.stroke();
+            }
+            
+            ctx.fillStyle = "#00ffff";
+            ctx.shadowColor = "#00ffff";
+            ctx.shadowBlur = 5;
+            ctx.beginPath(); ctx.arc(0, 0, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.restore(); 
+        }
+
+        // ==========================================
+        // 4. THE PLASMA TALON (Aggressive Sci-Fi Claw)
+        // ==========================================
+        ctx.save();
+        ctx.translate(pts[3].x, pts[3].y);
+        ctx.scale(0.6, 0.6); // Smaller claws
+        // Claws open downward — no rotation offset
+
+        let isActive = (this.arm.state === "RETRACTING");
+        let clamp = (this.arm.state === "EXTENDING") ? 0.85 : 0.1;
+
+        // --- Wrist Joint / Mount Collar ---
+        ctx.fillStyle = "#1a1f27";
+        ctx.strokeStyle = "#4a5261";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-10, -8);
+        ctx.lineTo(10, -8);
+        ctx.lineTo(12, 0);
+        ctx.lineTo(10, 8);
+        ctx.lineTo(-10, 8);
+        ctx.lineTo(-12, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Collar bolts
+        ctx.fillStyle = "#555f6d";
+        [[-8, -5], [8, -5], [-8, 5], [8, 5]].forEach(([bx, by]) => {
+            ctx.beginPath(); ctx.arc(bx, by, 1.5, 0, Math.PI * 2); ctx.fill();
+        });
+
+        // Glowing Core
+        let coreIntensity = isActive ? 1 : 0.2;
+        let coreGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, 6);
+        coreGlow.addColorStop(0, `rgba(0, 255, 255, ${coreIntensity})`);
+        coreGlow.addColorStop(1, `rgba(0, 100, 200, 0)`);
+        ctx.fillStyle = coreGlow;
+        ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = isActive ? "#00ffff" : "#0a2a2a";
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // ---- LEFT CLAW ----
+        ctx.save();
+        ctx.translate(-6, 6);
+        ctx.rotate(-clamp);
+
+        // Outer claw body
+        ctx.fillStyle = "#22282f";
+        ctx.strokeStyle = "#404854";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-5, 5);
+        ctx.lineTo(-7, 16);
+        ctx.lineTo(-3, 28);   // Long curved tip
+        ctx.lineTo(2, 20);
+        ctx.lineTo(4, 10);
+        ctx.lineTo(2, 0);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Inner plate detail
+        ctx.fillStyle = "#2e3540";
+        ctx.beginPath();
+        ctx.moveTo(0, 2);
+        ctx.lineTo(-2, 8);
+        ctx.lineTo(-1, 18);
+        ctx.lineTo(2, 10);
+        ctx.lineTo(1, 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cutting edge glow
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = isActive ? 10 : 3;
+        ctx.strokeStyle = isActive ? "rgba(0,255,255,0.95)" : "rgba(0,180,180,0.4)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-7, 16);
+        ctx.lineTo(-3, 28);
+        ctx.lineTo(2, 20);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Serration notches
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 0.75;
+        ctx.globalAlpha = 0.5;
+        for (let s = 0; s < 4; s++) {
+            let sy = 8 + s * 4;
+            ctx.beginPath();
+            ctx.moveTo(-4, sy);
+            ctx.lineTo(-2, sy + 2);
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        // ---- RIGHT CLAW ----
+        ctx.save();
+        ctx.translate(6, 6);
+        ctx.rotate(clamp);
+
+        // Outer claw body
+        ctx.fillStyle = "#22282f";
+        ctx.strokeStyle = "#404854";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(5, 5);
+        ctx.lineTo(7, 16);
+        ctx.lineTo(3, 28);
+        ctx.lineTo(-2, 20);
+        ctx.lineTo(-4, 10);
+        ctx.lineTo(-2, 0);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Inner plate detail
+        ctx.fillStyle = "#2e3540";
+        ctx.beginPath();
+        ctx.moveTo(0, 2);
+        ctx.lineTo(2, 8);
+        ctx.lineTo(1, 18);
+        ctx.lineTo(-2, 10);
+        ctx.lineTo(-1, 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cutting edge glow
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = isActive ? 10 : 3;
+        ctx.strokeStyle = isActive ? "rgba(0,255,255,0.95)" : "rgba(0,180,180,0.4)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(7, 16);
+        ctx.lineTo(3, 28);
+        ctx.lineTo(-2, 20);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Serration notches
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 0.75;
+        ctx.globalAlpha = 0.5;
+        for (let s = 0; s < 4; s++) {
+            let sy = 8 + s * 4;
+            ctx.beginPath();
+            ctx.moveTo(4, sy);
+            ctx.lineTo(2, sy + 2);
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        // ---- CENTER FANG ----
+        ctx.save();
+        ctx.translate(0, 8);
+        let fangDrop = (this.arm.state === "EXTENDING") ? 14 : 4;
+        ctx.fillStyle = "#1b1f24";
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 1;
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = isActive ? 8 : 2;
+        ctx.beginPath();
+        ctx.moveTo(-3, 0);
+        ctx.lineTo(-2, fangDrop * 0.6);
+        ctx.lineTo(0, fangDrop);
+        ctx.lineTo(2, fangDrop * 0.6);
+        ctx.lineTo(3, 0);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.restore();
+
+        // ---- PLASMA WEBBING when active ----
+        if (isActive) {
+            ctx.shadowColor = "#00ffff";
+            ctx.shadowBlur = 14;
+
+            // Arcing energy between claw tips
+            let leftTipX = -Math.sin(clamp) * 14 - 6;
+            let leftTipY = Math.cos(clamp) * 22 + 6;
+            let rightTipX = Math.sin(clamp) * 14 + 6;
+            let rightTipY = Math.cos(clamp) * 22 + 6;
+
+            ctx.strokeStyle = "rgba(0, 255, 255, 0.9)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(leftTipX, leftTipY);
+            let jitter1 = Math.random() * 6 - 3;
+            let jitter2 = Math.random() * 6 - 3;
+            ctx.bezierCurveTo(
+                leftTipX * 0.5 + jitter1, leftTipY + 4,
+                rightTipX * 0.5 + jitter2, rightTipY + 4,
+                rightTipX, rightTipY
+            );
+            ctx.stroke();
+
+            // Secondary thinner arc
+            ctx.strokeStyle = "rgba(100, 220, 255, 0.4)";
+            ctx.lineWidth = 0.75;
+            ctx.beginPath();
+            ctx.moveTo(leftTipX, leftTipY - 3);
+            ctx.quadraticCurveTo(0, leftTipY + 8 + Math.random() * 4, rightTipX, rightTipY - 3);
+            ctx.stroke();
+
+            // Containment field fill
+            ctx.fillStyle = "rgba(0, 200, 255, 0.08)";
+            ctx.beginPath();
+            ctx.moveTo(-8, 4);
+            ctx.lineTo(leftTipX, leftTipY);
+            ctx.bezierCurveTo(leftTipX * 0.5, leftTipY + 8, rightTipX * 0.5, rightTipY + 8, rightTipX, rightTipY);
+            ctx.lineTo(8, 4);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+        }
+
+        ctx.restore(); // End Talon Context
+        ctx.restore(); // End Crane Arm Context
+
+        // --- ROOT CONTEXT RESTORE (Crucial for map stability) ---
+        ctx.restore();
+    }
+}
+
+class Railgun {
+    constructor(col, row, buildRotation) {
+        this.col = col;
+        this.row = row;
+        
+        this.angle = buildRotation || 0;
+        let isHorizontal = Math.abs(Math.sin(this.angle)) < 0.1;
+        this.wCells = isHorizontal ? 3 : 2;
+        this.hCells = isHorizontal ? 2 : 3;
+
+        this.cellSize = typeof CELL_SIZE !== 'undefined' ? CELL_SIZE : 40;
+        this.bw = 3 * this.cellSize;
+        this.bh = 2 * this.cellSize;
+
+        this.x = col * this.cellSize + (this.wCells * this.cellSize) / 2;
+        this.y = row * this.cellSize + (this.hCells * this.cellSize) / 2;
+
+        this.damage = 3000 * (hasSkill('railgun_damage') ? 1.5 : 1);       // Legendary Damage
+        this.cooldown = 0;
+        this.maxCooldown = 350;   
+        this.maxWindup = 600;     // Extended windup to savor the 6-phase transformation
+        this.fov = Math.PI / 2; 
+        
+        this.headAngle = this.angle; 
+        this.currentTarget = null;
+        this.windupTimer = 0;
+        
+        this.laserTimer = 0;
+        this.pulse = 0;
+        this.coreRotation = 0;
+        this.recoil = 0; 
+        this.tick = 0;
+
+        // 🚀 LEGENDARY ANIMATION STATE (5 Moving Groups)
+        this.animState = {
+            outerSpread: 0, outerTravel: 0, outerAngle: 0, // Blast Shields
+            mainSpread: 0,  mainTravel: 0,  mainAngle: 0,  // Induction Clamps
+            innerSpread: 0, innerTravel: 0, innerAngle: 0, // Split Needle Prongs
+            finAngle: 0,    finTravel: 0,                  // Rear Stabilizers (NEW)
+            accelTravel: 0, accelSpread: 0                 // Ejecting Rails (NEW)
+        };
+
+        this.activeBeam = null;
+        this.initPaths();
+    }
+
+    initPaths() {
+        let bw = this.bw, bh = this.bh;
+        this.paths = {
+            baseShadow: new Path2D(), basePlate: new Path2D(), track: new Path2D(),
+            teeth: new Path2D(), chassis: new Path2D(), railCore: new Path2D(),
+            innerTop: new Path2D(), mainTop: new Path2D(), outerTop: new Path2D(), finTop: new Path2D(), accelTop: new Path2D(),
+            innerBot: new Path2D(), mainBot: new Path2D(), outerBot: new Path2D(), finBot: new Path2D(), accelBot: new Path2D()
+        };
+
+        // Static Base
+        this.paths.baseShadow.roundRect(-bw/2 + 10, -bh/2 + 10, bw, bh, 15);
+        this.paths.basePlate.roundRect(-bw/2 + 4, -bh/2 + 4, bw - 8, bh - 8, 15);
+        this.paths.track.arc(-bw/6, 0, bh/2 - 5, 0, Math.PI * 2);
+
+        for (let i = 0; i < 24; i++) {
+            let gAng = i * (Math.PI / 12);
+            this.paths.teeth.moveTo(-bw/6 + Math.cos(gAng) * (bh/2 - 15), Math.sin(gAng) * (bh/2 - 15));
+            this.paths.teeth.lineTo(-bw/6 + Math.cos(gAng) * (bh/2 - 5), Math.sin(gAng) * (bh/2 - 5));
+        }
+
+        // Main Body Core
+        this.paths.chassis.moveTo(-bw/3, -20); this.paths.chassis.lineTo(-10, -36);   
+        this.paths.chassis.lineTo(bw/6, -22); this.paths.chassis.lineTo(bw/4, -12);   
+        this.paths.chassis.lineTo(bw/4, 12); this.paths.chassis.lineTo(bw/6, 22);
+        this.paths.chassis.lineTo(-10, 36); this.paths.chassis.lineTo(-bw/3, 20); this.paths.chassis.closePath();
+
+        this.paths.railCore.moveTo(0, -5); this.paths.railCore.lineTo(bw*1.22, -5);
+        this.paths.railCore.lineTo(bw*1.28, 0); this.paths.railCore.lineTo(bw*1.22, 5); 
+        this.paths.railCore.lineTo(0, 5); this.paths.railCore.closePath();
+
+        // --- NEW: Rear Stabilizer Fins ---
+        this.paths.finTop.moveTo(-bw*0.4, -15); this.paths.finTop.lineTo(-bw*0.6, -45);
+        this.paths.finTop.lineTo(-10, -25); this.paths.finTop.lineTo(0, -15); this.paths.finTop.closePath();
+        
+        this.paths.finBot.moveTo(-bw*0.4, 15); this.paths.finBot.lineTo(-bw*0.6, 45);
+        this.paths.finBot.lineTo(-10, 25); this.paths.finBot.lineTo(0, 15); this.paths.finBot.closePath();
+
+        // Blast Shields (Outer)
+        this.paths.outerTop.moveTo(5, -18); this.paths.outerTop.lineTo(25, -38);
+        this.paths.outerTop.lineTo(50, -38); this.paths.outerTop.lineTo(55, -30); 
+        this.paths.outerTop.lineTo(bw*1.1, -30); this.paths.outerTop.lineTo(bw*1.15, -22); 
+        this.paths.outerTop.lineTo(40, -18); this.paths.outerTop.closePath();
+        
+        this.paths.outerBot.moveTo(5, 18); this.paths.outerBot.lineTo(25, 38);
+        this.paths.outerBot.lineTo(50, 38); this.paths.outerBot.lineTo(55, 30); 
+        this.paths.outerBot.lineTo(bw*1.1, 30); this.paths.outerBot.lineTo(bw*1.15, 22); 
+        this.paths.outerBot.lineTo(40, 18); this.paths.outerBot.closePath();
+
+        // Induction Clamps (Main)
+        this.paths.mainTop.moveTo(15, -10); this.paths.mainTop.lineTo(25, -24);
+        this.paths.mainTop.lineTo(bw*1.05, -24); this.paths.mainTop.lineTo(bw*1.18, -16); 
+        this.paths.mainTop.lineTo(bw*1.25, -10); this.paths.mainTop.lineTo(40, -10); this.paths.mainTop.closePath();
+        
+        this.paths.mainBot.moveTo(15, 10); this.paths.mainBot.lineTo(25, 24);
+        this.paths.mainBot.lineTo(bw*1.05, 24); this.paths.mainBot.lineTo(bw*1.18, 16); 
+        this.paths.mainBot.lineTo(bw*1.25, 10); this.paths.mainBot.lineTo(40, 10); this.paths.mainBot.closePath();
+        
+        // --- NEW: Ejecting Accelerator Rails ---
+        this.paths.accelTop.moveTo(bw*0.8, -8); this.paths.accelTop.lineTo(bw*1.3, -8);
+        this.paths.accelTop.lineTo(bw*1.4, -4); this.paths.accelTop.lineTo(bw*0.8, -4); this.paths.accelTop.closePath();
+        
+        this.paths.accelBot.moveTo(bw*0.8, 8); this.paths.accelBot.lineTo(bw*1.3, 8);
+        this.paths.accelBot.lineTo(bw*1.4, 4); this.paths.accelBot.lineTo(bw*0.8, 4); this.paths.accelBot.closePath();
+
+        // Split Needle Prongs (Inner)
+        this.paths.innerTop.moveTo(0, -1); this.paths.innerTop.lineTo(bw*1.15, -1);
+        this.paths.innerTop.lineTo(bw*1.35, -4); this.paths.innerTop.lineTo(bw*1.4, -1); 
+        this.paths.innerTop.lineTo(bw*1.4, 0); this.paths.innerTop.lineTo(0, 0); this.paths.innerTop.closePath();
+
+        this.paths.innerBot.moveTo(0, 1); this.paths.innerBot.lineTo(bw*1.15, 1);
+        this.paths.innerBot.lineTo(bw*1.35, 4); this.paths.innerBot.lineTo(bw*1.4, 1); 
+        this.paths.innerBot.lineTo(bw*1.4, 0); this.paths.innerBot.lineTo(0, 0); this.paths.innerBot.closePath();
+    }
+
+    update(dt) {
+        this.tick++; 
+
+        if (this.activeBeam) {
+            this.activeBeam.length = Math.min(this.activeBeam.maxLength, this.activeBeam.length + this.activeBeam.speed);
+            
+            // Beam originates from the furthest extended part
+            let tipDistance = (this.bw * 1.4) + Math.max(this.animState.innerTravel, this.animState.accelTravel) - this.recoil; 
+            let liveOx = this.x + Math.cos(this.headAngle) * tipDistance;
+            let liveOy = this.y + Math.sin(this.headAngle) * tipDistance;
+            
+            let dirX = Math.cos(this.headAngle);
+            let dirY = Math.sin(this.headAngle);
+
+            for (let e of enemies) {
+                if (!this.activeBeam.hitEnemies.has(e) && e.hp > 0) {
+                    let dx = e.x - liveOx, dy = e.y - liveOy;
+                    let proj = dx * dirX + dy * dirY; 
+                    
+                    if (proj > 0 && proj < this.activeBeam.length) {
+                        let perpDist = Math.abs(-dirY * dx + dirX * dy);
+                        if (perpDist < (this.activeBeam.width / 2) + 25) { 
+                            e.hp -= this.damage;
+                            this.activeBeam.hitEnemies.add(e);
+                        }
+                    }
+                }
+            }
+            if (this.laserTimer <= 0) this.activeBeam = null;
+        }
+
+        if (this.laserTimer > 0) {
+            this.laserTimer--;
+            this.recoil = (this.laserTimer / 60) * 70; 
+            this.coreRotation += 3.5; 
+        } else {
+            this.recoil = Math.max(0, this.recoil - 0.4); 
+        }
+
+        if (this.windupTimer > 0) {
+            this.windupTimer--;
+            if (this.currentTarget && this.currentTarget.hp > 0) {
+                let dx = this.currentTarget.x - this.x;
+                let dy = this.currentTarget.y - this.y;
+                let targetAngle = Math.atan2(dy, dx);
+                let angleDiff = this.normalizeAngle(targetAngle - this.headAngle);
+                // Turns slower, it's a massive heavy weapon
+                this.headAngle += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 0.012);
+                this.headAngle = this.normalizeAngle(this.headAngle);
+            } else {
+                this.windupTimer = 0;
+                this.currentTarget = null;
+            }
+
+            let chargeRatio = 1 - (this.windupTimer / this.maxWindup); 
+            this.coreRotation += 0.05 + (chargeRatio * 2.0);
+
+            if (this.windupTimer <= 0 && this.currentTarget) this.fire();
+        } else if (this.cooldown > 0) {
+            this.cooldown--;
+            if (this.laserTimer <= 0) this.idleAnimation();
+        } else if (this.laserTimer <= 0) {
+            this.idleAnimation();
+            let target = this.findTarget();
+            if (target) {
+                this.currentTarget = target;
+                this.windupTimer = this.maxWindup; 
+            }
+        }
+
+        // =======================================================
+        // 🌟 THE LEGENDARY 6-PHASE TRANSFORMATION SEQUENCE
+        // =======================================================
+        let t_iSpread = 0, t_iTravel = 0, t_iAngle = 0;
+        let t_mSpread = 0, t_mTravel = 0, t_mAngle = 0;
+        let t_oSpread = 0, t_oTravel = 0, t_oAngle = 0;
+        let t_fAngle = 0,  t_fTravel = 0;
+        let t_aTravel = 0, t_aSpread = 0;
+
+        let cr = this.windupTimer > 0 ? 1 - (this.windupTimer / this.maxWindup) : 0;
+
+        if (this.windupTimer > 0) {
+            // Slice the charge into 5 distinct phases
+            let p1 = Math.min(1, Math.max(0, cr / 0.2));           // 0.0 - 0.2: Unlocking
+            let p2 = Math.min(1, Math.max(0, (cr - 0.2) / 0.2));   // 0.2 - 0.4: Spooling & Fins
+            let p3 = Math.min(1, Math.max(0, (cr - 0.4) / 0.2));   // 0.4 - 0.6: Clamping
+            let p4 = Math.min(1, Math.max(0, (cr - 0.6) / 0.2));   // 0.6 - 0.8: Thrust & Eject
+            let p5 = Math.min(1, Math.max(0, (cr - 0.8) / 0.2));   // 0.8 - 1.0: CRITICAL SPLIT
+
+            // 1. Blast Shields
+            t_oTravel = -25 * p1;                    
+            t_oSpread = 12 * p1 + 8 * p3;            
+            t_oAngle  = 0.3 * p1 + 0.15 * p3;        
+
+            // 2. Rear Fins (Deploy to brace for impact)
+            t_fAngle = 0.6 * p2;                     
+            t_fTravel = -5 * p2;
+
+            // 3. Induction Clamps
+            t_mTravel = 25 * p2 - 10 * p4;           
+            t_mSpread = 18 * p2;                     
+            t_mAngle  = -0.18 * p3;                  
+
+            // 4. Accelerator Rails (Violently eject forward)
+            t_aTravel = 60 * p4 + 10 * p5;           
+            t_aSpread = 4 * p4;
+
+            // 5. Inner Needle (Pulls back, thrusts, then SPLITS open)
+            t_iTravel = -35 * p2 + 85 * p4;          
+            t_iSpread = 16 * p5;                     // The Legendary Singularity split
+            t_iAngle  = 0.1 * p5;
+
+        } else if (this.laserTimer > 0) {
+            // PHASE 6: FIRING BLOWBACK
+            t_oTravel = -45; t_oSpread = 35; t_oAngle = 0.7;  // Shields completely shattered open
+            t_mTravel = -15; t_mSpread = 15; t_mAngle = 0.15; // Clamps blown backward
+            t_iTravel = -55; t_iSpread = 25; t_iAngle = 0.2;  // Prongs forced incredibly wide
+            t_fAngle  = 0.8; t_fTravel = -10;                 // Fins buckle under pressure
+            t_aTravel = -20; t_aSpread = 10;                  // Rails snap all the way back into chassis
+        }
+
+        let lerp = (start, end, amt) => (1 - amt) * start + amt * end;
+        let animSpeed = this.laserTimer > 0 ? 0.6 : (cr > 0.6 && cr < 0.8) ? 0.3 : (cr > 0.8) ? 0.4 : 0.12; 
+
+        let a = this.animState;
+        a.innerSpread = lerp(a.innerSpread, t_iSpread, animSpeed);
+        a.innerTravel = lerp(a.innerTravel, t_iTravel, animSpeed);
+        a.innerAngle  = lerp(a.innerAngle,  t_iAngle,  animSpeed);
+
+        a.mainSpread  = lerp(a.mainSpread,  t_mSpread, animSpeed);
+        a.mainTravel  = lerp(a.mainTravel,  t_mTravel, animSpeed);
+        a.mainAngle   = lerp(a.mainAngle,   t_mAngle,  animSpeed);
+
+        a.outerSpread = lerp(a.outerSpread, t_oSpread, animSpeed);
+        a.outerTravel = lerp(a.outerTravel, t_oTravel, animSpeed);
+        a.outerAngle  = lerp(a.outerAngle,  t_oAngle,  animSpeed);
+
+        a.finAngle    = lerp(a.finAngle,    t_fAngle,  animSpeed);
+        a.finTravel   = lerp(a.finTravel,   t_fTravel, animSpeed);
+
+        a.accelTravel = lerp(a.accelTravel, t_aTravel, animSpeed);
+        a.accelSpread = lerp(a.accelSpread, t_aSpread, animSpeed);
+    }
+
+    fire() {
+        this.cooldown = this.maxCooldown;
+        this.laserTimer = 60; 
+        this.currentTarget = null; 
+
+        this.activeBeam = {
+            length: 0,
+            speed: 50,      
+            maxLength: 4000, 
+            width: 220 * (hasSkill('railgun_width') ? 1.2 : 1),      
+            hitEnemies: new Set()
+        };
+    }
+
+    idleAnimation() {
+        this.coreRotation += 0.01;
+        this.pulse += 0.01;
+        let angleDiff = this.normalizeAngle(this.angle - this.headAngle);
+        this.headAngle += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 0.002);
+    }
+
+    findTarget() {
+        let bestTarget = null, bestDistSq = Infinity;
+        for (let i = 0; i < enemies.length; i++) {
+            let e = enemies[i];
+            let dx = e.x - this.x, dy = e.y - this.y;
+            let angleToEnemy = Math.atan2(dy, dx);
+            let angleDiff = Math.abs(this.normalizeAngle(angleToEnemy - this.angle));
+
+            if (angleDiff <= this.fov / 2) {
+                let distSq = dx * dx + dy * dy;
+                if (distSq < bestDistSq) {
+                    bestDistSq = distSq;
+                    bestTarget = e;
+                }
+            }
+        }
+        return bestTarget;
+    }
+
+    normalizeAngle(a) {
+        while (a > Math.PI) a -= Math.PI * 2;
+        while (a < -Math.PI) a += Math.PI * 2;
+        return a;
+    }
+
+    draw() {
+        let bw = this.bw, bh = this.bh;
+        let chargeRatio = this.windupTimer > 0 ? 1 - (this.windupTimer / this.maxWindup) : 0;
+        let isFiring = this.laserTimer > 0;
+        let heatRatio = (!isFiring && this.cooldown > 0) ? Math.min(1, this.cooldown / (this.maxCooldown * 0.8)) : 0;
+        
+        let a = this.animState;
+        let tipDistance = (bw * 1.4) + Math.max(a.innerTravel, a.accelTravel) - this.recoil; 
+
+        // 1. Draw Beam First (Underneath gun)
+        if (this.activeBeam) {
+            let liveOx = this.x + Math.cos(this.headAngle) * tipDistance;
+            let liveOy = this.y + Math.sin(this.headAngle) * tipDistance;
+            this.renderContinuousBeam(liveOx, liveOy, this.headAngle);
+        }
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // 2. Static Base
+        ctx.save();
+        ctx.rotate(this.angle);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        ctx.fill(this.paths.baseShadow);
+
+        let baseGrad = ctx.createLinearGradient(-bw/2, -bh/2, bw/2, bh/2);
+        baseGrad.addColorStop(0, "#2a2d33"); baseGrad.addColorStop(0.5, "#414750"); baseGrad.addColorStop(1, "#1c1e22");
+        ctx.fillStyle = baseGrad;
+        ctx.strokeStyle = "#111";
+        ctx.lineWidth = 5;
+        ctx.fill(this.paths.basePlate); ctx.stroke(this.paths.basePlate);
+
+        ctx.fillStyle = "#353a42"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
+        ctx.fill(this.paths.track); ctx.stroke(this.paths.track);
+        ctx.strokeStyle = "#5a626d"; ctx.lineWidth = 5; ctx.stroke(this.paths.teeth);
+        ctx.restore(); 
+
+        // 3. Rotating Gun Head
+        ctx.save();
+        ctx.rotate(this.headAngle);
+        
+        // Phase 5 Violent Screen Shake
+        let shakeX = 0, shakeY = 0;
+        if (chargeRatio > 0.8 && !isFiring) {
+            let severity = (chargeRatio - 0.8) * 60; 
+            shakeX = (Math.random() - 0.5) * severity; 
+            shakeY = (Math.random() - 0.5) * severity;
+        }
+        ctx.translate(-this.recoil + shakeX, shakeY);
+
+        // Targeting Laser
+        if (chargeRatio > 0.5 && !isFiring && this.currentTarget) {
+            ctx.globalCompositeOperation = 'lighter';
+            let laserAlpha = (chargeRatio - 0.5) / 0.5;
+            ctx.strokeStyle = `rgba(255, 0, 80, ${laserAlpha * 0.9})`;
+            ctx.lineWidth = 3;
+            
+            let dx = this.currentTarget.x - this.x;
+            let dy = this.currentTarget.y - this.y;
+            let dist = Math.hypot(dx, dy); 
+            
+            ctx.beginPath();
+            ctx.moveTo(tipDistance, 0);
+            ctx.lineTo(dist, 0);
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        let railGrad = ctx.createLinearGradient(0, -bh, 0, bh);
+        railGrad.addColorStop(0, "#9ea7b0"); railGrad.addColorStop(0.5, "#757d86"); railGrad.addColorStop(1, "#4b5158");
+
+        // Helper to draw the complex mirrored parts
+        const drawJawPiece = (path, travelX, spreadY, angleOffset, jawType, isTop) => {
+            ctx.save();
+            ctx.translate(travelX, spreadY);
+            ctx.rotate(angleOffset * (isTop ? -1 : 1));
+            
+            ctx.fillStyle = railGrad; 
+            ctx.strokeStyle = "#222"; 
+            ctx.lineWidth = 2;
+            ctx.fill(path); ctx.stroke(path);
+
+            if (heatRatio > 0) {
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.fillStyle = `rgba(255, 60, 0, ${heatRatio * 0.4})`;
+                ctx.fill(path);
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            let dir = isTop ? -1 : 1;
+
+            if (jawType === 'fin') {
+                ctx.fillStyle = "#ffaa00";
+                if (chargeRatio > 0 || isFiring) {
+                    ctx.globalCompositeOperation = 'lighter';
+                    ctx.fillStyle = `rgba(0, 255, 255, ${chargeRatio || 1})`;
+                }
+                ctx.beginPath(); ctx.arc(-bw*0.3, 18 * dir, 3, 0, Math.PI*2); ctx.fill();
+                ctx.globalCompositeOperation = 'source-over';
+            }
+            else if (jawType === 'main') {
+                ctx.fillStyle = "#40464d";
+                ctx.lineWidth = 1.5;
+                for (let f = 0; f < 6; f++) {
+                    ctx.beginPath(); ctx.rect(40 + (f * 14), isTop ? 24*dir - 4 : 24*dir, 8, 4);
+                    ctx.fill(); ctx.stroke();
+                }
+
+                for (let c = 0; c < 5; c++) {
+                    let cx = 35 + (c * 18), cy = 16 * dir;
+                    ctx.fillStyle = "#2a2d33";
+                    ctx.beginPath(); ctx.ellipse(cx, cy, 5, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                    
+                    if (chargeRatio > 0.4 || isFiring) {
+                        ctx.globalCompositeOperation = 'lighter';
+                        let glowAmt = isFiring ? 1 : (chargeRatio - 0.4) / 0.6;
+                        ctx.fillStyle = `rgba(0, ${150 + glowAmt*105}, 255, ${glowAmt})`;
+                        ctx.beginPath(); ctx.ellipse(cx, cy, 3, 5, 0, 0, Math.PI * 2); ctx.fill();
+                        
+                        if (c < 4 && chargeRatio > 0.5) {
+                            ctx.strokeStyle = `rgba(0, 255, 255, ${glowAmt * 0.9})`;
+                            ctx.lineWidth = 2;
+                            ctx.beginPath(); ctx.moveTo(cx + 4, cy); ctx.lineTo(cx + 18 - 4, cy); ctx.stroke();
+                        }
+                        ctx.globalCompositeOperation = 'source-over';
+                    }
+                }
+            } 
+            else if (jawType === 'accel') {
+                // Glowing rails inside the ejecting parts
+                if (chargeRatio > 0.6 || isFiring) {
+                    ctx.globalCompositeOperation = 'lighter';
+                    let accGlow = isFiring ? 1 : (chargeRatio - 0.6) / 0.4;
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${accGlow})`;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.moveTo(bw*0.85, 6 * dir); ctx.lineTo(bw*1.35, 6 * dir); ctx.stroke();
+                    ctx.globalCompositeOperation = 'source-over';
+                }
+            }
+            else if (jawType === 'inner') {
+                ctx.fillStyle = (chargeRatio > 0.8 || isFiring) ? "#fff" : "#0ff";
+                if (chargeRatio > 0.2 || isFiring) {
+                    ctx.globalCompositeOperation = 'lighter';
+                    ctx.beginPath(); ctx.arc(bw*1.35, 2 * dir, 4, 0, Math.PI*2); ctx.fill();
+                    ctx.globalCompositeOperation = 'source-over';
+                }
+            }
+            ctx.restore();
+        };
+
+        // Render Background Parts (Fins, Outer Shields)
+        drawJawPiece(this.paths.finTop, a.finTravel, 0, a.finAngle, 'fin', true);
+        drawJawPiece(this.paths.finBot, a.finTravel, 0, a.finAngle, 'fin', false);
+        
+        drawJawPiece(this.paths.outerTop, a.outerTravel, -a.outerSpread, a.outerAngle, 'outer', true);
+        drawJawPiece(this.paths.outerBot, a.outerTravel, a.outerSpread, a.outerAngle, 'outer', false);
+
+        // Main Chassis & Core
+        ctx.fillStyle = "#33383e";
+        ctx.fill(this.paths.railCore);
+        if (chargeRatio > 0 || isFiring) {
+            ctx.globalCompositeOperation = 'lighter';
+            let coreAlpha = isFiring ? 1 : chargeRatio;
+            ctx.fillStyle = `rgba(0, 255, 255, ${coreAlpha})`;
+            for(let i=0; i<12; i++) {
+                if (chargeRatio > (i/12) || isFiring) {
+                    ctx.fillRect(10 + (i * 12), -4, 5, 8); 
+                }
+            }
+            ctx.strokeStyle = `rgba(255, 255, 255, ${coreAlpha * 0.8})`;
+            ctx.lineWidth = 2; ctx.stroke(this.paths.railCore);
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        ctx.fillStyle = "#505761"; ctx.strokeStyle = "#111"; ctx.lineWidth = 3;
+        ctx.fill(this.paths.chassis); ctx.stroke(this.paths.chassis);
+
+        // Core Holographic Interface
+        let rColor, rGlow;
+        if (isFiring) { rColor = "255,255,255"; rGlow = "0,255,255"; }
+        else if (chargeRatio > 0.8) { rColor = "255,0,255";   rGlow = "255,0,100"; } // LEGENDARY PURPLE/PINK CRITICAL
+        else if (chargeRatio > 0.6) { rColor = "255,255,255"; rGlow = "0,255,255"; } 
+        else if (chargeRatio > 0.2) { rColor = "0,255,255";   rGlow = "0,170,255"; } 
+        else if (this.cooldown > 0) { rColor = "255,80,0";    rGlow = "200,30,0"; }  
+        else                        { rColor = "0,255,100";   rGlow = "0,100,50"; }  // Idle Green/Cyan
+
+        ctx.save();
+        let uiAlpha = Math.min(1, 0.4 + chargeRatio); 
+        ctx.globalCompositeOperation = 'lighter';
+        
+        ctx.rotate(this.coreRotation);
+        ctx.strokeStyle = `rgba(${rColor}, ${uiAlpha})`; 
+        ctx.lineWidth = 3; 
+        ctx.setLineDash([10, 8, 4, 8]); 
+        ctx.beginPath(); ctx.arc(0, 0, 22, 0, Math.PI*2); ctx.stroke();
+        
+        ctx.setLineDash([]); ctx.lineWidth = 2;
+        ctx.strokeStyle = `rgba(${rGlow}, ${uiAlpha * 0.8})`;
+        ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI*2); ctx.stroke();
+
+        ctx.fillStyle = `rgba(${rGlow}, ${uiAlpha * 0.6})`;
+        ctx.beginPath(); ctx.arc(0, 0, 8 + (chargeRatio * 8), 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(${rColor}, ${uiAlpha})`;
+        ctx.beginPath(); ctx.arc(0, 0, 4 + (chargeRatio * 4), 0, Math.PI * 2); ctx.fill();
+        ctx.restore(); 
+
+        // Render Foreground Parts (Main Clamps, Accel Rails, Inner Prongs)
+        drawJawPiece(this.paths.mainTop, a.mainTravel, -a.mainSpread, a.mainAngle, 'main', true);
+        drawJawPiece(this.paths.mainBot, a.mainTravel, a.mainSpread, a.mainAngle, 'main', false);
+        
+        drawJawPiece(this.paths.accelTop, a.accelTravel, -a.accelSpread, 0, 'accel', true);
+        drawJawPiece(this.paths.accelBot, a.accelTravel, a.accelSpread, 0, 'accel', false);
+
+        drawJawPiece(this.paths.innerTop, a.innerTravel, -a.innerSpread, a.innerAngle, 'inner', true);
+        drawJawPiece(this.paths.innerBot, a.innerTravel, a.innerSpread, a.innerAngle, 'inner', false);
+
+        // Phase 5: Inner Needle Split Energy Arcs (The Singularity Chamber)
+        if (chargeRatio > 0.8 && !isFiring) {
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `rgba(255, 255, 255, ${chargeRatio})`;
+            ctx.lineWidth = 2 + Math.random() * 3;
+            let prongTipX = bw*1.35 + a.innerTravel;
+            
+            // Arcs connecting the separated top and bottom prongs
+            for (let i=0; i<3; i++) {
+                this.drawJaggedLine(
+                    prongTipX - (Math.random()*20), -a.innerSpread, 
+                    prongTipX - (Math.random()*20), a.innerSpread, 
+                    15
+                );
+            }
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        // Accelerator Rings & Implosion Effects
+        if (chargeRatio > 0 || isFiring) {
+            ctx.globalCompositeOperation = 'lighter';
+            let ringAlpha = isFiring ? 1 : chargeRatio;
+            
+            // Rings along the main barrel
+            if (chargeRatio > 0.4 || isFiring) {
+                for(let i=1; i<=8; i++) {
+                    let pX = 20 + (i * 20) + (chargeRatio * 25); 
+                    ctx.fillStyle = `rgba(0, 255, 255, ${ringAlpha * 0.4})`;
+                    ctx.beginPath(); ctx.ellipse(pX, 0, 8 + (chargeRatio*12), Math.max(a.mainSpread, 5) * 2.5, 0, 0, Math.PI*2); ctx.fill();
+                }
+            }
+
+            // The Singularity at the tip
+            let trueTipX = (bw * 1.4) + Math.max(a.innerTravel, a.accelTravel);
+            
+            if (!isFiring) {
+                if (chargeRatio > 0.6) {
+                    // Floating Halo rings extending ahead of the gun
+                    let haloDist = trueTipX + (chargeRatio - 0.6) * 100;
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${(chargeRatio - 0.6) * 2})`;
+                    ctx.lineWidth = 4;
+                    ctx.beginPath(); ctx.ellipse(haloDist, 0, 10, 60, 0, 0, Math.PI*2); ctx.stroke();
+                    ctx.beginPath(); ctx.ellipse(haloDist + 30, 0, 6, 40, 0, 0, Math.PI*2); ctx.stroke();
+
+                    // The Implosion Sphere (Black hole effect)
+                    if (chargeRatio > 0.8) {
+                        let implosionPhase = (this.tick % 10) / 10; 
+                        let ringRadius = 200 * (1 - implosionPhase); 
+                        ctx.strokeStyle = `rgba(255, 0, 255, ${implosionPhase * chargeRatio})`; // Pink legendary energy
+                        ctx.lineWidth = 8;
+                        ctx.beginPath(); ctx.ellipse(trueTipX, 0, ringRadius/4, ringRadius, 0, 0, Math.PI*2); ctx.stroke();
+
+                        // Core black hole
+                        ctx.fillStyle = `rgba(0, 0, 0, 0.9)`;
+                        ctx.beginPath(); ctx.arc(trueTipX, 0, 20, 0, Math.PI * 2); ctx.fill();
+                        
+                        // Event horizon glow
+                        ctx.strokeStyle = `rgba(255, 255, 255, 1)`;
+                        ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.arc(trueTipX, 0, 20 + Math.random()*5, 0, Math.PI * 2); ctx.stroke();
+                    }
+                }
+
+                let orbPulse = 1 + Math.sin(this.tick * 0.5) * 0.3;
+                ctx.fillStyle = `rgba(0, 255, 255, 0.4)`;
+                ctx.beginPath(); ctx.arc(trueTipX, 0, chargeRatio * 60 * orbPulse, 0, Math.PI * 2); ctx.fill();
+            } else {
+                // Muzzle Flash
+                let alpha = this.laserTimer / 60;
+                
+                ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+                ctx.lineWidth = 20 * alpha;
+                ctx.beginPath(); ctx.ellipse(trueTipX, 0, 200 * (1-alpha), 500 * (1-alpha), 0, 0, Math.PI * 2); ctx.stroke();
+
+                ctx.beginPath(); ctx.ellipse(trueTipX, 0, 150 * alpha, 400 * alpha, 0, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(150, 255, 255, ${alpha * 0.9})`; ctx.fill();
+                
+                ctx.beginPath(); ctx.ellipse(trueTipX, 0, 60 * alpha, 200 * alpha, 0, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`; ctx.fill();
+            }
+            ctx.globalCompositeOperation = 'source-over'; 
+        }
+
+        ctx.restore(); 
+        ctx.restore(); 
+    }
+
+    renderContinuousBeam(ox, oy, angle) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = "round";
+        
+        let dirX = Math.cos(angle);
+        let dirY = Math.sin(angle);
+        
+        let headX = ox + dirX * this.activeBeam.length;
+        let headY = oy + dirY * this.activeBeam.length;
+
+        let alpha = this.laserTimer / 60; 
+        let width = this.activeBeam.width;
+
+        // Massive deep blue aura
+        ctx.strokeStyle = `rgba(0, 100, 255, ${alpha * 0.4})`;
+        ctx.lineWidth = width + (Math.random() * 80); 
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(headX, headY); ctx.stroke();
+
+        // Cyan core
+        ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.9})`;
+        ctx.lineWidth = width * 0.7;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(headX, headY); ctx.stroke();
+
+        // White hot center
+        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.lineWidth = width * 0.3;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(headX, headY); ctx.stroke();
+
+        // Legendary Pink/Purple Lightning wrapping the beam
+        ctx.strokeStyle = `rgba(255, 50, 255, ${alpha})`;
+        ctx.lineWidth = 8;
+        this.drawJaggedLine(ox, oy, headX, headY, width * 1.2); 
+        
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+        this.drawJaggedLine(ox, oy, headX, headY, width * 0.5); 
+
+        // Impact Explosion
+        if (this.activeBeam.length > 50) {
+            ctx.beginPath();
+            ctx.ellipse(headX, headY, width * 1.2, width * 2.5, angle, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`; ctx.fill();
+            
+            ctx.beginPath();
+            ctx.ellipse(headX + (dirX * 40), headY + (dirY * 40), width * 0.6, width * 3.5, angle, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 255, 255, ${alpha * 0.7})`; ctx.fill();
+        }
+
+        ctx.restore();
+    }
+
+    drawJaggedLine(x1, y1, x2, y2, jitter) {
+        let dx = x2 - x1, dy = y2 - y1;
+        let dist = Math.sqrt(dx * dx + dy * dy); 
+        if (dist < 10) return;
+
+        let steps = Math.max(dist / 40, 4) | 0; 
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        for (let i = 1; i < steps; i++) {
+            let t = i / steps;
+            let currentJitter = jitter * (Math.sin(t * Math.PI)); // Max jitter in middle of beam
+            let ox = (Math.random() - 0.5) * currentJitter;
+            let oy = (Math.random() - 0.5) * currentJitter;
+            ctx.lineTo(x1 + dx * t + ox, y1 + dy * t + oy);
+        }
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+}
+
+class SuckerTower {
+    constructor(col, row) {
+        this.col = col;
+        this.row = row;
+        this.x = col * CELL_SIZE + CELL_SIZE / 2;
+        this.y = row * CELL_SIZE + CELL_SIZE / 2;
+
+        // Precalculate Scale & Ranges for fast math
+        this.scaleFactor = (CELL_SIZE * 0.95) / 80;
+        this.range = 160 * (hasSkill('sucker_area') ? 1.15 : 1); 
+        this.rangeSq = this.range * this.range; 
+        this.minDist = 15; // Stop pulling if they get right to the center
+        this.minDistSq = this.minDist * this.minDist;
+        
+        // Stats & Timing
+        this.pullStrength = 2 * (hasSkill('sucker_strenght') ? 1.1 : 1); // How fast they are dragged in per frame
+        this.cooldown = 0;
+        this.maxCooldown = 300; // Wait time between sucks
+        this.fireTimer = 0;
+        this.maxFireDuration = 45; // How long the tornado lasts
+
+        // Visuals
+        this.rotation = 0; // Rotates the fan and tornado
+        this.isFiring = false;
+    }
+
+    update(dt) {
+        if (this.cooldown > 0) this.cooldown--;
+        
+        // Always spin the fan a little, but spin it fast when firing
+        this.rotation += this.isFiring ? 0.3 : 0.05;
+
+        // Handle firing (sucking) state
+        if (this.fireTimer > 0) {
+            this.fireTimer--;
+            this.isFiring = true;
+            this.executePull();
+            
+            if (this.fireTimer <= 0) {
+                this.isFiring = false; // Turn off tornado
+            }
+        } 
+        // Handle trigger state
+        else if (this.cooldown <= 0) {
+            // Check if there are any enemies in range to trigger the attack
+            if (this.isEnemyInRange()) {
+                this.fireTimer = this.maxFireDuration;
+                this.cooldown = this.maxCooldown + this.maxFireDuration; 
+                this.isFiring = true;
+                this.executePull(); // Start pulling immediately
+            }
+        }
+    }
+
+    isEnemyInRange() {
+        for (let i = 0; i < enemies.length; i++) {
+            let e = enemies[i];
+            let dx = e.x - this.x;
+            let dy = e.y - this.y;
+            if (dx * dx + dy * dy <= this.rangeSq) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    executePull() {
+        // Pull ALL enemies currently within the radius
+        for (let i = 0; i < enemies.length; i++) {
+            let e = enemies[i];
+            let dx = this.x - e.x; // Vector pointing TO the tower
+            let dy = this.y - e.y;
+            let distSq = dx * dx + dy * dy;
+
+            if (distSq <= this.rangeSq && distSq > this.minDistSq) {
+                // Optimization: Only do Math.sqrt if they are actually in range
+                let dist = Math.sqrt(distSq);
+                
+                // Move enemy towards the tower (No damage applied)
+                e.x += (dx / dist) * this.pullStrength;
+                e.y += (dy / dist) * this.pullStrength;
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        // Base visuals (scaled like the Tesla Tower)
+        ctx.save();
+        ctx.scale(this.scaleFactor, this.scaleFactor); 
+
+        const isReady = this.cooldown <= this.maxCooldown; 
+
+        // --- 0. GROUND SHADOW ---
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.beginPath();
+        ctx.arc(2, 2, 38, 0, Math.PI * 2); 
+        ctx.fill();
+
+        // --- 1. HEAVY INDUSTRIAL BASE (Slightly different colors for Wind/Vacuum theme) ---
+        ctx.lineWidth = 3;
+        
+        ctx.fillStyle = "#1a242b"; // Dark blueish gray
+        ctx.strokeStyle = "#0a0f12";
+        this.drawOctagon(38, 15.2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#2a3b47";
+        this.drawOctagon(30, 12);
+        ctx.fill();
+        ctx.stroke();
+
+        // --- 2. VACUUM INTAKE PIT ---
+        ctx.fillStyle = "#05080a";
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // --- 3. SPINNING TURBINE BLADES ---
+        ctx.save();
+        ctx.rotate(this.rotation);
+        
+        // Inner glowing core
+        ctx.fillStyle = this.isFiring ? "#aaddff" : (isReady ? "#447799" : "#223344");
+        ctx.shadowBlur = this.isFiring ? 15 : 0;
+        ctx.shadowColor = "#aaddff";
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.shadowBlur = 0;
+        
+        // Draw 5 turbine blades
+        ctx.fillStyle = "#557788";
+        ctx.strokeStyle = "#112233";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(20, -5);
+            ctx.lineTo(20, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+        ctx.restore();
+        ctx.restore(); // Restore scale to draw range effects accurately
+
+        // --- 4. TORNADO EFFECT (Only draws when sucking) ---
+        if (this.isFiring) {
+            this.renderTornado();
+        }
+
+        ctx.restore(); 
+    }
+
+    // Reuse your octagon logic
+    drawOctagon(size, s) {
+        ctx.beginPath();
+        ctx.moveTo(-size, -s); ctx.lineTo(-s, -size);
+        ctx.lineTo(s, -size); ctx.lineTo(size, -s);
+        ctx.lineTo(size, s); ctx.lineTo(s, size);
+        ctx.lineTo(-s, size); ctx.lineTo(-size, s);
+        ctx.closePath();
+    }
+
+    renderTornado() {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = "round";
+
+        // Draw multiple swirling wind arcs that expand outwards
+        for (let i = 0; i < 4; i++) {
+            // Calculate an expanding radius that loops back using modulo
+            let age = (this.rotation * 15 + i * (this.range / 4));
+            let radius = age % this.range;
+            
+            // Fade out as it reaches the edge of the range
+            let alpha = 1 - (radius / this.range);
+            
+            ctx.strokeStyle = `rgba(180, 230, 255, ${alpha * 0.8})`;
+            ctx.lineWidth = 3 + (radius * 0.05); // Gets thicker as it expands
+            
+            // Spin the angle
+            let angle = this.rotation * 3 + (i * Math.PI / 2);
+            
+            ctx.beginPath();
+            // Draw a half-circle arc that looks like a gust of wind
+            ctx.arc(0, 0, Math.max(0.1, radius), angle, angle + Math.PI);
+            ctx.stroke();
+        }
+        
+        // Optional: draw a faint outer suction ring
+        ctx.strokeStyle = "rgba(180, 230, 255, 0.1)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.range, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
+
 class Minigun {
     constructor(col, row) {
         this.col = col;
@@ -10616,6 +12511,9 @@ function resize() {
         if(key === '8') setTool('money_farm');
         if(key === '9') setTool('sword_troop');
         if(key === 's') setTool('shield_troop');
+        if(key === "t") setTool('tesla');        
+        if(key === "v") setTool('sucker');
+        if(key === "y") setTool('bounty');
         
         // Rotation
         if (key === 'r') {
@@ -10692,7 +12590,10 @@ function resize() {
         'btn-farm':       'unlock_farm',
         'btn-barracks':   'unlock_barracks',
         'btn-minigun':    'unlock_minigun',
-        'btn-mortar':     'unlock_mortar'
+        'btn-mortar':     'unlock_mortar',
+        'btn-sucker':     'unlock_sucker',
+        'btn-tesla':      'unlock_tesla',
+        'btn-railgun':    'unlock_railgun'
     };
 
     // 2. Loop through every button
@@ -10728,6 +12629,9 @@ function resize() {
         case 'barracks':    btnIdCheck = 'btn-barracks'; break;
         case 'minigun':     btnIdCheck = 'btn-minigun'; break;
         case 'mortar':      btnIdCheck = 'btn-mortar'; break;
+        case 'sucker':      btnIdCheck = 'btn-sucker'; break;
+        case 'railgun':     btnIdCheck = 'btn-railgun'; break;
+        case 'bounty':      btnIdCheck = 'btn-bounty'; break; // <-- NEW BOUNTY TOWER ADDED HERE
     }
 
     // If the button exists and has the 'is-locked' class, STOP.
@@ -10925,6 +12829,15 @@ function resize() {
                 didChange = true;
             }
         }
+        else if (currentTool === 'tesla') {
+            // Check constraints: Not on a wall, not occupied, have enough money
+            if (!cell.wall && !cell.occupied && money >= 250) {
+                structures.push(new TeslaTower(col, row));
+                cell.occupied = true; // Mark spot as taken
+                money -= 250;
+                didChange = true;
+            }
+        }
         else if (currentTool === 'minigun') {
             if (!cell.wall && !cell.occupied && money >= 400) {
                 structures.push(new Minigun(col, row));
@@ -10949,6 +12862,58 @@ function resize() {
                 
                 // Spawn Effect
                 createParticles(mouseX, mouseY, "#ffff00", 15);
+            }
+        } else if (currentTool === 'sucker') {
+            if (!cell.wall && !cell.occupied && money >= 150) {
+                structures.push(new SuckerTower(col, row));
+                cell.occupied = true;
+                cell.wall = true;      // Enemies must path around or attack it
+                cell.wallHp = 150;     // Give it some health (adjust as needed)
+                money -= 150;
+                didChange = true;
+                
+                // Spawn Effect (Wind/Light Blue particles)
+                createParticles(mouseX, mouseY, "#aaddff", 15);
+            }
+        } else if (currentTool === 'railgun') {
+            if (money >= 1500) {
+                // Determine dimensions based on current rotation (0 or PI = horizontal, PI/2 or 3PI/2 = vertical)
+                let isHorizontal = Math.abs(Math.sin(buildRotation)) < 0.1;
+                let wCells = isHorizontal ? 3 : 2;
+                let hCells = isHorizontal ? 2 : 3;
+
+                // Prevent placing out of bounds
+                if (col + wCells > COLS || row + hCells > ROWS) return;
+
+                // Check if ALL cells in the footprint are free
+                let canPlace = true;
+                for (let i = 0; i < wCells; i++) {
+                    for (let j = 0; j < hCells; j++) {
+                        if (grid[col + i][row + j].wall || grid[col + i][row + j].occupied) {
+                            canPlace = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (canPlace) {
+                    // Push the new railgun
+                    structures.push(new Railgun(col, row, buildRotation));
+                    
+                    // Mark all grid cells in the footprint as occupied
+                    for (let i = 0; i < wCells; i++) {
+                        for (let j = 0; j < hCells; j++) {
+                            grid[col + i][row + j].occupied = true;
+                            grid[col + i][row + j].wall = true;
+                            grid[col + i][row + j].wallHp = 1000; // Strong base health
+                        }
+                    }
+                    money -= 1500;
+                    didChange = true;
+                    
+                    // Optional spawn effect
+                    if (typeof createParticles === 'function') createParticles(mouseX, mouseY, "#00ffff", 30);
+                }
             }
         }
         else if (currentTool === 'money_farm') {
@@ -10988,7 +12953,15 @@ function resize() {
                 didChange = true;
             }
         }
-        
+        else if (currentTool === 'bounty') {
+            if (!cell.wall && !cell.occupied && money >= 150) {
+                // CHANGED: towers.push -> structures.push
+                structures.push(new BountyTower(col, row)); 
+                cell.occupied = true;
+                money -= 150;
+                didChange = true; 
+            }
+        }
         // --- OPTIMIZATION ---
         // Only recalculate paths if the map layout changed (Walls or Buildings)
         if (didChange) {
@@ -11864,6 +13837,11 @@ function gameLoop(timestamp) {
         if (s.draw) s.draw();
     }
 
+    // Draw corpses that are falling into the crusher hole — must render above structures
+    for (let i = corpses.length - 1; i >= 0; i--) {
+        if (corpses[i].fallingIntoHole) corpses[i].draw();
+    }
+
     // Traps
     for (let i = traps.length - 1; i >= 0; i--) {
         traps[i].update(dt);
@@ -11883,7 +13861,7 @@ function gameLoop(timestamp) {
 
     for (let i = corpses.length - 1; i >= 0; i--) {
         corpses[i].update();
-        corpses[i].draw(); 
+        if (!corpses[i].fallingIntoHole) corpses[i].draw(); 
         if (!corpses[i].active) {
             corpses.splice(i, 1);
         }
@@ -11912,11 +13890,18 @@ function gameLoop(timestamp) {
         e.draw();
         
         if (e.hp <= 0) {
+            // 1. Give the player the standard kill bounty
             money += e.bounty; 
+            
             if (e.type !== "SKELETON_UNIT") {
-            corpses.push(new Corpse(e.x, e.y)); 
+                // 2. Spawn the corpse, but now PASS THE BOUNTY into it
+                corpses.push(new Corpse(e.x, e.y, e.bounty)); 
             }
-            if(typeof createParticles === 'function') createParticles(e.x, e.y, "orange", 6);
+            
+            if(typeof createParticles === 'function') {
+                createParticles(e.x, e.y, "orange", 6);
+            }
+            
             enemies.splice(i, 1);
         }
     }
